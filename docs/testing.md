@@ -1,4 +1,3 @@
-````markdown
 Livewireコンポーネントのテストファイルを生成するには、`make:livewire`コマンドに`--test`フラグを付けて実行します：
 
 ```shell
