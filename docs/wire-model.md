@@ -1,7 +1,7 @@
+<!-- filepath: /home/yamamoto/oss/translations/livewire/docs/wire-model.md -->
+Livewireでは、`wire:model` を使ってコンポーネントのプロパティとフォーム入力値を簡単にバインドできます。
 
-Livewire makes it easy to bind a component property's value with form inputs using `wire:model`.
-
-Here is a simple example of using `wire:model` to bind the `$title` and `$content` properties with form inputs in a "Create Post" component:
+例えば、「Create Post」コンポーネントで `$title` と `$content` プロパティをフォーム入力とバインドする例です。
 
 ```php
 use Livewire\Component;
@@ -43,52 +43,52 @@ class CreatePost extends Component
 </form>
 ```
 
-Because both inputs use `wire:model`, their values will be synchronized with the server's properties when the "Save" button is pressed.
+両方の入力欄に `wire:model` を使うことで、「Save」ボタン押下時に値がサーバー側のプロパティと同期されます。
 
-> [!warning] "Why isn't my component live updating as I type?"
-> If you tried this in your browser and are confused why the title isn't automatically updating, it's because Livewire only updates a component when an "action" is submitted—like pressing a submit button—not when a user types into a field. This cuts down on network requests and improves performance. To enable "live" updating as a user types, you can use `wire:model.live` instead. [Learn more about data binding](/docs/properties#data-binding).
+> [!warning] 「なぜ入力中に自動で更新されないの？」
+> ブラウザで試して「タイトルが入力中に自動で更新されない」と疑問に思った場合、Livewireは「アクション」（送信ボタン押下など）が発生したときのみコンポーネントを更新する仕様です。これによりネットワークリクエストが減り、パフォーマンスが向上します。入力中も即時反映したい場合は `wire:model.live` を使ってください。[データバインディングの詳細はこちら](/docs/properties#data-binding)。
 
-## Customizing update timing
+## 更新タイミングのカスタマイズ
 
-By default, Livewire will only send a network request when an action is performed (like `wire:click` or `wire:submit`), NOT when a `wire:model` input is updated.
+デフォルトでは、Livewireはアクション（`wire:click` や `wire:submit` など）が発生したときのみネットワークリクエストを送信します。`wire:model` の入力更新時には送信しません。
 
-This drastically improves the performance of Livewire by reducing network requests and provides a smoother experience for your users.
+この仕様により、Livewireのパフォーマンスが大幅に向上し、ユーザー体験もスムーズになります。
 
-However, there are occasions where you may want to update the server more frequently for things like real-time validation.
+ただし、リアルタイムバリデーションなど、より頻繁にサーバーを更新したい場合もあります。
 
-### Live updating
+### ライブ更新
 
-To send property updates to the server as a user types into an input-field, you can append the `.live` modifier to `wire:model`:
+入力欄の値を入力中に即時サーバーへ反映したい場合は、`wire:model` に `.live` モディファイアを付与します。
 
 ```html
 <input type="text" wire:model.live="title">
 ```
 
-#### Customizing the debounce
+#### デバウンスのカスタマイズ
 
-By default, when using `wire:model.live`, Livewire adds a 150 millisecond debounce to server updates. This means if a user is continually typing, Livewire will wait until the user stops typing for 150 milliseconds before sending a request.
+`wire:model.live` を使うと、デフォルトで150ミリ秒のデバウンス（入力が止まってから送信）がかかります。
 
-You can customize this timing by appending `.debounce.Xms` to the input. Here is an example of changing the debounce to 250 milliseconds:
+デバウンス時間は `.debounce.Xms` で変更できます。下記は250ミリ秒に設定した例です。
 
 ```html
 <input type="text" wire:model.live.debounce.250ms="title">
 ```
 
-### Updating on "blur" event
+### blurイベントでの更新
 
-By appending the `.blur` modifier, Livewire will only send network requests with property updates when a user clicks away from an input, or presses the tab key to move to the next input.
+`.blur` モディファイアを付与すると、入力欄からフォーカスが外れたタイミングやTabキーで次の入力欄に移動したときだけサーバーに反映されます。
 
-Adding `.blur` is helpful for scenarios where you want to update the server more frequently, but not as a user types. For example, real-time validation is a common instance where `.blur` is helpful.
+リアルタイムバリデーションなど、入力中は送信せず、適度なタイミングで更新したい場合に便利です。
 
 ```html
 <input type="text" wire:model.blur="title">
 ```
 
-### Updating on "change" event
+### changeイベントでの更新
 
-There are times when the behavior of `.blur` isn't exactly what you want and instead `.change` is.
+`.blur` の動作では不十分な場合、`.change` を使うこともできます。
 
-For example, if you want to run validation every time a select input is changed, by adding `.change`, Livewire will send a network request and validate the property as soon as a user selects a new option. As opposed to `.blur` which will only update the server after the user tabs away from the select input.
+例えば、セレクト入力が変更されたときにバリデーションを実行したい場合、`.change` を追加することで、ユーザーが新しいオプションを選択した瞬間にネットワークリクエストが送信され、バリデーションが実行されます。`.blur` の場合は、ユーザーがセレクト入力からタブで移動した後にサーバーが更新されます。
 
 ```html
 <select wire:model.change="title">
@@ -96,75 +96,75 @@ For example, if you want to run validation every time a select input is changed,
 </select>
 ```
 
-Any changes made to the text input will be automatically synchronized with the `$title` property in your Livewire component.
+テキスト入力に加えられた変更は、自動的にLivewireコンポーネントの `$title` プロパティと同期されます。
 
-## All available modifiers
+## 利用可能なモディファイア一覧
 
- Modifier          | Description
+ モディファイア          | 説明
 -------------------|-------------------------------------------------------------------------
- `.live`           | Send updates as a user types
- `.blur`           | Only send updates on the `blur` event
- `.change`         | Only send updates on the the `change` event
- `.lazy`           | An alias for `.change`
- `.debounce.[?]ms` | Debounce the sending of updates by the specified millisecond delay
- `.throttle.[?]ms` | Throttle network request updates by the specified millisecond interval
- `.number`         | Cast the text value of an input to `int` on the server
- `.boolean`        | Cast the text value of an input to `bool` on the server
- `.fill`           | Use the initial value provided by a "value" HTML attribute on page-load
+ `.live`           | 入力中に更新を送信
+ `.blur`           | `blur` イベント時のみ更新を送信
+ `.change`         | `change` イベント時のみ更新を送信
+ `.lazy`           | `.change` のエイリアス
+ `.debounce.[?]ms` | 指定ミリ秒遅延して更新を送信
+ `.throttle.[?]ms` | 指定ミリ秒間隔でネットワークリクエストを制限
+ `.number`         | 入力のテキスト値をサーバー側で `int` にキャスト
+ `.boolean`        | 入力のテキスト値をサーバー側で `bool` にキャスト
+ `.fill`           | ページロード時に "value" HTML 属性で提供された初期値を使用
 
-## Input fields
+## 入力フィールド
 
-Livewire supports most native input elements out of the box. Meaning you should just be able to attach `wire:model` to any input element in the browser and easily bind properties to them.
+Livewireは、ほとんどのネイティブ入力要素を標準でサポートしています。つまり、ブラウザで任意の入力要素に `wire:model` を簡単に追加してプロパティをバインドできます。
 
-Here's a comprehensive list of the different available input types and how you use them in a Livewire context.
+以下は、Livewireコンテキスト内で利用可能なさまざまな入力タイプとその使用方法の包括的なリストです。
 
-### Text inputs
+### テキスト入力
 
-First and foremost, text inputs are the bedrock of most forms. Here's how to bind a property named "title" to one:
+まず第一に、テキスト入力はほとんどのフォームの基盤です。プロパティ名 "title" を1つのテキスト入力にバインドする方法は以下の通りです。
 
 ```blade
 <input type="text" wire:model="title">
 ```
 
-### Textarea inputs
+### テキストエリア入力
 
-Textarea elements are similarly straightforward. Simply add `wire:model` to a textarea and the value will be bound:
+テキストエリア要素も同様に簡単です。テキストエリアに `wire:model` を追加するだけで、その値がバインドされます。
 
 ```blade
 <textarea type="text" wire:model="content"></textarea>
 ```
 
-If the "content" value is initialized with a string, Livewire will fill the textarea with that value - there's no need to do something like the following:
+もし "content" の値が文字列で初期化されている場合、Livewireはその値でテキストエリアを自動的に埋めます。以下のようにする必要はありません。
 
 ```blade
-<!-- Warning: This snippet demonstrates what NOT to do... -->
+<!-- 警告: このスニペットは、絶対にやってはいけないことを示しています... -->
 
 <textarea type="text" wire:model="content">{{ $content }}</textarea>
 ```
 
-### Checkboxes
+### チェックボックス
 
-Checkboxes can be used for single values, such as when toggling a boolean property. Or, checkboxes may be used to toggle a single value in a group of related values. We'll discuss both scenarios:
+チェックボックスは、単一の値（例えば、メール更新のオプトイン）をトグルするために使用できます。また、一連の関連する値の中から単一の値をトグルするためにも使用できます。両方のシナリオについて説明します。
 
-#### Single checkbox
+#### 単一チェックボックス
 
-At the end of a signup form, you might have a checkbox allowing the user to opt-in to email updates. You might call this property `$receiveUpdates`. You can easily bind this value to the checkbox using `wire:model`:
+サインアップフォームの最後に、ユーザーがメール更新を受け取るかどうかを選択できるチェックボックスがあるとします。このプロパティを `$receiveUpdates` と呼ぶとしましょう。`wire:model` を使ってこの値をチェックボックスに簡単にバインドできます。
 
 ```blade
 <input type="checkbox" wire:model="receiveUpdates">
 ```
 
-Now when the `$receiveUpdates` value is `false`, the checkbox will be unchecked. Of course, when the value is `true`, the checkbox will be checked.
+これで、`$receiveUpdates` の値が `false` のとき、チェックボックスはオフになります。もちろん、値が `true` のときはチェックボックスはオンになります。
 
-#### Multiple checkboxes
+#### 複数チェックボックス
 
-Now, let's say in addition to allowing the user to decide to receive updates, you have an array property in your class called `$updateTypes`, allowing the user to choose from a variety of update types:
+ユーザーに更新を受け取るかどうかを選択させるだけでなく、さまざまな更新タイプから選択できるように `$updateTypes` という配列プロパティを用意したとします。
 
 ```php
 public $updateTypes = [];
 ```
 
-By binding multiple checkboxes to the `$updateTypes` property, the user can select multiple update types and they will be added to the `$updateTypes` array property:
+複数のチェックボックスを `$updateTypes` プロパティにバインドすることで、ユーザーは複数の更新タイプを選択でき、それらは `$updateTypes` 配列プロパティに追加されます。
 
 ```blade
 <input type="checkbox" value="email" wire:model="updateTypes">
@@ -172,24 +172,24 @@ By binding multiple checkboxes to the `$updateTypes` property, the user can sele
 <input type="checkbox" value="notification" wire:model="updateTypes">
 ```
 
-For example, if the user checks the first two boxes but not the third, the value of `$updateTypes` will be: `["email", "sms"]`
+例えば、ユーザーが最初の2つのボックスにチェックを入れ、3つ目には入れなかった場合、`$updateTypes` の値は `["email", "sms"]` になります。
 
-### Radio buttons
+### ラジオボタン
 
-To toggle between two different values for a single property, you may use radio buttons:
+2つの異なる値の間で単一のプロパティを切り替えるには、ラジオボタンを使用します。
 
 ```blade
 <input type="radio" value="yes" wire:model="receiveUpdates">
 <input type="radio" value="no" wire:model="receiveUpdates">
 ```
 
-### Select dropdowns
+### セレクトドロップダウン
 
-Livewire makes it simple to work with `<select>` dropdowns. When adding `wire:model` to a dropdown, the currently selected value will be bound to the provided property name and vice versa.
+Livewireは、`<select>` ドロップダウンとの連携を簡単にします。ドロップダウンに `wire:model` を追加すると、現在選択されている値が自動的に指定されたプロパティ名にバインドされます。
 
-In addition, there's no need to manually add `selected` to the option that will be selected - Livewire handles that for you automatically.
+さらに、選択されるオプションに手動で `selected` を追加する必要はありません。Livewireが自動的にそれを処理します。
 
-Below is an example of a select dropdown filled with a static list of states:
+以下は、静的な州のリストで満たされたセレクトドロップダウンの例です。
 
 ```blade
 <select wire:model="state">
@@ -200,9 +200,9 @@ Below is an example of a select dropdown filled with a static list of states:
 </select>
 ```
 
-When a specific state is selected, for example, "Alaska", the `$state` property on the component will be set to `AK`. If you would prefer the value to be set to "Alaska" instead of "AK", you can leave the `value=""` attribute off the `<option>` element entirely.
+特定の州が選択されると、例えば「Alaska」の場合、コンポーネントの `$state` プロパティは `AK` に設定されます。もし値を「AK」ではなく「Alaska」にしたい場合は、`<option>` 要素から `value=""` 属性を省略できます。
 
-Often, you may build your dropdown options dynamically using Blade:
+しばしば、Bladeを使用してドロップダウンオプションを動的に構築します。
 
 ```blade
 <select wire:model="state">
@@ -212,11 +212,11 @@ Often, you may build your dropdown options dynamically using Blade:
 </select>
 ```
 
-If you don't have a specific option selected by default, you may want to show a muted placeholder option by default, such as "Select a state":
+デフォルトで特定のオプションが選択されていない場合、「州を選択」などの控えめなプレースホルダーオプションをデフォルトで表示したいことがあります。
 
 ```blade
 <select wire:model="state">
-    <option disabled value="">Select a state...</option>
+    <option disabled value="">州を選択...</option>
 
     @foreach (\App\Models\State::all() as $state)
         <option value="{{ $state->id }}">{{ $state->label }}</option>
@@ -224,15 +224,15 @@ If you don't have a specific option selected by default, you may want to show a 
 </select>
 ```
 
-As you can see, there is no "placeholder" attribute for a select menu like there is for text inputs. Instead, you have to add a `disabled` option element as the first option in the list.
+ご覧の通り、テキスト入力にはプレースホルダー属性がありますが、セレクトメニューにはありません。代わりに、リストの最初のオプション要素として `disabled` オプションを追加する必要があります。
 
-### Dependent select dropdowns
+### 依存セレクトドロップダウン
 
-Sometimes you may want one select menu to be dependent on another. For example, a list of cities that changes based on which state is selected.
+時には、1つのセレクトメニューが別のセレクトメニューに依存することがあります。例えば、選択された州に基づいて変わる都市のリストなどです。
 
-For the most part, this works as you'd expect, however there is one important gotcha: You must add a `wire:key` to the changing select so that Livewire properly refreshes its value when the options change.
+ほとんどの場合、これは予想通りに機能しますが、1つだけ重要な注意点があります: 値が変わるときにLivewireが正しくリフレッシュできるように、変化するセレクトに `wire:key` を追加する必要があります。
 
-Here's an example of two selects, one for states, one for cities. When the state select changes, the options in the city select will change properly:
+以下は、州用と都市用の2つのセレクトの例です。州のセレクトが変更されると、都市のセレクトのオプションも適切に変更されます。
 
 ```blade
 <!-- States select menu... -->
@@ -250,11 +250,11 @@ Here's an example of two selects, one for states, one for cities. When the state
 </select>
 ```
 
-Again, the only thing non-standard here is the `wire:key` that has been added to the second select. This ensures that when the state changes, the "selectedCity" value will be reset properly.
+再度、ここでの唯一の非標準な点は、州が変更されたときに "selectedCity" の値が正しくリセットされることを保証するために追加された `wire:key` です。
 
-### Multi-select dropdowns
+### 複数選択ドロップダウン
 
-If you are using a "multiple" select menu, Livewire works as expected. In this example, states will be added to the `$states` array property when they are selected and removed if they are deselected:
+「multiple」セレクトメニューを使用している場合、Livewireは予想通りに動作します。この例では、選択された州が `$states` 配列プロパティに追加され、選択解除されます。
 
 ```blade
 <select wire:model="states" multiple>
@@ -265,6 +265,6 @@ If you are using a "multiple" select menu, Livewire works as expected. In this e
 </select>
 ```
 
-## Going deeper
+## さらに詳しく
 
-For a more complete documentation on using `wire:model` in the context of HTML forms, visit the [Livewire forms documentation page](/docs/forms).
+HTMLフォームのコンテキスト内での `wire:model` の使用に関する完全なドキュメントについては、[Livewireフォームドキュメントページ](/docs/forms)をご覧ください。

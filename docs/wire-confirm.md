@@ -1,37 +1,36 @@
+Livewireで危険な操作を行う前に、ユーザーに確認ダイアログを表示したい場合があります。
 
-Before performing dangerous actions in Livewire, you may want to provide your users with some sort of visual confirmation.
+Livewireでは、`wire:click` や `wire:submit` などのアクションに加えて `wire:confirm` を追加するだけで、簡単に確認ダイアログを実装できます。
 
-Livewire makes this easy to do by adding `wire:confirm` in addition to any action (`wire:click`, `wire:submit`, etc.).
-
-Here's an example of adding a confirmation dialog to a "Delete post" button:
+「投稿を削除」ボタンに確認ダイアログを追加する例は以下の通りです。
 
 ```blade
 <button
     type="button"
     wire:click="delete"
-    wire:confirm="Are you sure you want to delete this post?"
+    wire:confirm="本当にこの投稿を削除しますか？"
 >
     Delete post <!-- [tl! highlight:-2,1] -->
 </button>
 ```
 
-When a user clicks "Delete post", Livewire will trigger a confirmation dialog (The default browser confirmation alert). If the user hits escape or presses cancel, the action won't be performed. If they press "OK", the action will be completed.
+ユーザーが「Delete post」をクリックすると、Livewireがブラウザの標準の確認ダイアログを表示します。Escキーやキャンセルを押すと操作は実行されず、「OK」を押すとアクションが実行されます。
 
-## Prompting users for input
+## 入力を求めるプロンプト
 
-For even more dangerous actions such as deleting a user's account entirely, you may want to present them with a confirmation prompt which they would need to type in a specific string of characters to confirm the action.
+アカウント削除など、さらに慎重な確認が必要な操作では、特定の文字列を入力させて確認するプロンプトを表示することもできます。
 
-Livewire provides a helpful `.prompt` modifier, that when applied to `wire:confirm`, it will prompt the user for input and only confirm the action if the input matches (case-sensitive) the provided string (designated by a "|" (pipe) character at the end if the `wire:confirm` value):
+Livewireの `.prompt` モディファイアを `wire:confirm` に付与すると、指定した文字列と一致した場合のみアクションが実行されます（大文字・小文字は区別されます）。
 
 ```blade
 <button
     type="button"
     wire:click="delete"
-    wire:confirm.prompt="Are you sure?\n\nType DELETE to confirm|DELETE"
+    wire:confirm.prompt="本当に実行しますか？\n\n確認のため DELETE と入力してください|DELETE"
 >
     Delete account <!-- [tl! highlight:-2,1] -->
 </button>
 ```
 
-When a user presses "Delete account", the action will only be performed if "DELETE" is entered into the prompt, otherwise, the action will be cancelled.
+この例では、「Delete account」ボタンを押した際、「DELETE」と正しく入力された場合のみアクションが実行され、それ以外はキャンセルされます。
 

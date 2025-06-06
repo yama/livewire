@@ -1,7 +1,7 @@
+<!-- filepath: /home/yamamoto/oss/translations/livewire/docs/wire-submit.md -->
+Livewireでは、`wire:submit`ディレクティブを使うことでフォーム送信を簡単に処理できます。`<form>`要素に`wire:submit`を追加すると、Livewireが送信イベントを受け取り、ブラウザのデフォルト動作を防いだ上で、任意のLivewireコンポーネントメソッドを呼び出します。
 
-Livewire makes it easy to handle form submissions via the `wire:submit` directive. By adding `wire:submit` to a `<form>` element, Livewire will intercept the form submission, prevent the default browser handling, and call any Livewire component method.
-
-Here's a basic example of using `wire:submit` to handle a "Create Post" form submission:
+「投稿作成」フォーム送信を`wire:submit`で処理する基本例を紹介します。
 
 ```php
 <?php
@@ -44,17 +44,17 @@ class CreatePost extends Component
 </form>
 ```
 
-In the above example, when a user submits the form by clicking "Save", `wire:submit` intercepts the `submit` event and calls the `save()` action on the server.
+この例では、ユーザーが「Save」ボタンでフォームを送信すると、`wire:submit`が`submit`イベントを受け取り、サーバー側の`save()`アクションを呼び出します。
 
-> [!info] Livewire automatically calls `preventDefault()`
-> `wire:submit` is different than other Livewire event handlers in that it internally calls `event.preventDefault()` without the need for the `.prevent` modifier. This is because there are very few instances you would be listening for the `submit` event and NOT want to prevent it's default browser handling (performing a full form submission to an endpoint).
+> [!info] Livewireは自動でpreventDefault()を呼び出します
+> `wire:submit`は他のLivewireイベントハンドラと異なり、内部的に`event.preventDefault()`を自動で実行します。これは、`submit`イベントを監視する場合、ほとんどのケースでブラウザのデフォルト動作（通常のフォーム送信）を防ぎたいからです。
 
-> [!info] Livewire automatically disables forms while submitting
-> By default, when Livewire is sending a form submission to the server, it will disable form submit buttons and mark all form inputs as `readonly`. This way a user cannot submit the same form again until the initial submission is complete.
+> [!info] 送信中はフォームが自動で無効化されます
+> Livewireはフォーム送信中、送信ボタンを無効化し、すべての入力を`readonly`にします。これにより、送信完了まで同じフォームが二重送信されるのを防げます。
 
-## Going deeper
+## さらに詳しく
 
-`wire:submit` is just one of many event listeners that Livewire provides. The following two pages provide much more complete documentation on using `wire:submit` in your application:
+`wire:submit`はLivewireが提供する多くのイベントリスナーのひとつです。より詳しい使い方は、以下のページもご参照ください。
 
-* [Responding to browser events with Livewire](/docs/actions)
-* [Creating forms in Livewire](/docs/forms)
+* [Livewireでブラウザイベントに応答する](/docs/actions)
+* [Livewireでフォームを作成する](/docs/forms)

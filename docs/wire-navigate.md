@@ -1,9 +1,8 @@
+Livewireの `wire:navigate` 機能を使うと、ページ遷移が非常に高速になり、SPAのような体験をユーザーに提供できます。
 
-Livewire's `wire:navigate` feature makes page navigation much faster, providing an SPA-like experience for your users.
+このページは `wire:navigate` ディレクティブの簡単なリファレンスです。より詳しい解説は [LivewireのNavigate機能のページ](/docs/navigate) をご覧ください。
 
-This page is a simple reference for the `wire:navigate` directive. Be sure to read the [page on Livewire's Navigate feature](/docs/navigate) for more complete documentation.
-
-Below is a simple example of adding `wire:navigate` to links in a nav bar:
+以下は、ナビゲーションバーのリンクに `wire:navigate` を追加するシンプルな例です。
 
 ```blade
 <nav>
@@ -13,16 +12,16 @@ Below is a simple example of adding `wire:navigate` to links in a nav bar:
 </nav>
 ```
 
-When any of these links are clicked, Livewire will intercept the click and, instead of allowing the browser to perform a full page visit, Livewire will fetch the page in the background and swap it with the current page (resulting in much faster and smoother page navigation).
+これらのリンクがクリックされると、Livewireがクリックを検知し、ブラウザの通常のページ遷移を行わず、バックグラウンドでページを取得して現在のページと入れ替えます（これにより、非常に高速かつスムーズなページ遷移が実現します）。
 
-## Prefetching pages on hover
+## ホバー時のプリフェッチ
 
-By adding the `.hover` modifier, Livewire will pre-fetch a page when a user hovers over a link. This way, the page will have already been downloaded from the server when the user clicks on the link.
+`.hover` モディファイアを付与すると、リンクにマウスオーバーした時点でページを事前取得できます。これにより、クリック時にはすでにサーバーからページがダウンロード済みとなります。
 
 ```blade
 <a href="/" wire:navigate.hover>Dashboard</a>
 ```
 
-## Going deeper
+## さらに詳しく
 
-For more complete documentation on this feature, visit [Livewire's navigate documentation page](/docs/navigate).
+この機能の詳細は [Livewireのnavigateドキュメント](/docs/navigate) をご覧ください。

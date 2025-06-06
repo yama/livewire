@@ -1,18 +1,17 @@
+Livewireコンポーネントは、JSONにシリアライズ（脱水化）されてから、リクエストごとにPHPコンポーネントへとアンシリアライズ（再水和）されます。そのため、プロパティはJSONでシリアライズ可能である必要があります。
 
-Because Livewire components are dehydrated (serialized) into JSON, then hydrated (unserialized) back into PHP components between requests, their properties need to be JSON-serializable.
+PHPのプリミティブな値は標準でJSONにシリアライズできますが、モデルやコレクション、Carbonインスタンス、Stringableなど、より高度なプロパティ型をサポートするには、より柔軟な仕組みが必要です。
 
-Natively, PHP serializes most primitive values into JSON easily. However, in order for Livewire components to support more sophisticated property types (like models, collections, carbon instances, and stringables), a more robust system is needed.
+そこでLivewireは「シンセサイザー（Synthesizer）」という拡張ポイントを提供し、任意のカスタムプロパティ型もサポートできるようになっています。
 
-Therefore, Livewire provides a point of extension called "Synthesizers" that allow users to support any custom property types they wish.
+> [!tip] まずは「水和」について理解しましょう
+> Synthesizerを使う前に、Livewireの水和システムを理解しておくと役立ちます。詳しくは[水和のドキュメント](/docs/hydration)をご覧ください。
 
-> [!tip] Make sure you understand hydration first
-> Before using Synthesizers, it's helpful to fully understand Livewire's hydration system. You can learn more by reading the [hydration documentation](/docs/hydration).
+## Synthesizerの仕組み
 
-## Understanding Synthesizers
+カスタムSynthesizerの作成方法を学ぶ前に、まずLivewireが[Laravel Stringable](https://laravel.com/docs/strings)をサポートするために内部で使っているSynthesizerを見てみましょう。
 
-Before exploring the creation of custom Synthesizers, let's first look at the internal Synthesizer that Livewire uses to support [Laravel Stringables](https://laravel.com/docs/strings).
-
-Suppose your application contained the following `CreatePost` component:
+例えば、次のような`CreatePost`コンポーネントがあるとします：
 
 ```php
 class CreatePost extends Component
@@ -21,13 +20,13 @@ class CreatePost extends Component
 }
 ```
 
-Between requests, Livewire might serialize this component's state into a JSON object like the following:
+リクエスト間でLivewireはこのコンポーネントの状態を次のようなJSONオブジェクトにシリアライズします：
 
 ```js
 state: { title: '' },
 ```
 
-Now, consider a more advanced example where the `$title` property value is a stringable instead of a plain string:
+次に、`$title`プロパティの値が単なる文字列ではなく、stringableの場合を考えます：
 
 ```php
 class CreatePost extends Component
@@ -41,15 +40,15 @@ class CreatePost extends Component
 }
 ```
 
-The dehydrated JSON representing this component's state now contains a [metadata tuple](/docs/hydration#deeply-nested-tuples) instead of a plain empty string:
+この場合、脱水化されたJSONは単なる空文字列ではなく、[メタデータタプル](/docs/hydration#deeply-nested-tuples)を含みます：
 
 ```js
 state: { title: ['', { s: 'str' }] },
 ```
 
-Livewire can now use this tuple to hydrate the `$title` property back into a stringable on the next request.
+Livewireはこのタプルを使って、次のリクエスト時に`$title`プロパティを再びstringableとして水和できます。
 
-Now that you've seen the outside-in effects of Synthesizers, here is the actual source code for Livewire's internal stringable synth:
+ここまででSynthesizerの「外側から見た」効果が分かりました。次は、Livewire内部のstringable用Synthesizerの実際のソースコードを見てみましょう：
 
 ```php
 use Illuminate\Support\Stringable;
@@ -75,17 +74,17 @@ class StringableSynth extends Synth
 }
 ```
 
-Let's break this down piece by piece.
+このコードを順に解説します。
 
-First is the `$key` property:
+まずは`$key`プロパティ：
 
 ```php
 public static $key = 'str';
 ```
 
-Every synth must contain a static `$key` property that Livewire uses to convert a [metadata tuple](/docs/hydration#deeply-nested-tuples) like `['', { s: 'str' }]` back into a stringable. As you may notice, each metadata tuple has an `s` key referencing this key.
+すべてのSynthesizerは、Livewireが[メタデータタプル](/docs/hydration#deeply-nested-tuples)（例：`['', { s: 'str' }]`）からstringableへ復元するための静的`$key`プロパティを持つ必要があります。各タプルの`s`キーがこの値を参照しています。
 
-Inversely, when Livewire is dehydrating a property, it will use the synth's static `match()` function to identify if this particular Synthesizer is a good candidate to dehydrate the current property (`$target` being the current value of the property):
+逆に、Livewireがプロパティを脱水化する際は、Synthesizerの`match()`メソッドで対象プロパティ（`$target`）がこのSynthesizerで処理すべきか判定します：
 
 ```php
 public static function match($target)
@@ -94,7 +93,7 @@ public static function match($target)
 }
 ```
 
-If `match()` returns true, the `dehydrate()` method will be used to take the property's PHP value as input and return the JSONable [metadata](/docs/hydration#deeply-nested-tuples) tuple:
+`match()`がtrueを返すと、`dehydrate()`メソッドが呼ばれ、プロパティのPHP値を受け取り、JSON化可能な[メタデータ](/docs/hydration#deeply-nested-tuples)タプルを返します：
 
 ```php
 public function dehydrate($target)
@@ -103,7 +102,7 @@ public function dehydrate($target)
 }
 ```
 
-Now, at the beginning of the next request, after this Synthesizer has been matched by the `{ s: 'str' }` key in the tuple, the `hydrate()` method will be called and passed the raw JSON representation of the property with the expectation that it returns the full PHP-compatible value to be assigned to the property.
+次のリクエスト開始時、タプル内の`{ s: 'str' }`キーでこのSynthesizerが特定されると、`hydrate()`メソッドが呼ばれ、JSONの値からPHP互換の値へ復元されます。
 
 ```php
 public function hydrate($value)
@@ -112,9 +111,9 @@ public function hydrate($value)
 }
 ```
 
-## Registering a custom Synthesizer
+## カスタムSynthesizerの登録
 
-To demonstrate how you might author your own Synthesizer to support a custom property, we will use the following `UpdateProperty` component as an example:
+独自のプロパティ型をサポートするSynthesizerを作成する例として、次の`UpdateProperty`コンポーネントを使います：
 
 ```php
 class UpdateProperty extends Component
@@ -128,7 +127,7 @@ class UpdateProperty extends Component
 }
 ```
 
-Here's the source for the `Address` class:
+`Address`クラスのソースは次の通りです：
 
 ```php
 namespace App\Dtos\Address;
@@ -142,7 +141,7 @@ class Address
 }
 ```
 
-To support properties of type `Address`, we can use the following Synthesizer:
+この`Address`型プロパティをサポートするには、次のようなSynthesizerを用意します：
 
 ```php
 use App\Dtos\Address;
@@ -160,8 +159,6 @@ class AddressSynth extends Synth
     {
         return [[
             'street' => $target->street,
-            'city' => $target->city,
-            'state' => $target->state,
             'zip' => $target->zip,
         ], []];
     }
@@ -173,20 +170,18 @@ class AddressSynth extends Synth
         $instance->street = $value['street'];
         $instance->city = $value['city'];
         $instance->state = $value['state'];
-        $instance->zip = $value['zip'];
-
         return $instance;
     }
 }
 ```
 
-To make it available globally in your application, you can use Livewire's `propertySynthesizer` method to register the synthesizer from your service provider boot method:
+アプリケーション全体で利用できるようにするには、サービスプロバイダのbootメソッドでLivewireの`propertySynthesizer`メソッドを使って登録します：
 
 ```php
 class AppServiceProvider extends ServiceProvider
 {
     /**
-     * Bootstrap any application services.
+     * アプリケーションサービスの起動処理
      */
     public function boot(): void
     {
@@ -195,9 +190,9 @@ class AppServiceProvider extends ServiceProvider
 }
 ```
 
-## Supporting data binding
+## データバインディング対応
 
-Using the `UpdateProperty` example from above, it is likely that you would want to support `wire:model` binding directly to properties of the `Address` object. Synthesizers allow you to support this using the `get()` and `set()` methods:
+先ほどの`UpdateProperty`の例のように、`Address`オブジェクトのプロパティに`wire:model`バインディングを直接使いたい場合もあるでしょう。Synthesizerでは`get()`と`set()`メソッドを実装することで、これに対応できます：
 
 ```php
 use App\Dtos\Address;
@@ -214,22 +209,12 @@ class AddressSynth extends Synth
     public function dehydrate($target)
     {
         return [[
-            'street' => $target->street,
-            'city' => $target->city,
-            'state' => $target->state,
-            'zip' => $target->zip,
         ], []];
     }
 
     public function hydrate($value)
     {
         $instance = new Address;
-
-        $instance->street = $value['street'];
-        $instance->city = $value['city'];
-        $instance->state = $value['state'];
-        $instance->zip = $value['zip'];
-
         return $instance;
     }
 

@@ -1,9 +1,8 @@
+## 基本的な使い方
 
-## Basic usage
+Livewireでコンテンツの表示・非表示を切り替えるには、Bladeの`@if`などの条件ディレクティブを使うのが一般的です。さらにユーザー体験を高めるため、Livewireは`wire:transition`ディレクティブを提供しており、条件付き要素の出現・消失をなめらかにトランジションできます。
 
-Showing or hiding content in Livewire is as simple as using one of Blade's conditional directives like `@if`. To enhance this experience for your users, Livewire provides a `wire:transition` directive that allows you to transition conditional elements smoothly in and out of the page.
-
-For example, below is a `ShowPost` component with the ability to toggle viewing comments on and off:
+たとえば、コメントの表示・非表示を切り替える`ShowPost`コンポーネントの例です。
 
 ```php
 use App\Models\Post;
@@ -31,14 +30,14 @@ class ShowPost extends Component
     @endif
 </div>
 ```
-Because `wire:transition` has been added to the `<div>` containing the post's comments, when the "Show comments" button is pressed, `$showComments` will be set to `true` and the comments will "fade" onto the page instead of abruptly appearing.
+`wire:transition`をコメント部分の`<div>`に追加することで、「Show comments」ボタンを押すと`$showComments`が`true`になり、コメントがフェードインで表示されます。
 
-## Limitations
+## 制限事項
 
-Currently, `wire:transition` is only supported on a single element inside a Blade conditional like `@if`. It will not work as expected when used in a list of sibling elements. For example, the following will NOT work properly:
+現時点で`wire:transition`は、`@if`などの条件分岐内の単一要素にのみ対応しています。兄弟要素のリストに使うと、期待通りに動作しません。たとえば、次のような使い方は正しく動作しません。
 
 ```blade
-<!-- Warning: The following is code that will not work properly -->
+<!-- 注意: 以下のコードは正しく動作しません -->
 <ul>
     @foreach ($post->comments as $comment)
         <li wire:transition wire:key="{{ $comment->id }}">{{ $comment->content }}</li>
@@ -46,11 +45,11 @@ Currently, `wire:transition` is only supported on a single element inside a Blad
 </ul>
 ```
 
-If one of the above comment `<li>` elements were to get removed, you would expect Livewire to transition it out. However, because of hurdles with Livewire's underlying "morph" mechanism, this will not be the case. There is currently no way to transition dynamic lists in Livewire using `wire:transition`.
+上記のようなリストで要素が削除された場合、Livewireの内部的な「morph」機構の制約により、トランジションで消えることはありません。現状、`wire:transition`で動的リストのトランジションはできません。
 
-## Default transition style
+## デフォルトのトランジションスタイル
 
-By default, Livewire applies both an opacity and a scale CSS transition to elements with `wire:transition`. Here's a visual preview:
+デフォルトで、`wire:transition`を付けた要素には不透明度とスケールのCSSトランジションが適用されます。以下はそのビジュアル例です。
 
 <div x-data="{ show: false }" x-cloak class="border border-gray-700 rounded-xl p-6 w-full flex justify-between">
     <a href="#" x-on:click.prevent="show = ! show" class="py-2.5 outline-none">
@@ -71,35 +70,35 @@ By default, Livewire applies both an opacity and a scale CSS transition to eleme
     </div>
 </div>
 
-The above transition uses the following values for transitioning by default:
+デフォルトのトランジション値は次の通りです：
 
-Transition in | Transition out
---- | ---
-`duration: 150ms` | `duration: 75ms`
-`opacity: [0 - 100]` | `opacity: [100 - 0]`
-`transform: scale([0.95 - 1])` | `transform: scale([1 - 0.95])`
+| トランジションin | トランジションout |
+| --- | --- |
+| `duration: 150ms` | `duration: 75ms` |
+| `opacity: [0 - 100]` | `opacity: [100 - 0]` |
+| `transform: scale([0.95 - 1])` | `transform: scale([1 - 0.95])` |
 
-## Customizing transitions
+## トランジションのカスタマイズ
 
-To customize the CSS Livewire internally uses when transitioning, you can use any combination of the available modifiers:
+Livewireが内部的に使うCSSは、以下の修飾子を組み合わせて自由にカスタマイズできます。
 
-Modifier | Description
---- | ---
-`.in` | Only transition the element "in"
-`.out` | Only transition the element "out"
-`.duration.[?]ms` | Customize the transition duration in milliseconds
-`.duration.[?]s` | Customize the transition duration in seconds
-`.delay.[?]ms` | Customize the transition delay in milliseconds
-`.delay.[?]s` | Customize the transition delay in seconds
-`.opacity` | Only apply the opacity transition
-`.scale` | Only apply the scale transition
-`.origin.[top\|bottom\|left\|right]` | Customize the scale "origin" used
+| 修飾子 | 説明 |
+| --- | --- |
+| `.in` | 「表示時」だけトランジション |
+| `.out` | 「非表示時」だけトランジション |
+| `.duration.[?]ms` | ミリ秒単位でトランジション時間を指定 |
+| `.duration.[?]s` | 秒単位でトランジション時間を指定 |
+| `.delay.[?]ms` | ミリ秒単位で遅延を指定 |
+| `.delay.[?]s` | 秒単位で遅延を指定 |
+| `.opacity` | 不透明度のみトランジション |
+| `.scale` | スケールのみトランジション |
+| `.origin.[top\|bottom\|left\|right]` | スケールの基準位置を指定 |
 
-Below is a list of various transition combinations that may help to better visualize these customizations:
+さまざまなトランジションの組み合わせ例を紹介します。
 
-**Fade-only transition**
+**フェードのみのトランジション**
 
-By default, Livewire both fades and scales the element when transitioning. You can disable scaling and only fade by adding the `.opacity` modifier. This is useful for things like transitioning a full-page overlay, where adding a scale doesn't make sense.
+デフォルトではフェードとスケール両方が適用されますが、`.opacity`修飾子を付けるとスケールなしのフェードだけになります。全画面オーバーレイなどに最適です。
 
 ```html
 <div wire:transition.opacity>
@@ -124,9 +123,9 @@ By default, Livewire both fades and scales the element when transitioning. You c
     </div>
 </div>
 
-**Fade-out transition**
+**フェードアウトトランジション**
 
-A common transition technique is to show an element immediately when transitioning in, and fade its opacity when transitioning out. You'll notice this effect on most native MacOS dropdowns and menus. Therefore it's commonly applied on the web to dropdowns, popovers, and menus.
+表示時は即座に表示し、非表示時だけフェードアウトするパターンもよく使われます。MacOSのドロップダウンやメニューでよく見られる効果です。
 
 ```html
 <div wire:transition.out.opacity.duration.200ms>
@@ -151,9 +150,9 @@ A common transition technique is to show an element immediately when transitioni
     </div>
 </div>
 
-**Origin-top transition**
+**origin-topトランジション**
 
-When using Livewire to transition an element such as a dropdown menu, it makes sense to scale in from the top of the menu as the origin, rather than center (Livewire's default). This way the menu feels visually anchored to the element that triggered it.
+ドロップダウンメニューなどでは、中央ではなく上端を基準にスケールインさせると自然です。
 
 ```html
 <div wire:transition.scale.origin.top>
@@ -178,6 +177,6 @@ When using Livewire to transition an element such as a dropdown menu, it makes s
     </div>
 </div>
 
-> [!tip] Livewire uses Alpine transitions behind the scenes
-> When using `wire:transition` on an element, Livewire is internally applying Alpine's `x-transition` directive. Therefore you can use most if not all syntaxes you would normally use with `x-transition`. Check out [Alpine's transition documentation](https://alpinejs.dev/directives/transition) for all its capabilities.
+> [!tip] Livewireは内部的にAlpineのトランジションを利用
+> `wire:transition`を使うと、Livewireは内部的にAlpineの`x-transition`ディレクティブを適用します。Alpineのトランジション構文もほぼそのまま使えるので、[Alpine公式ドキュメント](https://alpinejs.dev/directives/transition)も参考にしてください。
 

@@ -1,2 +1,2 @@
-* Start with extracting a Blade component first, then only do a Livewire component if you need to
-* 
+* まずはBladeコンポーネントとして切り出し、本当に必要な場合のみLivewireコンポーネント化を検討しましょう
+*

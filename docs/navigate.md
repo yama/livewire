@@ -1,13 +1,13 @@
+<!-- filepath: /home/yamamoto/oss/translations/livewire/docs/navigate.md -->
+多くの最新Webアプリケーションは「シングルページアプリケーション（SPA）」として構築されています。これらのアプリケーションでは、各ページの表示時にブラウザ全体のリロードが不要となり、JavaScriptやCSSアセットを毎回再ダウンロードする手間を省くことができます。
 
-Many modern web applications are built as "single page applications" (SPAs). In these applications, each page rendered by the application no longer requires a full browser page reload, avoiding the overhead of re-downloading JavaScript and CSS assets on every request.
+*シングルページアプリケーション*の対義語は*マルチページアプリケーション*です。マルチページアプリケーションでは、ユーザーがリンクをクリックするたびに新しいHTMLページがリクエストされ、ブラウザで再描画されます。
 
-The alternative to a *single page application* is a *multi-page application*. In these applications, every time a user clicks a link, an entirely new HTML page is requested and rendered in the browser.
+従来のPHPアプリケーションの多くはマルチページアプリケーションでしたが、Livewireを使えば、アプリケーション内のリンクに`wire:navigate`属性を追加するだけで、シングルページアプリケーションのような体験を簡単に実現できます。
 
-While most PHP applications have traditionally been multi-page applications, Livewire offers a single page application experience via a simple attribute you can add to links in your application: `wire:navigate`.
+## 基本的な使い方
 
-## Basic usage
-
-Let's explore an example of using `wire:navigate`. Below is a typical Laravel routes file (`routes/web.php`) with three Livewire components defined as routes:
+`wire:navigate`の使い方を例で見てみましょう。以下は、3つのLivewireコンポーネントをルートとして定義した、一般的なLaravelのルートファイル（`routes/web.php`）です：
 
 ```php
 use App\Livewire\Dashboard;
@@ -21,7 +21,7 @@ Route::get('/posts', ShowPosts::class);
 Route::get('/users', ShowUsers::class);
 ```
 
-By adding `wire:navigate` to each link in a navigation menu on each page, Livewire will prevent the standard handling of the link click and replace it with its own, faster version:
+各ページのナビゲーションメニュー内のリンクに`wire:navigate`を追加すると、Livewireが通常のリンククリックの挙動を上書きし、より高速な独自の処理に置き換えます：
 
 ```blade
 <nav>
@@ -31,56 +31,56 @@ By adding `wire:navigate` to each link in a navigation menu on each page, Livewi
 </nav>
 ```
 
-Below is a breakdown of what happens when a `wire:navigate` link is clicked:
+`wire:navigate`リンクがクリックされると、以下のような処理が行われます：
 
-* User clicks a link
-* Livewire prevents the browser from visiting the new page
-* Instead, Livewire requests the page in the background and shows a loading bar at the top of the page
-* When the HTML for the new page has been received, Livewire replaces the current page's URL, `<title>` tag and `<body>` contents with the elements from the new page
+* ユーザーがリンクをクリック
+* Livewireがブラウザによる新しいページ訪問を防止
+* 代わりに、Livewireがバックグラウンドでページをリクエストし、ページ上部にロードバーを表示
+* 新しいページのHTMLが受信されると、Livewireが現在のページのURL、`<title>`タグ、および`<body>`の内容を新しいページの要素と置き換え
 
-This technique results in much faster page load times — often twice as fast — and makes the application "feel" like a JavaScript powered single page application.
+この手法により、ページのロード時間が大幅に短縮されるため、アプリケーションがJavaScriptで動作するシングルページアプリケーションのように「感じられる」ようになります。
 
-## Redirects
+## リダイレクト
 
-When one of your Livewire components redirects users to another URL within your application, you can also instruct Livewire to use its `wire:navigate` functionality to load the new page. To accomplish this, provide the `navigate` argument to the `redirect()` method:
+Livewireコンポーネントの1つがユーザーをアプリケーション内の別のURLにリダイレクトする場合、Livewireに`wire:navigate`機能を使用して新しいページをロードするよう指示することもできます。これを実現するには、`redirect()`メソッドに`navigate`引数を指定します：
 
 ```php
 return $this->redirect('/posts', navigate: true);
 ```
 
-Now, instead of a full page request being used to redirect the user to the new URL, Livewire will replace the contents and URL of the current page with the new one.
+これにより、ユーザーを新しいURLにリダイレクトするためにフルページリクエストが使用されるのではなく、Livewireが現在のページの内容とURLを新しいものに置き換えます。
 
-## Prefetching links
+## リンクのプリフェッチ
 
-By default, Livewire includes a gentle strategy to _prefetch_ pages before a user clicks on a link:
+デフォルトでは、Livewireはユーザーがリンクをクリックする前にページをプリフェッチするための穏やかな戦略を含んでいます：
 
-* A user presses down on their mouse button
-* Livewire starts requesting the page
-* They lift up on the mouse button to complete the _click_
-* Livewire finishes the request and navigates to the new page
+* ユーザーがマウスボタンを押す
+* Livewireがページのリクエストを開始
+* ユーザーがマウスボタンを離してクリックを完了
+* Livewireがリクエストを完了し、新しいページにナビゲート
 
-Surprisingly, the time between a user pressing down and lifting up on the mouse button is often enough time to load half or even an entire page from the server.
+驚くべきことに、ユーザーがマウスボタンを押してから離すまでの間の時間は、サーバーから半分またはまるごと1ページ分のデータをロードするのに十分な場合がよくあります。
 
-If you want an even more aggressive approach to prefetching, you may use the `.hover` modifier on a link:
+より積極的なプリフェッチアプローチを希望する場合は、リンクに`.hover`修飾子を使用できます：
 
 ```blade
 <a href="/posts" wire:navigate.hover>Posts</a>
 ```
 
-The `.hover` modifier will instruct Livewire to prefetch the page after a user has hovered over the link for `60` milliseconds.
+`.hover`修飾子は、ユーザーがリンクの上に`60`ミリ秒間ホバーした後にページをプリフェッチするようLivewireに指示します。
 
-> [!warning] Prefetching on hover increases server usage
-> Because not all users will click a link they hover over, adding `.hover` will request pages that may not be needed, though Livewire attempts to mitigate some of this overhead by waiting `60` milliseconds before prefetching the page.
+> [!warning] ホバー時のプリフェッチはサーバーの使用量を増加させます
+> すべてのユーザーがホバーしたリンクをクリックするわけではないため、`.hover`を追加すると、必要ないかもしれないページがリクエストされることになります。ただし、Livewireはページをプリフェッチする前に`60`ミリ秒待機することで、このオーバーヘッドの一部を軽減しようとします。
 
-## Persisting elements across page visits
+## ページ訪問間での要素の永続化
 
-Sometimes, there are parts of a user interface that you need to persist between page loads, such as audio or video players. For example, in a podcasting application, a user may want to keep listening to an episode as they browse other pages.
+時には、オーディオやビデオプレーヤーなど、ページロード間で永続化する必要があるユーザーインターフェイスの部分があります。たとえば、ポッドキャスティングアプリケーションでは、ユーザーが他のページをブラウジングしている間もエピソードのリスニングを続けたいと考えるかもしれません。
 
-You can achieve this in Livewire with the `@persist` directive.
+Livewireでは、`@persist`ディレクティブを使用してこれを実現できます。
 
-By wrapping an element with `@persist` and providing it with a name, when a new page is requested using `wire:navigate`, Livewire will look for an element on the new page that has a matching `@persist`. Instead of replacing the element like normal, Livewire will use the existing DOM element from the previous page in the new page, preserving any state within the element.
+要素を`@persist`でラップし、名前を指定すると、新しいページが`wire:navigate`を使用してリクエストされると、Livewireは新しいページ上の要素を探します。一致する`@persist`がある場合、Livewireは通常の置き換えの代わりに、新しいページの既存のDOM要素を使用して、要素内の状態を保持します。
 
-Here is an example of an `<audio>` player element being persisted across pages using `@persist`:
+以下は、`@persist`を使用してページ間で永続化される`<audio>`プレーヤー要素の例です：
 
 ```blade
 @persist('player')
@@ -88,9 +88,9 @@ Here is an example of an `<audio>` player element being persisted across pages u
 @endpersist
 ```
 
-If the above HTML appears on both pages — the current page, and the next one — the original element will be re-used on the new page. In the case of an audio player, the audio playback won't be interrupted when navigating from one page to another.
+上記のHTMLが現在のページと次のページの両方に表示される場合、元の要素は新しいページで再利用されます。オーディオプレーヤーの場合、ページ間を移動してもオーディオの再生が中断されることはありません。
 
-Please be aware that the persisted element must be placed outside your Livewire components. A common practice is to position the persisted element in your main layout, such as `resources/views/components/layouts/app.blade.php`.
+永続化された要素はLivewireコンポーネントの外部に配置する必要があることに注意してください。一般的なプラクティスは、永続化された要素をメインレイアウトに配置することです。たとえば、`resources/views/components/layouts/app.blade.php`のように。
 
 ```html
 <!-- resources/views/components/layouts/app.blade.php -->
@@ -115,9 +115,9 @@ Please be aware that the persisted element must be placed outside your Livewire 
 </html>
 ```
 
-### Highlighting active links
+### アクティブリンクのハイライト
 
-You might be used to highlighting the currently active page link in a navbar using server-side Blade like so:
+サーバーサイドのBladeを使用して、ナビゲーションバー内の現在のアクティブページリンクをハイライト表示することに慣れているかもしれません：
 
 ```blade
 <nav>
@@ -127,9 +127,9 @@ You might be used to highlighting the currently active page link in a navbar usi
 </nav>
 ```
 
-However, this will not work inside persisted elements as they are re-used between page loads. Instead, you should use Livewire's `wire:current` directive to highlight the currently active link.
+しかし、これは永続化された要素内では機能しません。なぜなら、それらはページ間で再利用されるからです。代わりに、Livewireの`wire:current`ディレクティブを使用して、現在のアクティブリンクをハイライト表示する必要があります。
 
-Simply pass any CSS classes you want to apply to the currently active link to `wire:current`:
+`wire:current`に適用したいCSSクラスを渡すだけで済みます：
 
 ```blade
 <nav>
@@ -139,15 +139,15 @@ Simply pass any CSS classes you want to apply to the currently active link to `w
 </nav>
 ```
 
-Now, when the `/posts` page is visited, the "Posts" link will have a stronger font treatment than the other links.
+これで、`/posts`ページが訪問されると、「Posts」リンクは他のリンクよりも強調表示されます。
 
-Read more in the [`wire:current` documentation](/docs/wire-current).
+詳細は[`wire:current`ドキュメント](/docs/wire-current)を参照してください。
 
-### Preserving scroll position
+### スクロール位置の保持
 
-By default, Livewire will preserve the scroll position of a page when navigating back and forth between pages. However, sometimes you may want to preserve the scroll position of an individual element you are persisting between page loads.
+デフォルトでは、Livewireはページ間を前後に移動する際にページのスクロール位置を保持します。ただし、時にはページロード間で永続化している個々の要素のスクロール位置を保持したい場合もあるでしょう。
 
-To do this, you must add `wire:scroll` to the element containing a scrollbar like so:
+これを行うには、次のようにスクロールバーを含む要素に`wire:scroll`を追加する必要があります：
 
 ```html
 @persist('scrollbar')
@@ -157,69 +157,65 @@ To do this, you must add `wire:scroll` to the element containing a scrollbar lik
 @endpersist
 ```
 
-## JavaScript hooks
+## JavaScriptフック
 
-Each page navigation triggers three lifecycle hooks:
+各ページナビゲーションは、次の3つのライフサイクルフックをトリガーします：
 
 * `livewire:navigate`
 * `livewire:navigating`
 * `livewire:navigated`
 
-It's important to note that these three hooks events are dispatched on navigations of all types. This includes manual navigation using `Livewire.navigate()`, redirecting with navigation enabled, and back and forward button presses in the browser.
+これらの3つのフックイベントは、すべてのタイプのナビゲーションで発火することに注意してください。これには、`Livewire.navigate()`を使用した手動ナビゲーション、ナビゲーションが有効なリダイレクト、ブラウザの戻るボタンと進むボタンを使用したナビゲーションが含まれます。
 
-Here's an example of registering listeners for each of these events:
+これらのイベントのリスナーを登録する例を以下に示します：
 
 ```js
 document.addEventListener('livewire:navigate', (event) => {
-    // Triggers when a navigation is triggered.
+    // ナビゲーションがトリガーされたときに発火します。
 
-    // Can be "cancelled" (prevent the navigate from actually being performed):
+    // 「キャンセル」できます（実際にナビゲートが行われるのを防ぐ）：
     event.preventDefault()
 
-    // Contains helpful context about the navigation trigger:
+    // ナビゲーショントリガーに関する便利なコンテキストが含まれています：
     let context = event.detail
 
-    // A URL object of the intended destination of the navigation...
+    // ナビゲーションの意図された宛先のURLオブジェクト...
     context.url
 
-    // A boolean [true/false] indicating whether or not this navigation
-    // was triggered by a back/forward (history state) navigation...
+    // このナビゲーションが履歴の前後（履歴状態）ナビゲーションによってトリガーされたかどうかを示す真偽値[true/false]...
     context.history
 
-    // A boolean [true/false] indicating whether or not there is
-    // cached version of this page to be used instead of
-    // fetching a new one via a network round-trip...
+    // このページのキャッシュバージョンがあり、新しいネットワーク往復を介して新しいものを取得する代わりに使用されるかどうかを示す真偽値[true/false]...
     context.cached
 })
 
 document.addEventListener('livewire:navigating', () => {
-    // Triggered when new HTML is about to swapped onto the page...
+    // 新しいHTMLがページにスワップされる直前にトリガーされます...
 
-    // This is a good place to mutate any HTML before the page
-    // is navigated away from...
+    // これは、ページから遷移する前にHTMLを変更するのに適した場所です...
 })
 
 document.addEventListener('livewire:navigated', () => {
-    // Triggered as the final step of any page navigation...
+    // すべてのページナビゲーションの最終ステップとしてトリガーされます...
 
-    // Also triggered on page-load instead of "DOMContentLoaded"...
+    // また、「DOMContentLoaded」ではなくページロード時にもトリガーされます...
 })
 ```
 
-> [!warning] Event listeners will persist across pages
+> [!warning] イベントリスナーはページ間で永続化されます
 >
-> When you attach an event listener to the document it will not be removed when you navigate to a different page. This can lead to unexpected behaviour if you need code to run only after navigating to a specific page, or if you add the same event listener on every page. If you do not remove your event listener it may cause exceptions on other pages when it's looking for elements that do not exist, or you may end up with the event listener executing multiple times per navigation.
+> ドキュメントにイベントリスナーを添付すると、それは別のページにナビゲートしても削除されません。これにより、特定のページにナビゲートした後にのみコードを実行する必要がある場合や、各ページに同じイベントリスナーを追加した場合に予期しない動作が発生する可能性があります。イベントリスナーを削除しないと、存在しない要素を探しているときに他のページで例外が発生したり、ナビゲーションごとにイベントリスナーが複数回実行されたりする可能性があります。
 >
-> An easy method to remove an event listener after it runs is to pass the option `{once: true}` as a third parameter to the `addEventListener` function.
+> イベントリスナーが実行された後に削除されるようにする簡単な方法は、`addEventListener`関数の3番目のパラメータとして`{once: true}`オプションを渡すことです。
 > ```js
 > document.addEventListener('livewire:navigated', () => {
 >     // ...
 > }, { once: true })
 > ```
 
-## Manually visiting a new page
+## 新しいページへの手動訪問
 
-In addition to `wire:navigate`, you can manually call the `Livewire.navigate()` method to trigger a visit to a new page using JavaScript:
+`wire:navigate`に加えて、JavaScriptを使用して新しいページへの訪問をトリガーするために`Livewire.navigate()`メソッドを手動で呼び出すこともできます：
 
 ```html
 <script>
@@ -229,13 +225,13 @@ In addition to `wire:navigate`, you can manually call the `Livewire.navigate()` 
 </script>
 ```
 
-## Using with analytics software
+## アナリティクスソフトウェアとの併用
 
-When navigating pages using `wire:navigate` in your app, any `<script>` tags in the `<head>` only evaluate when the page is initially loaded.
+アプリ内で`wire:navigate`を使用してページをナビゲートする際、`<head>`内の`<script>`タグはページが最初にロードされたときにのみ評価されます。
 
-This creates a problem for analytics software such as [Fathom Analytics](https://usefathom.com/). These tools rely on a `<script>` snippet being evaluated on every single page change, not just the first.
+これは、[Fathom Analytics](https://usefathom.com/)などのアナリティクスソフトウェアに問題を引き起こします。これらのツールは、最初だけでなく、ページ変更ごとに`<script>`スニペットが評価されることに依存しています。
 
-Tools like [Google Analytics](https://marketingplatform.google.com/about/analytics/) are smart enough to handle this automatically, however, when using Fathom Analytics, you must add `data-spa="auto"` to your script tag to ensure each page visit is tracked properly:
+[Google Analytics](https://marketingplatform.google.com/about/analytics/)のようなツールは、これを自動的に処理するのに十分賢いですが、Fathom Analyticsを使用している場合は、各ページ訪問が適切に追跡されるように、スクリプトタグに`data-spa="auto"`を追加する必要があります：
 
 ```blade
 <head>
@@ -248,21 +244,21 @@ Tools like [Google Analytics](https://marketingplatform.google.com/about/analyti
 </head>
 ```
 
-## Script evaluation
+## スクリプトの評価
 
-When navigating to a new page using `wire:navigate`, it _feels_ like the browser has changed pages; however, from the browser's perspective, you are technically still on the original page.
+`wire:navigate`を使用して新しいページに移動すると、ブラウザにはページが変更されたように「感じられ」ます。ただし、ブラウザの観点から見ると、技術的には元のページにまだいることになります。
 
-Because of this, styles and scripts are executed normally on the first page, but on subsequent pages, you may have to tweak the way you normally write JavaScript.
+このため、最初のページではスタイルとスクリプトは通常どおり実行されますが、後のページでは、通常のJavaScriptの記述方法を調整する必要がある場合があります。
 
-Here are a few caveats and scenarios you should be aware of when using `wire:navigate`.
+`wire:navigate`を使用する際に注意すべきいくつかの注意点とシナリオを以下に示します。
 
-### Don't rely on `DOMContentLoaded`
+### `DOMContentLoaded`に依存しない
 
-It's common practice to place JavaScript inside a `DOMContentLoaded` event listener so that the code you want to run only executes after the page has fully loaded.
+JavaScriptを`DOMContentLoaded`イベントリスナー内に配置することは一般的なプラクティスです。これにより、ページが完全にロードされた後にのみコードが実行されるようになります。
 
-When using `wire:navigate`, `DOMContentLoaded` is only fired on the first page visit, not subsequent visits.
+`wire:navigate`を使用していると、`DOMContentLoaded`は最初のページ訪問時にのみ発火し、後の訪問時には発火しません。
 
-To run code on every page visit, swap every instance of `DOMContentLoaded` with `livewire:navigated`:
+すべてのページ訪問時にコードを実行するには、`DOMContentLoaded`のすべてのインスタンスを`livewire:navigated`に置き換えます：
 
 ```js
 document.addEventListener('DOMContentLoaded', () => { // [tl! remove]
@@ -271,71 +267,71 @@ document.addEventListener('livewire:navigated', () => { // [tl! add]
 })
 ```
 
-Now, any code placed inside this listener will be run on the initial page visit, and also after Livewire has finished navigating to subsequent pages.
+これで、このリスナー内に配置されたコードは、初回のページ訪問時と、Livewireが後続のページにナビゲートした後の両方で実行されるようになります。
 
-Listening to this event is useful for things like initializing third-party libraries.
+このイベントをリッスンすることは、サードパーティライブラリの初期化などに役立ちます。
 
-### Scripts in `<head>` are loaded once
+### `<head>`内のスクリプトは一度だけ読み込まれる
 
-If two pages include the same `<script>` tag in the `<head>`, that script will only be run on the initial page visit and not on subsequent page visits.
+同じ`<script>`タグが2つのページに含まれている場合、そのスクリプトは最初のページ訪問時にのみ実行され、後のページ訪問時には実行されません。
 
 ```blade
-<!-- Page one -->
+<!-- ページ1 -->
 <head>
     <script src="/app.js"></script>
 </head>
 
-<!-- Page two -->
+<!-- ページ2 -->
 <head>
     <script src="/app.js"></script>
 </head>
 ```
 
-### New `<head>` scripts are evaluated
+### 新しい`<head>`スクリプトは評価される
 
-If a subsequent page includes a new `<script>` tag in the `<head>` that was not present in the `<head>` of the initial page visit, Livewire will run the new `<script>` tag.
+後のページに、最初のページ訪問時の`<head>`には存在しなかった新しい`<script>`タグが含まれている場合、Livewireは新しい`<script>`タグを実行します。
 
-In the below example, _page two_ includes a new JavaScript library for a third-party tool. When the user navigates to _page two_, that library will be evaluated.
+以下の例では、_ページ2_にサードパーティツール用の新しいJavaScriptライブラリが含まれています。ユーザーが_ページ2_に移動すると、そのライブラリが評価されます。
 
 ```blade
-<!-- Page one -->
+<!-- ページ1 -->
 <head>
     <script src="/app.js"></script>
 </head>
 
-<!-- Page two -->
+<!-- ページ2 -->
 <head>
     <script src="/app.js"></script>
     <script src="/third-party.js"></script>
 </head>
 ```
 
-> [!info] Head assets are blocking
-> If you are navigating to a new page that contains an asset like `<script src="...">` in the head tag. That asset will be fetched and processed before the navigation is complete and the new page is swapped in. This might be surprising behavior, but it ensures any scripts that depend on those assets will have immediate access to them.
+> [!info] ヘッドアセットはブロッキングです
+> ヘッドタグに`<script src="...">`のようなアセットを含む新しいページにナビゲートする場合、そのアセットはフェッチされ、新しいページがスワップされる前に処理されます。これは驚くべき動作かもしれませんが、それにより、これらのアセットに依存するスクリプトが即座にアクセスできるようになります。
 
-### Reloading when assets change
+### アセット変更時のリロード
 
-It's common practice to include a version hash in an application's main JavaScript file name. This ensures that after deploying a new version of your application, users will receive the fresh JavaScript asset, and not an old version served from the browser's cache.
+アプリケーションのメインJavaScriptファイル名にバージョンハッシュを含めることは一般的なプラクティスです。これにより、新しいバージョンのアプリケーションをデプロイした後、ユーザーはブラウザのキャッシュから提供される古いバージョンではなく、新しいJavaScriptアセットを受け取ることが保証されます。
 
-But, now that you are using `wire:navigate` and each page visit is no longer a fresh browser page load, your users may still be receiving stale JavaScript after deployments.
+しかし、現在`wire:navigate`を使用しており、各ページ訪問が新しいブラウザページのロードではなくなったため、ユーザーはデプロイ後も古いJavaScriptを受け取り続ける可能性があります。
 
-To prevent this, you may add `data-navigate-track` to a `<script>` tag in `<head>`:
+これを防ぐために、`<script>`タグに`data-navigate-track`を追加できます：
 
 ```blade
-<!-- Page one -->
+<!-- ページ1 -->
 <head>
     <script src="/app.js?id=123" data-navigate-track></script>
 </head>
 
-<!-- Page two -->
+<!-- ページ2 -->
 <head>
     <script src="/app.js?id=456" data-navigate-track></script>
 </head>
 ```
 
-When a user visits _page two_, Livewire will detect a fresh JavaScript asset and trigger a full browser page reload.
+ユーザーが_ページ2_に訪問すると、Livewireは新しいJavaScriptアセットを検出し、ブラウザページをフルリロードします。
 
-If you are using [Laravel's Vite plug-in](https://laravel.com/docs/vite#loading-your-scripts-and-styles) to bundle and serve your assets, Livewire adds `data-navigate-track` to the rendered HTML asset tags automatically. You can continue referencing your assets and scripts like normal:
+[LaravelのViteプラグイン](https://laravel.com/docs/vite#loading-your-scripts-and-styles)を使用してアセットをバンドルおよび提供している場合、Livewireは自動的にレンダリングされたHTMLアセットタグに`data-navigate-track`を追加します。通常通りアセットやスクリプトを参照し続けることができます：
 
 ```blade
 <head>
@@ -343,44 +339,44 @@ If you are using [Laravel's Vite plug-in](https://laravel.com/docs/vite#loading-
 </head>
 ```
 
-Livewire will automatically inject `data-navigate-track` onto the rendered HTML tags.
+Livewireは自動的にレンダリングされたHTMLタグに`data-navigate-track`を挿入します。
 
-> [!warning] Only query string changes are tracked
-> Livewire will only reload a page if a `[data-navigate-track]` element's query string (`?id="456"`) changes, not the URI itself (`/app.js`).
+> [!warning] クエリ文字列の変更のみが追跡されます
+> Livewireは、`data-navigate-track`要素のクエリ文字列（`?id="456"`）が変更された場合にのみページをリロードします。URI自体（`/app.js`）の変更は追跡されません。
 
-### Scripts in the `<body>` are re-evaluated
+### `<body>`内のスクリプトは再評価される
 
-Because Livewire replaces the entire contents of the `<body>` on every new page, all `<script>` tags on the new page will be run:
+Livewireは新しいページの`<body>`の内容を毎回置き換えるため、新しいページのすべての`<script>`タグが実行されます：
 
 ```blade
-<!-- Page one -->
+<!-- ページ1 -->
 <body>
     <script>
-        console.log('Runs on page one')
+        console.log('ページ1で実行')
     </script>
 </body>
 
-<!-- Page two -->
+<!-- ページ2 -->
 <body>
     <script>
-        console.log('Runs on page two')
+        console.log('ページ2で実行')
     </script>
 </body>
 ```
 
-If you have a `<script>` tag in the body that you only want to be run once, you can add the `data-navigate-once` attribute to the `<script>` tag and Livewire will only run it on the initial page visit:
+1回だけ実行したい`<script>`タグがボディ内にある場合、その`<script>`タグに`data-navigate-once`属性を追加すると、Livewireは初回のページ訪問時にのみそれを実行します：
 
 ```blade
 <script data-navigate-once>
-    console.log('Runs only on page one')
+    console.log('ページ1でのみ実行')
 </script>
 ```
 
-## Customizing the progress bar
+## プログレスバーのカスタマイズ
 
-When a page takes longer than 150ms to load, Livewire will show a progress bar at the top of the page.
+ページのロードに150ミリ秒以上かかると、Livewireはページ上部にプログレスバーを表示します。
 
-You can customize the color of this bar or disable it all together inside Livewire's config file (`config/livewire.php`):
+このバーの色をカスタマイズしたり、Livewireの設定ファイル（`config/livewire.php`）内で完全に無効にしたりできます：
 
 ```php
 'navigate' => [

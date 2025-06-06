@@ -1,6 +1,7 @@
-Livewire allows you to lazy load components that would otherwise slow down the initial page load.
+<!-- filepath: /home/yamamoto/oss/translations/livewire/docs/lazy.md -->
+Livewireを使うと、初回のページ読み込みを遅くしてしまうコンポーネントを遅延読み込み（レイジーロード）できます。
 
-For example, imagine you have a `Revenue` component which contains a slow database query in `mount()`:
+たとえば、`mount()`内で重いデータベースクエリを実行する`Revenue`コンポーネントがあるとします。
 
 ```php
 <?php
@@ -16,7 +17,7 @@ class Revenue extends Component
 
     public function mount()
     {
-        // Slow database query...
+        // 重いデータベースクエリ...
         $this->amount = Transaction::monthToDate()->sum('amount');
     }
 
@@ -29,28 +30,28 @@ class Revenue extends Component
 
 ```blade
 <div>
-    Revenue this month: {{ $amount }}
+    今月の売上: {{ $amount }}
 </div>
 ```
 
-Without lazy loading, this component would delay the loading of the entire page and make your entire application feel slow.
+遅延読み込みを使わない場合、このコンポーネントはページ全体の読み込みを遅らせてしまい、アプリケーション全体が遅く感じられてしまいます。
 
-To enable lazy loading, you can pass the `lazy` parameter into the component:
+遅延読み込みを有効にするには、コンポーネントに`lazy`パラメータを渡します。
 
 ```blade
 <livewire:revenue lazy />
 ```
 
-Now, instead of loading the component right away, Livewire will skip this component, loading the page without it. Then, when the component is visible in the viewport, Livewire will make a network request to fully load this component on the page.
+これで、コンポーネントをすぐに読み込むのではなく、Livewireはこのコンポーネントをスキップし、ページをコンポーネントなしで読み込みます。そして、コンポーネントがビューポートに表示される時に、Livewireはネットワークリクエストを行い、このコンポーネントをページに完全に読み込みます。
 
-> [!info] Lazy requests are isolated by default
-> Unlike other network requests in Livewire, lazy loading updates are isolated from each other when sent to the server. This keeps lazy loading fast, by loading each component in parallel when a page loads. [Read more on disabling this behavior here →](#disabling-request-isolation)
+> [!info] 遅延リクエストはデフォルトでアイソレートされています
+> 他のネットワークリクエストとは異なり、遅延読み込みの更新は、サーバーに送信される際に互いにアイソレートされます。これにより、ページ読み込み時に各コンポーネントが並行して読み込まれ、遅延読み込みが高速になります。[この動作を無効にする方法については、こちらを参照してください →](#disabling-request-isolation)
 
-## Rendering placeholder HTML
+## プレースホルダーHTMLのレンダリング
 
-By default, Livewire will insert an empty `<div></div>` for your component before it is fully loaded. As the component will initially be invisible to users, it can be jarring when the component suddenly appears on the page.
+デフォルトでは、Livewireはコンポーネントが完全に読み込まれる前に、空の`<div></div>`を挿入します。コンポーネントが最初はユーザーに見えないため、コンポーネントが突然ページに表示されると、ユーザーにとっては不自然に感じられることがあります。
 
-To signal to your users that the component is being loaded, you can define a `placeholder()` method to render any kind of placeholder HTML you like, including loading spinners and skeleton placeholders:
+コンポーネントが読み込まれていることをユーザーに知らせるために、`placeholder()`メソッドを定義して、ローディングスピナーやスケルトンプレースホルダーなど、任意の種類のプレースホルダーHTMLをレンダリングできます。
 
 ```php
 <?php
@@ -66,7 +67,7 @@ class Revenue extends Component
 
     public function mount()
     {
-        // Slow database query...
+        // 重いデータベースクエリ...
         $this->amount = Transaction::monthToDate()->sum('amount');
     }
 
@@ -74,7 +75,7 @@ class Revenue extends Component
     {
         return <<<'HTML'
         <div>
-            <!-- Loading spinner... -->
+            <!-- ローディングスピナー... -->
             <svg>...</svg>
         </div>
         HTML;
@@ -87,14 +88,14 @@ class Revenue extends Component
 }
 ```
 
-Because the above component specifies a "placeholder" by returning HTML from a `placeholder()` method, the user will see an SVG loading spinner on the page until the component is fully loaded.
+上記のコンポーネントは`placeholder()`メソッドからHTMLを返すことで「プレースホルダー」を指定しているため、コンポーネントが完全に読み込まれるまでの間、ユーザーはSVGローディングスピナーを見ることになります。
 
-> [!warning] The placeholder and the component must share the same element type
-> For instance, if your placeholder's root element type is a 'div,' your component must also use a 'div' element.
+> [!warning] プレースホルダーとコンポーネントは同じ要素タイプである必要があります
+> たとえば、プレースホルダーのルート要素タイプが'div'の場合、コンポーネントも'div'要素を使用する必要があります。
 
-### Rendering a placeholder via a view
+### ビューを介したプレースホルダーのレンダリング
 
-For more complex loaders (such as skeletons) you can return a `view` from the `placeholder()` similar to `render()`.
+スケルトンなどのより複雑なローダーの場合、`render()`と同様に`placeholder()`から`view`を返すことができます。
 
 ```php
 public function placeholder(array $params = [])
@@ -103,25 +104,25 @@ public function placeholder(array $params = [])
 }
 ```
 
-Any parameters from the component being lazy loaded will be available as an `$params` argument passed to the `placeholder()` method.
+遅延読み込みされるコンポーネントからの任意のパラメータは、`placeholder()`メソッドに渡される`$params`引数として利用可能です。
 
-## Lazy loading outside of the viewport
+## ビューポート外での遅延読み込み
 
-By default, Lazy-loaded components aren't full loaded until they enter the browser's viewport, for example when a user scrolls to one.
+デフォルトでは、遅延読み込みされたコンポーネントは、ユーザーがそれにスクロールするなどしてブラウザのビューポートに入るまで完全には読み込まれません。
 
-If you'd rather lazy load all components on a page as soon as the page is loaded, without waiting for them to enter the viewport, you can do so by passing "on-load" into the `lazy` parameter:
+ページが読み込まれるとすぐに、ビューポートに入るのを待たずにページ上のすべてのコンポーネントを遅延読み込みしたい場合は、`lazy`パラメータに「on-load」を渡すことで可能です。
 
 ```blade
 <livewire:revenue lazy="on-load" />
 ```
 
-Now this component will load after the page is ready without waiting for it to be inside the viewport.
+これで、このコンポーネントはページが準備完了後、ビューポート内に入るのを待たずに読み込まれます。
 
-## Passing in props
+## プロパティの受け渡し
 
-In general, you can treat `lazy` components the same as normal components, since you can still pass data into them from outside.
+一般に、`lazy`コンポーネントは通常のコンポーネントと同様に扱うことができ、外部からデータを渡すことができます。
 
-For example, here's a scenario where you might pass a time interval into the `Revenue` component from a parent component:
+たとえば、親コンポーネントから`Revenue`コンポーネントに時間間隔を渡すシナリオを考えてみましょう。
 
 ```blade
 <input type="date" wire:model="start">
@@ -130,7 +131,7 @@ For example, here's a scenario where you might pass a time interval into the `Re
 <livewire:revenue lazy :$start :$end />
 ```
 
-You can accept this data in `mount()` just like any other component:
+このデータは、他のコンポーネントと同様に`mount()`メソッドで受け取ることができます。
 
 ```php
 <?php
@@ -146,7 +147,7 @@ class Revenue extends Component
 
     public function mount($start, $end)
     {
-        // Expensive database query...
+        // 高コストなデータベースクエリ...
         $this->amount = Transactions::between($start, $end)->sum('amount');
     }
 
@@ -154,7 +155,7 @@ class Revenue extends Component
     {
         return <<<'HTML'
         <div>
-            <!-- Loading spinner... -->
+            <!-- ローディングスピナー... -->
             <svg>...</svg>
         </div>
         HTML;
@@ -167,21 +168,21 @@ class Revenue extends Component
 }
 ```
 
-However, unlike a normal component load, a `lazy` component has to serialize or "dehydrate" any passed-in properties and temporarily store them on the client-side until the component is fully loaded.
+しかし、通常のコンポーネントの読み込みとは異なり、`lazy`コンポーネントは渡されたプロパティをシリアライズまたは「脱水」し、コンポーネントが完全に読み込まれるまでクライアント側に一時的に保存する必要があります。
 
-For example, you might want to pass in an Eloquent model to the `Revenue` component like so:
+たとえば、`Revenue`コンポーネントにEloquentモデルを渡したい場合、次のようにします。
 
 ```blade
 <livewire:revenue lazy :$user />
 ```
 
-In a normal component, the actual PHP in-memory `$user` model would be passed into the `mount()` method of `Revenue`. However, because we won't run `mount()` until the next network request, Livewire will internally serialize `$user` to JSON and then re-query it from the database before the next request is handled.
+通常のコンポーネントでは、実際のPHPメモリ内の`$user`モデルが`Revenue`の`mount()`メソッドに渡されます。しかし、次のネットワークリクエストが処理されるまで`mount()`は実行されないため、Livewireは内部的に`$user`をJSONにシリアライズし、次のリクエストが処理される前にデータベースから再クエリします。
 
-Typically, this serialization should not cause any behavioral differences in your application.
+通常、このシリアライズはアプリケーションの動作に影響を与えることはありません。
 
-## Lazy load by default
+## デフォルトでの遅延読み込み
 
-If you want to enforce that all usages of a component will be lazy-loaded, you can add the `#[Lazy]` attribute above the component class:
+すべてのコンポーネントの使用が遅延読み込みされるように強制したい場合は、コンポーネントクラスの上に`#[Lazy]`属性を追加します。
 
 ```php
 <?php
@@ -198,17 +199,17 @@ class Revenue extends Component
 }
 ```
 
-If you want to override lazy loading you can set the `lazy` parameter to `false`:
+遅延読み込みをオーバーライドしたい場合は、`lazy`パラメータを`false`に設定します。
 
 ```blade
 <livewire:revenue :lazy="false" />
 ```
 
-### Disabling request isolation
+### リクエストのアイソレーションの無効化
 
-If there are multiple lazy-loaded components on the page, each component will make an independent network request, rather than each lazy update being bundled into a single request.
+ページに複数の遅延読み込みコンポーネントがある場合、各コンポーネントは独立したネットワークリクエストを行います。つまり、各遅延更新が単一のリクエストにバンドルされるのではなく、個別に処理されます。
 
-If you want to disable this isolation behavior and instead bundle all updates together in a single network request you can do so with the `isolate: false` parameter:
+このアイソレーション動作を無効にし、すべての更新を単一のネットワークリクエストにバンドルしたい場合は、`isolate: false`パラメータを使用します。
 
 ```php
 <?php
@@ -225,37 +226,37 @@ class Revenue extends Component
 }
 ```
 
-Now, if there are ten `Revenue` components on the same page, when the page loads, all ten updates will be bundled and sent the server as single network request.
+これで、同じページに10個の`Revenue`コンポーネントがある場合、ページが読み込まれると、すべての10個の更新がバンドルされ、単一のネットワークリクエストとしてサーバーに送信されます。
 
-## Full-page lazy loading
+## フルページの遅延読み込み
 
-You may want to lazy load full-page Livewire components. You can do this by calling `->lazy()` on the route like so:
+フルページのLivewireコンポーネントを遅延読み込みしたい場合は、ルートで`->lazy()`と呼び出すことで可能です。
 
 ```php
 Route::get('/dashboard', \App\Livewire\Dashboard::class)->lazy();
 ```
 
-Or alternatively, if there is a component that is lazy-loaded by default, and you would like to opt-out of lazy-loading, you can use the following `enabled: false` parameter:
+または、デフォルトで遅延読み込みされるコンポーネントがあり、その遅延読み込みをオプトアウトしたい場合は、次の`enabled: false`パラメータを使用します。
 
 ```php
 Route::get('/dashboard', \App\Livewire\Dashboard::class)->lazy(enabled: false);
 ```
 
-## Default placeholder view
+## デフォルトのプレースホルダービュー
 
-If you want to set a default placeholder view for all your components you can do so by referencing the view in the `/config/livewire.php` config file:
+すべてのコンポーネントにデフォルトのプレースホルダービューを設定したい場合は、`/config/livewire.php`設定ファイルでビューを参照することで可能です。
 
 ```php
 'lazy_placeholder' => 'livewire.placeholder',
 ```
 
-Now, when a component is lazy-loaded and no `placeholder()` is defined, Livewire will use the configured Blade view (`livewire.placeholder` in this case.)
+これで、コンポーネントが遅延読み込みされ、`placeholder()`が定義されていない場合、Livewireは構成されたBladeビュー（この場合は`livewire.placeholder`）を使用します。
 
-## Disabling lazy loading for tests
+## テスト用の遅延読み込みの無効化
 
-When unit testing a lazy component, or a page with nested lazy components, you may want to disable the "lazy" behavior so that you can assert the final rendered behavior. Otherwise, those components would be rendered as their placeholders during your tests.
+遅延コンポーネントや、ネストされた遅延コンポーネントを含むページをユニットテストする際に、「遅延」動作を無効にして最終的なレンダリング結果をアサートしたい場合があります。その場合、テスト中はプレースホルダーとしてレンダリングされます。
 
-You can easily disable lazy loading using the `Livewire::withoutLazyLoading()` testing helper like so:
+次のように、`Livewire::withoutLazyLoading()`テストヘルパーを使用して遅延読み込みを簡単に無効にできます。
 
 ```php
 <?php
@@ -277,5 +278,5 @@ class DashboardTest extends TestCase
 }
 ```
 
-Now, when the dashboard component is rendered for this test, it will skip rendering the `placeholder()` and instead render the full component as if lazy loading wasn't applied at all.
+これで、このテストのためにダッシュボードコンポーネントがレンダリングされるとき、`placeholder()`のレンダリングをスキップし、遅延読み込みが適用されていないかのようにフルコンポーネントがレンダリングされます。
 

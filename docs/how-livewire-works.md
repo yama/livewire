@@ -1,30 +1,29 @@
+* コンポーネント
+    * カウンターコンポーネント
+* コンポーネントのレンダリング
+    * マウント
+        * クラスのインスタンス化
+        * ステートのデハイドレート
+        * HTMLへの埋め込み
+        * HTMLを返す
+* JSでのコンポーネント初期化
+    * wire:id要素の検出
+    * idとスナップショットの抽出
+    * オブジェクトの生成
+* 更新の送信
+    * イベントリスナーの登録
+    * 更新内容とスナップショットを含むfetchリクエストの送信
+* 更新の受信
+    * スナップショットからコンポーネントへ変換（ハイドレート）
+    * 更新の適用
+    * コンポーネントのレンダリング
+    * HTMLと新しいスナップショットを返す
+* 更新の処理
+    * 新しいスナップショットで置き換え
+    * 新しいHTMLで置き換え
+        * モーフィング
 
-* The component
-    * Counter component
-* Rendering the component
-    * Mount
-        * New up class
-        * Dehydrate state
-        * Embed inside HTML
-        * Return HTML
-* Initializing the component in JS
-    * Finding wire:id elements
-    * Extracting id and snapshot
-    * Newing up object
-* Sending an update
-    * Registering event listeners
-    * Sending a fetch request with updates and snapshot
-* Receiving an update
-    * Converting snapshot to component (hydrate)
-    * Applying updates
-    * Rendering component
-    * Returning HTML and new snapshot
-* Processing an update
-    * Replacing with new snapshot
-    * Replacing HTML with new HTML
-        * Morphing
-
-## The component
+## コンポーネント
 
 ```php
 <?php
@@ -55,7 +54,7 @@ class Counter extends Component
 </div>
 ```
 
-## Rendering the component
+## コンポーネントのレンダリング
 
 ```blade
 <livewire:counter />
@@ -102,7 +101,7 @@ public function mount($name)
 </div>
 ```
 
-## JavaScript initialization
+## JavaScript初期化
 
 ```js
 let el = document.querySelector('wire\\:id')
@@ -137,7 +136,7 @@ function updateComponent(el, component, action) {
 }
 ```
 
-## Receiving an update
+## 更新の受信
 
 ```php
 Route::post('/livewire/update', function () {
@@ -159,7 +158,7 @@ Route::post('/livewire/update', function () {
 });
 ```
 
-## Handling an update
+## 更新の処理
 
 ```js
 function updateComponent(el, component, action) {

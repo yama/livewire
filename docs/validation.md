@@ -1,6 +1,7 @@
-Livewire aims to make validating a user's input and giving them feedback as pleasant as possible. By building on top of Laravel's validation features, Livewire leverages your existing knowledge while also providing you with robust, additional features like real-time validation.
+````markdown
+Livewireは、ユーザーの入力を検証し、フィードバックを返す体験をできるだけ快適にすることを目指しています。Laravelのバリデーション機能を基盤とし、Livewireは既存の知識を活かしつつ、リアルタイムバリデーションなどの強力な追加機能も提供します。
 
-Here's an example `CreatePost` component that demonstrates the most basic validation workflow in Livewire:
+以下は、Livewireで最も基本的なバリデーションのワークフローを示す `CreatePost` コンポーネントの例です。
 
 ```php
 <?php
@@ -47,17 +48,17 @@ class CreatePost extends Component
 </form>
 ```
 
-As you can see, Livewire provides a `validate()` method that you can call to validate your component's properties. It returns the validated set of data that you can then safely insert into the database.
+ご覧の通り、Livewireは `validate()` メソッドを提供しており、コンポーネントのプロパティを簡単にバリデーションできます。このメソッドは検証済みのデータセットを返すため、そのまま安全にデータベースへ保存できます。
 
-On the frontend, you can use Laravel's existing Blade directives to show validation messages to your users.
+フロントエンドでは、Laravelの既存のBladeディレクティブを使って、ユーザーにバリデーションメッセージを表示できます。
 
-For more information, see [Laravel's documentation on rendering validation errors in Blade](https://laravel.com/docs/blade#validation-errors).
+詳細は [LaravelのBladeでのバリデーションエラー表示に関するドキュメント](https://laravel.com/docs/blade#validation-errors) を参照してください。
 
 ## Validate attributes
 
-If you prefer to co-locate your component's validation rules with the properties directly, you can use Livewire's `#[Validate]` attribute.
+コンポーネントのバリデーションルールをプロパティと直接関連付けて配置したい場合は、Livewireの `#[Validate]` 属性を使用できます。
 
-By associating validation rules with properties using `#[Validate]`, Livewire will automatically run the properties validation rules before each update. However, you should still run `$this->validate()` before persisting data to a database so that properties that haven't been updated are also validated.
+`#[Validate]` を使用してプロパティにバリデーションルールを関連付けることで、Livewireは各更新の前にプロパティのバリデーションルールを自動的に実行します。ただし、データベースに保存する前に `$this->validate()` を実行して、更新されていないプロパティもバリデーションする必要があります。
 
 ```php
 use Livewire\Attributes\Validate;
@@ -93,7 +94,7 @@ class CreatePost extends Component
 >
 > Learn more in the documentation on [using Laravel Rule objects with Livewire](#using-laravel-rule-objects).
 
-If you prefer more control over when the properties are validated, you can pass a `onUpdate: false` parameter to the `#[Validate]` attribute. This will disable any automatic validation and instead assume you want to manually validate the properties using the `$this->validate()` method:
+プロパティのバリデーションを実行するタイミングをより細かく制御したい場合は、`#[Validate]` 属性に `onUpdate: false` パラメータを渡すことができます。これにより、自動バリデーションが無効になり、代わりに `$this->validate()` メソッドを使用してプロパティを手動でバリデートすることが前提となります。
 
 ```php
 use Livewire\Attributes\Validate;
@@ -123,7 +124,7 @@ class CreatePost extends Component
 
 ### Custom attribute name
 
-If you wish to customize the attribute name injected into the validation message, you may do so using the `as: ` parameter:
+バリデーションメッセージに挿入される属性名をカスタマイズしたい場合は、`as: ` パラメータを使用できます。
 
 ```php
 use Livewire\Attributes\Validate;
@@ -132,11 +133,11 @@ use Livewire\Attributes\Validate;
 public $dob;
 ```
 
-When validation fails in the above snippet, Laravel will use "date of birth" instead of "dob" as the name of the field in the validation message. The generated message will be "The date of birth field is required" instead of "The dob field is required".
+上記のスニペットでバリデーションに失敗した場合、Laravelはフィールドの名前として「date of birth」を使用します。そのため、生成されるメッセージは「The date of birth field is required」となり、「The dob field is required」にはなりません。
 
 ### Custom validation message
 
-To bypass Laravel's validation message and replace it with your own, you can use the `message: ` parameter in the `#[Validate]` attribute:
+Laravelのバリデーションメッセージをバイパスして独自のメッセージに置き換えたい場合は、`#[Validate]` 属性の `message: ` パラメータを使用できます。
 
 ```php
 use Livewire\Attributes\Validate;
@@ -145,9 +146,9 @@ use Livewire\Attributes\Validate;
 public $title;
 ```
 
-Now, when the validation fails for this property, the message will be "Please provide a post title" instead of "The title field is required".
+これで、このプロパティのバリデーションに失敗した場合のメッセージは、「The title field is required」ではなく「Please provide a post title」となります。
 
-If you wish to add different messages for different rules, you can simply provide multiple `#[Validate]` attributes:
+異なるルールに対して異なるメッセージを追加したい場合は、単に複数の `#[Validate]` 属性を提供すればよいのです。
 
 ```php
 #[Validate('required', message: 'Please provide a post title')]
@@ -157,9 +158,9 @@ public $title;
 
 ### Opting out of localization
 
-By default, Livewire rule messages and attributes are localized using Laravel's translate helper: `trans()`.
+デフォルトでは、Livewireのルールメッセージと属性はLaravelの翻訳ヘルパー `trans()` を使用してローカライズされます。
 
-You can opt-out of localization by passing the `translate: false` parameter to the `#[Validate]` attribute:
+`#[Validate]` 属性に `translate: false` パラメータを渡すことで、ローカライズをオプトアウトできます。
 
 ```php
 #[Validate('required', message: 'Please provide a post title', translate: false)]
@@ -168,9 +169,9 @@ public $title;
 
 ### Custom key
 
-When applying validation rules directly to a property using the `#[Validate]` attribute, Livewire assumes the validation key should be the name of the property itself. However, there are times when you may want to customize the validation key.
+`#[Validate]` 属性を使用してプロパティにバリデーションルールを適用する場合、Livewireはバリデーションキーがプロパティの名前であると仮定します。ただし、バリデーションキーをカスタマイズしたい場合もあります。
 
-For example, you might want to provide separate validation rules for an array property and its children. In this case, instead of passing a validation rule as the first argument to the `#[Validate]` attribute, you can pass an array of key-value pairs instead:
+たとえば、配列プロパティとその子要素に対して別々のバリデーションルールを提供したい場合、`#[Validate]` 属性の最初の引数としてバリデーションルールを渡すのではなく、キーと値のペアの配列を渡すことができます。
 
 ```php
 #[Validate([
@@ -184,13 +185,13 @@ For example, you might want to provide separate validation rules for an array pr
 public $todos = [];
 ```
 
-Now, when a user updates `$todos`, or the `validate()` method is called, both of these validation rules will be applied.
+これで、ユーザーが `$todos` を更新したり `validate()` メソッドが呼び出されたりすると、これらのバリデーションルールの両方が適用されます。
 
 ## Form objects
 
-As more properties and validation rules are added to a Livewire component, it can begin to feel too crowded. To alleviate this pain and also provide a helpful abstraction for code reuse, you can use Livewire's *Form Objects* to store your properties and validation rules.
+プロパティとバリデーションルールがLivewireコンポーネントに追加されると、コンポーネントが混雑しているように感じることがあります。この問題を軽減し、コードの再利用のための便利な抽象化を提供するために、Livewireの*Form Objects*を使用してプロパティとバリデーションルールを格納できます。
 
-Below is the same `CreatePost` example, but now the properties and rules have been extracted to a dedicated form object named `PostForm`:
+以下は、プロパティとルールが `PostForm` という専用のフォームオブジェクトに抽出された同じ `CreatePost` の例です。
 
 ```php
 <?php
@@ -210,7 +211,7 @@ class PostForm extends Form
 }
 ```
 
-The `PostForm` above can now be defined as a property on the `CreatePost` component:
+上記の `PostForm` は、`CreatePost` コンポーネントでプロパティとして定義できます。
 
 ```php
 <?php
@@ -238,9 +239,9 @@ class CreatePost extends Component
 }
 ```
 
-As you can see, instead of listing out each property individually, we can retrieve all the property values using the `->all()` method on the form object.
+このように、各プロパティを個別に列挙する代わりに、フォームオブジェクトの `->all()` メソッドを使用してすべてのプロパティ値を取得できます。
 
-Also, when referencing the property names in the template, you must prepend `form.` to each instance:
+また、テンプレート内でプロパティ名を参照する際は、各インスタンスの前に `form.` を付ける必要があります。
 
 ```blade
 <form wire:submit="save">
@@ -254,7 +255,7 @@ Also, when referencing the property names in the template, you must prepend `for
 </form>
 ```
 
-When using form objects, `#[Validate]` attribute validation will be run every time a property is updated. However, if you disable this behavior by specifying `onUpdate: false` on the attribute, you can manually run a form object's validation using `$this->form->validate()`:
+フォームオブジェクトを使用する場合、`#[Validate]` 属性のバリデーションはプロパティが更新されるたびに実行されます。ただし、属性で `onUpdate: false` を指定してこの動作を無効にした場合は、`$this->form->validate()` を使用してフォームオブジェクトのバリデーションを手動で実行できます。
 
 ```php
 public function save()
@@ -267,17 +268,15 @@ public function save()
 }
 ```
 
-Form objects are a useful abstraction for most larger datasets and a variety of additional features that make them even more powerful. For more information, check out the comprehensive [form object documentation](/docs/forms#extracting-a-form-object).
+フォームオブジェクトは、より大規模なデータセットに対する便利な抽象化であり、さらに強力にするためのさまざまな追加機能を提供します。詳細については、包括的な [form object documentation](/docs/forms#extracting-a-form-object) を参照してください。
 
 ## Real-time validation
 
-Real-time validation is the term used for when you validate a user's input as they fill out a form rather than waiting for the form submission.
+リアルタイムバリデーションとは、フォームに入力する際にユーザーの入力を検証することを指し、フォームの送信を待つのではありません。
 
-By using `#[Validate]` attributes directly on Livewire properties, any time a network request is sent to update a property's value on the server, the provided validation rules will be applied.
+特定の入力に対してリアルタイムバリデーション体験を提供するために、特別なバックエンドの作業は必要ありません。必要なのは、フィールドが入力されるときにネットワークリクエストをトリガーするようLivewireに指示する `wire:model.live` または `wire:model.blur` を使用することだけです。
 
-This means to provide a real-time validation experience for your users on a specific input, no extra backend work is required. The only thing that is required is using `wire:model.live` or `wire:model.blur` to instruct Livewire to trigger network requests as the fields are filled out.
-
-In the below example, `wire:model.blur` has been added to the text input. Now, when a user types in the field and then tabs or clicks away from the field, a network request will be triggered with the updated value and the validation rules will run:
+以下の例では、テキスト入力に `wire:model.blur` が追加されています。これにより、ユーザーがフィールドに入力してからタブを移動するかフィールドの外をクリックすると、ネットワークリクエストがトリガーされ、更新された値とバリデーションルールが実行されます。
 
 ```blade
 <form wire:submit="save">
@@ -287,7 +286,7 @@ In the below example, `wire:model.blur` has been added to the text input. Now, w
 </form>
 ```
 
-If you are using a `rules()` method to declare your validation rules for a property instead of the `#[Validate]` attribute, you can still include a #[Validate] attribute with no parameters to retain the real-time validating behavior:
+`#[Validate]` 属性の代わりに `rules()` メソッドを使用してプロパティのバリデーションルールを宣言している場合でも、リアルタイムバリデーションを保持するためにパラメータなしの `#[Validate]` 属性を含めることができます。
 
 ```php
 use Livewire\Attributes\Validate;
@@ -319,19 +318,19 @@ class CreatePost extends Component
     }
 ```
 
-Now, in the above example, even though `#[Validate]` is empty, it will tell Livewire to run the fields validation provided by `rules()` everytime the property is updated.
+上記の例では、たとえ `#[Validate]` が空であっても、Livewireによりフィールドのバリデーションが `rules()` によって提供されたものがプロパティが更新されるたびに実行されるようになります。
 
 ## Customizing error messages
 
-Out-of-the-box, Laravel provides sensible validation messages like "The title field is required." if the `$title` property has the `required` rule attached to it.
+初期設定のままでは、Laravelは `$title` プロパティに `required` ルールが付いている場合、「The title field is required.」のような妥当なバリデーションメッセージを提供します。
 
-However, you may need to customize the language of these error messages to better suite your application and its users.
+ただし、これらのエラーメッセージの言語をカスタマイズして、アプリケーションやユーザーにより適したものにする必要があるかもしれません。
 
 ### Custom attribute names
 
-Sometimes the property you are validating has a name that isn't suited for displaying to users. For example, if you have a database field in your app named `dob` that stands for "Date of birth", you would want to show your users "The date of birth field is required" instead of "The dob field is required".
+時には、検証しているプロパティの名前がユーザーに表示するのに適していないことがあります。たとえば、アプリのデータベースフィールドに「dob」という名前が付いている場合、これは「生年月日」を表すものであり、「The date of birth field is required」ではなく「The dob field is required」と表示したいでしょう。
 
-Livewire allows you to specify an alternative name for a property using the `as: ` parameter:
+Livewireでは、`as: ` パラメータを使用してプロパティの代替名を指定できます。
 
 ```php
 use Livewire\Attributes\Validate;
@@ -340,11 +339,11 @@ use Livewire\Attributes\Validate;
 public $dob = '';
 ```
 
-Now, if the `required` validation rule fails, the error message will state "The date of birth field is required." instead of "The dob field is required.".
+これで、`required` バリデーションルールに失敗した場合、エラーメッセージは「The date of birth field is required.」となります。
 
 ### Custom messages
 
-If customizing the property name isn't enough, you can customize the entire validation message using the `message: ` parameter:
+プロパティ名のカスタマイズだけでは不十分な場合、`message: ` パラメータを使用してバリデーションメッセージ全体をカスタマイズできます。
 
 ```php
 use Livewire\Attributes\Validate;
@@ -353,7 +352,7 @@ use Livewire\Attributes\Validate;
 public $dob = '';
 ```
 
-If you have multiple rules to customize the message for, it is recommended that you use entirely separate `#[Validate]` attributes for each, like so:
+メッセージをカスタマイズするルールが複数ある場合は、それぞれに対して完全に別々の `#[Validate]` 属性を使用することをお勧めします。
 
 ```php
 use Livewire\Attributes\Validate;
@@ -363,7 +362,7 @@ use Livewire\Attributes\Validate;
 public $title = '';
 ```
 
-If you want to use the `#[Validate]` attribute's array syntax instead, you can specify custom attributes and messages like so:
+`#[Validate]` 属性の配列構文を代わりに使用したい場合は、次のようにカスタム属性とメッセージを指定できます。
 
 ```php
 use Livewire\Attributes\Validate;
@@ -383,11 +382,11 @@ public $titles = [];
 
 ## Defining a `rules()` method
 
-As an alternative to Livewire's `#[Validate]` attributes, you can define a method in your component called `rules()` and return a list of fields and corresponding validation rules. This can be helpful if you are trying to use run-time syntaxes that aren't supported in PHP Attributes, for example, Laravel rule objects like `Rule::password()`.
+Livewireの `#[Validate]` 属性の代わりに、コンポーネント内に `rules()` メソッドを定義してフィールドと対応するバリデーションルールのリストを返すことができます。これは、`Rule::password()` のようなランタイム構文を使用しようとしている場合に役立ちます。
 
-These rules will then be applied when you run `$this->validate()` inside the component. You also can define the `messages()` and `validationAttributes()` functions.
+これらのルールは、コンポーネント内で `$this->validate()` を実行するときに適用されます。また、`messages()` および `validationAttributes()` 関数を定義することもできます。
 
-Here's an example:
+以下はその例です。
 
 ```php
 use Livewire\Component;
@@ -500,24 +499,24 @@ class UpdatePost extends Form
 
 ## Manually controlling validation errors
 
-Livewire's validation utilities should handle the most common validation scenarios; however, there are times when you may want full control over the validation messages in your component.
+Livewireのバリデーションユーティリティは、最も一般的なバリデーションシナリオを処理します。ただし、コンポーネント内のバリデーションメッセージを完全に制御したい場合もあるでしょう。
 
-Below are all the available methods for manipulating the validation errors in your Livewire component:
+以下は、Livewireコンポーネント内で利用可能なバリデーションエラーメッセージを操作するためのすべてのメソッドです。
 
-Method | Description
+メソッド | 説明
 --- | ---
-`$this->addError([key], [message])` | Manually add a validation message to the error bag
-`$this->resetValidation([?key])` | Reset the validation errors for the provided key, or reset all errors if no key is supplied
-`$this->getErrorBag()` | Retrieve the underlying Laravel error bag used in the Livewire component
+`$this->addError([key], [message])` | バリデーションメッセージをエラーバッグに手動で追加します
+`$this->resetValidation([?key])` | 指定されたキーのバリデーションエラーをリセットするか、キーが指定されていない場合はすべてのエラーをリセットします
+`$this->getErrorBag()` | Livewireコンポーネントで使用される基礎となるLaravelエラーバッグを取得します
 
 > [!info] Using `$this->addError()` with Form Objects
 > When manually adding errors using `$this->addError` inside of a form object the key will automatically be prefixed with the name of the property the form is assigned to in the parent component. For example, if in your Component you assign the form to a property called `$data`, key will become `data.key`.
 
 ## Accessing the validator instance
 
-Sometimes you may want to access the Validator instance that Livewire uses internally in the `validate()` method. This is possible using the `withValidator` method. The closure you provide receives the fully constructed validator as an argument, allowing you to call any of its methods before the validation rules are actually evaluated.
+時には、Livewireが内部で使用するバリデーターインスタンスにアクセスしたい場合もあるでしょう。これは、`withValidator` メソッドを使用することで可能です。提供されたクロージャは、完全に構築されたバリデーターを引数として受け取り、そのルールが実際に評価される前に、そのメソッドのいずれかを呼び出すことができます。
 
-Below is an example of intercepting Livewire's internal validator to manually check a condition and add an additional validation message:
+以下は、Livewireの内部バリデーターをインターセプトして手動で条件をチェックし、追加のバリデーションメッセージを加える例です。
 
 ```php
 use Livewire\Attributes\Validate;
@@ -556,9 +555,9 @@ class CreatePost extends Component
 
 ## Using custom validators
 
-If you wish to use your own validation system in Livewire, that isn't a problem. Livewire will catch any `ValidationException` exceptions thrown inside of components and provide the errors to the view just as if you were using Livewire's own `validate()` method.
+Livewireで独自のバリデーションシステムを使用したい場合でも、問題ありません。Livewireは、コンポーネント内でスローされた `ValidationException` 例外をキャッチし、エラーをビューに提供します。これは、Livewireの独自の `validate()` メソッドを使用しているかのように行われます。
 
-Below is an example of the `CreatePost` component, but instead of using Livewire's validation features, a completely custom validator is being created and applied to the component properties:
+以下は、Livewireのバリデーション機能を使用せず、代わりにカスタムバリデーターを作成してコンポーネントプロパティに適用している `CreatePost` コンポーネントの例です。
 
 ```php
 use Illuminate\Support\Facades\Validator;
@@ -595,9 +594,9 @@ class CreatePost extends Component
 
 ## Testing validation
 
-Livewire provides useful testing utilities for validation scenarios, such as the `assertHasErrors()` method.
+Livewireは、`assertHasErrors()` メソッドなど、バリデーションシナリオのテストに役立つテストユーティリティを提供します。
 
-Below is a basic test case that ensures validation errors are thrown if no input is set for the `title` property:
+以下は、`$title` プロパティに入力がない場合にバリデーションエラーがスローされることを確認する基本的なテストケースです。
 
 ```php
 <?php
@@ -620,7 +619,7 @@ class CreatePostTest extends TestCase
 }
 ```
 
-In addition to testing the presence of errors, `assertHasErrors` allows you to also narrow down the assertion to specific rules by passing the rules to assert against as the second argument to the method:
+エラーの存在をテストするだけでなく、`assertHasErrors` を使用して、メソッドの2番目の引数としてテストするルールを渡すことで、特定のルールに絞ってアサーションを行うこともできます。
 
 ```php
 public function test_cant_create_post_with_title_shorter_than_3_characters()
@@ -633,7 +632,7 @@ public function test_cant_create_post_with_title_shorter_than_3_characters()
 }
 ```
 
-You can also assert the presence of validation errors for multiple properties at the same time:
+複数のプロパティに対するバリデーションエラーの存在を同時にアサートすることもできます。
 
 ```php
 public function test_cant_create_post_without_title_and_content()
@@ -644,10 +643,11 @@ public function test_cant_create_post_without_title_and_content()
 }
 ```
 
-For more information on other testing utilities provided by Livewire, check out the [testing documentation](/docs/testing).
+Livewireが提供する他のテストユーティリティに関する詳細は、[testing documentation](/docs/testing) を参照してください。
 
 ## Deprecated `[#Rule]` attribute
 
-When Livewire v3 first launched, it used the term "Rule" instead of "Validate" for it's validation attributes (`#[Rule]`).
+Livewire v3が最初にリリースされたとき、「Rule」という用語は「Validate」の代わりにそのバリデーション属性に使用されていました（`#[Rule]`）。
 
-Because of naming conflicts with Laravel rule objects, this has since been changed to `#[Validate]`. Both are supported in Livewire v3, however it is recommended that you change all occurrences of `#[Rule]` with `#[Validate]` to stay current.
+Laravelのルールオブジェクトとの名前の衝突を避けるために、これは `#[Validate]` に変更されました。Livewire v3では両方がサポートされていますが、最新の状態を保つためにすべての `#[Rule]` の発生を `#[Validate]` に変更することをお勧めします。
+````

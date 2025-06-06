@@ -1,13 +1,13 @@
+<!-- filepath: /home/yamamoto/oss/translations/livewire/docs/downloads.md -->
+Livewireでのファイルダウンロードは、基本的にLaravel本体と同じように動作します。通常、Livewireコンポーネント内でLaravelのダウンロード用ユーティリティをそのまま利用でき、期待通りに動作します。
 
-File downloads in Livewire work much the same as in Laravel itself. Typically, you can use any Laravel download utility inside a Livewire component, and it should work as expected.
+ただし、内部的には標準的なLaravelアプリケーションとは異なる方法でファイルダウンロードが処理されます。Livewireを使う場合、ファイルの内容はBase64でエンコードされてフロントエンドに送信され、クライアント側でバイナリにデコードされて直接ダウンロードされます。
 
-However, behind the scenes, file downloads are handled differently than in a standard Laravel application. When using Livewire, the file's contents are Base64 encoded, sent to the frontend, and decoded back into binary to be downloaded directly from the client.
+## 基本的な使い方
 
-## Basic usage
+Livewireでファイルをダウンロードするには、通常のLaravelのダウンロードレスポンスを返すだけでOKです。
 
-Triggering a file download in Livewire is as simple as returning a standard Laravel download response.
-
-Below is an example of a `ShowInvoice` component that contains a "Download" button to download the invoice PDF:
+以下は、請求書PDFをダウンロードする「ダウンロード」ボタンを持つ`ShowInvoice`コンポーネントの例です。
 
 ```php
 <?php
@@ -51,7 +51,7 @@ class ShowInvoice extends Component
 </div>
 ```
 
-Just like in a Laravel controller, you can also use the `Storage` facade to initiate downloads:
+Laravelのコントローラと同様に、`Storage`ファサードを使ってダウンロードを開始することもできます。
 
 ```php
 public function download()
@@ -60,22 +60,22 @@ public function download()
 }
 ```
 
-## Streaming downloads
+## ストリーミングダウンロード
 
-Livewire can also stream downloads; however, they aren't truly streamed. The download isn't triggered until the file's contents are collected and delivered to the browser:
+Livewireでもストリーミングダウンロードが可能ですが、実際には「ストリーミング」されるわけではありません。ファイルの内容がすべて収集されてから、ブラウザに配信されてダウンロードが開始されます。
 
 ```php
 public function download()
 {
     return response()->streamDownload(function () {
-        echo '...'; // Echo download contents directly...
+        echo '...'; // ダウンロード内容を直接echoします
     }, 'invoice.pdf');
 }
 ```
 
-## Testing file downloads
+## ファイルダウンロードのテスト
 
-Livewire also provides a `->assertFileDownloaded()` method to easily test that a file was downloaded with a given name:
+Livewireでは、指定したファイル名でダウンロードが行われたかどうかを簡単にテストできる`->assertFileDownloaded()`メソッドも用意されています。
 
 ```php
 use App\Models\Invoice;
@@ -90,7 +90,7 @@ public function test_can_download_invoice()
 }
 ```
 
-You can also test to ensure a file was not downloaded using the `->assertNoFileDownloaded()` method:
+また、`->assertNoFileDownloaded()`メソッドを使えば、ファイルがダウンロードされなかったこともテストできます。
 
 ```php
 use App\Models\Invoice;

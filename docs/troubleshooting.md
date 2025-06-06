@@ -1,10 +1,11 @@
-Here at Livewire HQ, we try to remove problems from your pathway before you hit them. However, sometimes, there are some problems that we can't solve without introducing new ones, and other times, there are problems we can't anticipate.
+<!-- filepath: /home/yamamoto/oss/translations/livewire/docs/troubleshooting.md -->
+Livewire HQ では、みなさんが問題に直面する前にできる限り障害を取り除くよう努めています。しかし、時には新たな問題を生み出さずに解決できないケースや、予期できない問題も発生します。
 
-Here are some common errors and scenarios you may encounter in your Livewire apps.
+ここでは、Livewire アプリでよく遭遇するエラーやシナリオを紹介します。
 
-## Component mismatches
+## コンポーネントの不一致
 
-When interacting with Livewire components on your page, you may encounter odd behavior or error messages like the following:
+ページ上で Livewire コンポーネントを操作していると、次のような予期しない挙動やエラーメッセージが表示されることがあります。
 
 ```
 Error: Component already initialized
@@ -14,11 +15,11 @@ Error: Component already initialized
 Error: Snapshot missing on Livewire component with id: ...
 ```
 
-There are lots of reasons why you may encounter these messages, but the most common one is forgetting to add `wire:key` to elements and components inside a `@foreach` loop.
+これらのメッセージが表示される理由はさまざまですが、最も多い原因は `@foreach` ループ内の要素やコンポーネントに `wire:key` を付け忘れていることです。
 
-### Adding `wire:key`
+### `wire:key` の追加
 
-Any time you have a loop in your Blade templates using something like `@foreach`, you need to add `wire:key` to the opening tag of the first element within the loop:
+Blade テンプレートで `@foreach` などのループを使う場合は、ループ内の最初の要素の開始タグに必ず `wire:key` を追加してください。
 
 ```blade
 @foreach($posts as $post)
@@ -28,9 +29,9 @@ Any time you have a loop in your Blade templates using something like `@foreach`
 @endforeach
 ```
 
-This ensures that Livewire can keep track of different elements in the loop when the loop changes.
+この指定によって、ループの内容が変化したときも Livewire が各要素を正しく追跡できます。
 
-The same applies to Livewire components within a loop:
+ループ内に Livewire コンポーネントがある場合も同様です。
 
 ```blade
 @foreach($posts as $post)
@@ -38,9 +39,9 @@ The same applies to Livewire components within a loop:
 @endforeach
 ```
 
-However, here's a tricky scenario you might not have assumed:
+しかし、あなたが想像していないかもしれないトリッキーなシナリオがあります。
 
-When you have a Livewire component deeply nested inside a `@foreach` loop, you STILL need to add a key to it. For example:
+`@foreach` ループの中に Livewire コンポーネントが深くネストされている場合、そこにもキーを追加する必要があります。例えば：
 
 ```blade
 @foreach($posts as $post)
@@ -52,13 +53,13 @@ When you have a Livewire component deeply nested inside a `@foreach` loop, you S
 @endforeach
 ```
 
-Without the key on the nested Livewire component, Livewire will be unable to match the looped components up between network requests.
+ネストされた Livewire コンポーネントにキーがないと、Livewire はネットワークリクエスト間でループされたコンポーネントを照合できなくなります。
 
-#### Prefixing keys
+#### プレフィックス付きキー
 
-Another tricky scenario you may run into is having duplicate keys within the same component. This often results from using model IDs as keys, which can sometimes collide.
+同じコンポーネント内で重複したキーが発生する別のトリッキーなシナリオもあります。これは、モデル ID をキーとして使用しているときに、衝突が発生することがあります。
 
-Here's an example where we need to add a `post-` and an `author-` prefix to designate each set of keys as unique. Otherwise, if you have a `$post` and `$author` model with the same ID, you would have an ID collision:
+次の例では、各キーのセットを一意に指定するために `post-` と `author-` のプレフィックスを追加する必要があります。さもなければ、同じ ID を持つ `$post` と `$author` モデルがあると、ID が衝突してしまいます。
 
 ```blade
 <div>
@@ -72,9 +73,9 @@ Here's an example where we need to add a `post-` and an `author-` prefix to desi
 </div>
 ```
 
-## Multiple instances of Alpine
+## 複数の Alpine インスタンス
 
-When installing Livewire, you may run into error messages like the following:
+Livewire をインストールすると、次のようなエラーメッセージが表示されることがあります。
 
 ```
 Error: Detected multiple instances of Alpine running
@@ -84,15 +85,15 @@ Error: Detected multiple instances of Alpine running
 Alpine Expression Error: $wire is not defined
 ```
 
-If this is the case, you likely have two versions of Alpine running on the same page. Livewire includes its own bundle of Alpine under the hood, so you must remove any other versions of Alpine on Livewire pages in your application.
+この場合、同じページに 2 つのバージョンの Alpine が実行されている可能性が高いです。Livewire は内部で独自の Alpine バンドルを含んでいるため、アプリケーションの Livewire ページに他の Alpine バージョンを削除する必要があります。
 
-One common scenario in which this happens is adding Livewire to an existing application that already includes Alpine. For example, if you installed the Laravel Breeze starter kit and then added Livewire later, you would run into this.
+これが発生する一般的なシナリオの 1 つは、既存のアプリケーションに Livewire を追加する際に、すでに Alpine が含まれている場合です。例えば、Laravel Breeze スターターキットをインストールした後に Livewire を追加すると、これが発生します。
 
-The fix for this is simple: remove the extra Alpine instance.
+修正は簡単です：余分な Alpine インスタンスを削除します。
 
-### Removing Laravel Breeze's Alpine
+### Laravel Breeze の Alpine の削除
 
-If you are installing Livewire inside an existing Laravel Breeze (Blade + Alpine version), you need to remove the following lines from `resources/js/app.js`:
+既存の Laravel Breeze (Blade + Alpine バージョン) に Livewire をインストールする場合は、`resources/js/app.js` から次の行を削除する必要があります。
 
 ```js
 import './bootstrap';
@@ -104,9 +105,9 @@ window.Alpine = Alpine;
 Alpine.start();
 ```
 
-### Removing a CDN version of Alpine
+### CDN バージョンの Alpine の削除
 
-Because Livewire version 2 and below didn't include Alpine by default, you may have included an Alpine CDN as a script tag in the head of your layout. In Livewire v3, you can remove this CDN altogether, and Livewire will automatically provide Alpine for you:
+Livewire バージョン 2 以前はデフォルトで Alpine を含んでいなかったため、レイアウトの head に Alpine CDN をスクリプトタグとして追加していたかもしれません。Livewire v3 では、この CDN を完全に削除でき、Livewire が自動的に Alpine を提供します。
 
 ```html
     ...
@@ -114,17 +115,17 @@ Because Livewire version 2 and below didn't include Alpine by default, you may h
 </head>
 ```
 
-Note: you can also remove any additional Alpine plugins, as Livewire includes all Alpine plugins except `@alpinejs/ui`.
+注意：Livewire は `@alpinejs/ui` を除くすべての Alpine プラグインを含んでいるため、追加の Alpine プラグインも削除できます。
 
-## Missing `@alpinejs/ui`
+## `@alpinejs/ui` が見つからない
 
-Livewire's bundled version of Alpine includes all Alpine plugins EXCEPT `@alpinejs/ui`. If you are using headless components from [Alpine Components](https://alpinejs.dev/components), which relies on this plugin, you may encounter errors like the following:
+Livewire にバンドルされている Alpine は、`@alpinejs/ui` を除くすべての Alpine プラグインを含んでいます。このプラグインに依存している [Alpine Components](https://alpinejs.dev/components) のヘッドレスコンポーネントを使用している場合、次のようなエラーが発生することがあります。
 
 ```
 Uncaught Alpine: no element provided to x-anchor
 ```
 
-To fix this, you can simply include the `@alpinejs/ui` plugin as a CDN in your layout file like so:
+これを修正するには、次のようにレイアウトファイルに `@alpinejs/ui` プラグインを CDN として含めるだけです。
 
 ```html
     ...
@@ -132,4 +133,4 @@ To fix this, you can simply include the `@alpinejs/ui` plugin as a CDN in your l
 </head>
 ```
 
-Note: be sure to include the latest version of this plugin, which you can find on [any component's documentation page](https://alpinejs.dev/component/headless-dialog/docs).
+注意：このプラグインの最新バージョンは、[任意のコンポーネントのドキュメントページ](https://alpinejs.dev/component/headless-dialog/docs) で確認できます。

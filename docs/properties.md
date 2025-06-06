@@ -1,10 +1,11 @@
-Properties store and manage data inside your Livewire components. They are defined as public properties on component classes and can be accessed and modified on both the server and client-side.
+<!-- filepath: /home/yamamoto/oss/translations/livewire/docs/properties.md -->
+Livewireのコンポーネント内でデータを保持・管理するのが「プロパティ」です。プロパティはコンポーネントクラスのpublicプロパティとして定義され、サーバー・クライアントの両方からアクセス・変更できます。
 
-## Initializing properties
+## プロパティの初期化
 
-You can set initial values for properties within your component's `mount()` method.
+プロパティの初期値は、コンポーネントの`mount()`メソッド内で設定できます。
 
-Consider the following example:
+次の例を見てみましょう。
 
 ```php
 <?php
@@ -29,13 +30,13 @@ class TodoList extends Component
 }
 ```
 
-In this example, we've defined an empty `todos` array and initialized it with existing todos from the authenticated user. Now, when the component renders for the first time, all the existing todos in the database are shown to the user.
+この例では、空の`todos`配列を定義し、認証済みユーザーの既存のToDoリストで初期化しています。これにより、コンポーネントが最初に表示される際、データベースに保存されているすべてのToDoがユーザーに表示されます。
 
-## Bulk assignment
+## 一括割り当て
 
-Sometimes initializing many properties in the `mount()` method can feel verbose. To help with this, Livewire provides a convenient way to assign multiple properties at once via the `fill()` method. By passing an associative array of property names and their respective values, you can set several properties simultaneously and cut down on repetitive lines of code in `mount()`.
+`mount()`メソッド内で多くのプロパティを初期化するのは冗長に感じることがあります。これを助けるために、Livewireは`fill()`メソッドを介して複数のプロパティを一度に割り当てる便利な方法を提供します。プロパティ名とそれぞれの値の連想配列を渡すことで、複数のプロパティを同時に設定し、`mount()`内の冗長なコードを削減できます。
 
-For example:
+例えば：
 
 ```php
 <?php
@@ -66,13 +67,13 @@ class UpdatePost extends Component
 }
 ```
 
-Because `$post->only(...)` returns an associative array of model attributes and values based on the names you pass into it, the `$title` and `$description` properties will be initially set to the `title` and `description` of the `$post` model from the database without having to set each one individually.
+`$post->only(...)`が、渡された名前に基づいてモデル属性と値の連想配列を返すため、`$title`と`$description`プロパティは、データベースの`$post`モデルの`title`と`description`に初期設定されます。これにより、各プロパティを個別に設定する必要がなくなります。
 
-## Data binding
+## データバインディング
 
-Livewire supports two-way data binding through the `wire:model` HTML attribute. This allows you to easily synchronize data between component properties and HTML inputs, keeping your user interface and component state in sync.
+Livewireは、`wire:model` HTML属性を介して双方向データバインディングをサポートしています。これにより、コンポーネントプロパティとHTML入力の間でデータを簡単に同期させ、ユーザーインターフェースとコンポーネントの状態を同期させることができます。
 
-Let's use the `wire:model` directive to bind the `$todo` property in a `TodoList` component to a basic input element:
+`TodoList`コンポーネントの`$todo`プロパティを基本的な入力要素にバインドするために、`wire:model`ディレクティブを使用してみましょう。
 
 ```php
 <?php
@@ -112,15 +113,15 @@ class TodoList extends Component
 </div>
 ```
 
-In the above example, the text input's value will synchronize with the `$todo` property on the server when the "Add Todo" button is clicked.
+上記の例では、テキスト入力の値は、「Add Todo」ボタンがクリックされたときにサーバー上の`$todo`プロパティと同期されます。
 
-This is just scratching the surface of `wire:model`. For deeper information on data binding, check out our [documentation on forms](/docs/forms).
+これは`wire:model`のほんの表面をなぞったに過ぎません。データバインディングの詳細については、[フォームに関するドキュメント](/docs/forms)を参照してください。
 
-## Resetting properties
+## プロパティのリセット
 
-Sometimes, you may need to reset your properties back to their initial state after an action is performed by the user. In these cases, Livewire provides a `reset()` method that accepts one or more property names and resets their values to their initial state.
+時には、ユーザーによってアクションが実行された後にプロパティを初期状態にリセットする必要があるかもしれません。このような場合に、Livewireは1つまたは複数のプロパティ名を受け取り、それらの値を初期状態にリセットする`reset()`メソッドを提供します。
 
-In the example below, we can avoid code duplication by using `$this->reset()` to reset the `todo` field after the "Add Todo" button is clicked:
+以下の例では、「Add Todo」ボタンがクリックされた後に`todo`フィールドをリセットするために、`$this->reset()`を使用してコードの重複を避けることができます。
 
 ```php
 <?php
@@ -146,16 +147,16 @@ class ManageTodos extends Component
 }
 ```
 
-In the above example, after a user clicks "Add Todo", the input field holding the todo that has just been added will clear, allowing the user to write a new todo.
+上記の例では、「Add Todo」をクリックした後、追加されたばかりのtodoを保持している入力フィールドがクリアされ、新しいtodoを書き込むことができるようになります。
 
-> [!warning] `reset()` won't work on values set in `mount()`
-> `reset()` will reset a property to its state before the `mount()` method was called. If you initialized the property in `mount()` to a different value, you will need to reset the property manually.
+> [!warning] `reset()`は`mount()`で設定された値には機能しません
+> `reset()`は、`mount()`メソッドが呼び出される前の状態にプロパティをリセットします。`mount()`でプロパティを別の値に初期化した場合は、手動でプロパティをリセットする必要があります。
 
-## Pulling properties
+## プロパティの取得
 
-Alternatively, you can use the `pull()` method to both reset and retrieve the value in one operation.
+また、`pull()`メソッドを使用して、リセットと取得を1つの操作で実行することもできます。
 
-Here's the same example from above, but simplified with `pull()`:
+以下は、上記と同じ例ですが、`pull()`を使用して簡略化されています。
 
 ```php
 <?php
@@ -179,51 +180,51 @@ class ManageTodos extends Component
 }
 ```
 
-The above example is pulling a single value, but `pull()` can also be used to reset and retrieve (as a key-value pair) all or some properties:
+上記の例では、単一の値をプルしていますが、`pull()`はすべてまたは一部のプロパティをリセットして取得するためにも使用できます（キーと値のペアとして）：
 
 ```php
-// The same as $this->all() and $this->reset();
+// $this->all()と$this->reset()と同じ
 $this->pull();
 
-// The same as $this->only(...) and $this->reset(...);
+// $this->only(...)と$this->reset(...)と同じ
 $this->pull(['title', 'content']);
 ```
 
-## Supported property types
+## サポートされているプロパティタイプ
 
-Livewire supports a limited set of property types because of its unique approach to managing component data between server requests.
+Livewireは、サーバーリクエスト間でコンポーネントデータを管理する独自のアプローチのため、限られたセットのプロパティタイプをサポートしています。
 
-Each property in a Livewire component is serialized or "dehydrated" into JSON between requests, then "hydrated" from JSON back into PHP for the next request.
+Livewireコンポーネントの各プロパティは、リクエスト間でJSONにシリアル化または「脱水」され、次のリクエストのためにPHPに「再水和」されます。
 
-This two-way conversion process has certain limitations, restricting the types of properties Livewire can work with.
+この双方向変換プロセスには特定の制限があり、Livewireが操作できるプロパティのタイプが制限されます。
 
-### Primitive types
+### プリミティブタイプ
 
-Livewire supports primitive types such as strings, integers, etc. These types can be easily converted to and from JSON, making them ideal for use as properties in Livewire components.
+Livewireは、文字列や整数などのプリミティブタイプをサポートしています。これらのタイプはJSONへの変換とそこからの変換が容易であり、Livewireコンポーネントのプロパティとして使用するのに理想的です。
 
-Livewire supports the following primitive property types: `Array`, `String`, `Integer`, `Float`, `Boolean`, and `Null`.
+Livewireがサポートするプリミティブプロパティタイプは次のとおりです： `Array`, `String`, `Integer`, `Float`, `Boolean`, および `Null`。
 
 ```php
 class TodoList extends Component
 {
-    public $todos = []; // Array
+    public $todos = []; // 配列
 
-    public $todo = ''; // String
+    public $todo = ''; // 文字列
 
-    public $maxTodos = 10; // Integer
+    public $maxTodos = 10; // 整数
 
-    public $showTodos = false; // Boolean
+    public $showTodos = false; // 真偽値
 
-    public $todoFilter; // Null
+    public $todoFilter; // null
 }
 ```
 
-### Common PHP types
+### 一般的なPHPタイプ
 
-In addition to primitive types, Livewire supports common PHP object types used in Laravel applications. However, it's important to note that these types will be _dehydrated_ into JSON and _hydrated_ back to PHP on each request. This means that the property may not preserve run-time values such as closures. Also, information about the object such as class names may be exposed to JavaScript.
+プリミティブタイプに加えて、LivewireはLaravelアプリケーションで使用される一般的なPHPオブジェクトタイプもサポートしています。ただし、これらのタイプは各リクエストごとにJSONに「脱水」され、PHPに「再水和」されることに注意してください。つまり、クロージャなどの実行時値はプロパティに保持されません。また、クラス名などのオブジェクトに関する情報がJavaScriptに公開される可能性があります。
 
-Supported PHP types:
-| Type | Full Class Name |
+サポートされているPHPタイプ：
+| タイプ | 完全クラス名 |
 |------|-----------------|
 | BackedEnum | `BackedEnum` |
 | Collection | `Illuminate\Support\Collection` |
@@ -233,21 +234,21 @@ Supported PHP types:
 | Carbon | `Carbon\Carbon` |
 | Stringable | `Illuminate\Support\Stringable` |
 
-> [!warning] Eloquent Collections and Models
-> When storing Eloquent Collections and Models in Livewire properties, additional query constraints like select(...) will not be re-applied on subsequent requests.
+> [!warning] Eloquentコレクションとモデル
+> LivewireプロパティにEloquentコレクションとモデルを格納する場合、select(...)のような追加のクエリ制約は、後続のリクエストでは再適用されません。
 >
-> See [Eloquent constraints aren't preserved between requests](#eloquent-constraints-arent-preserved-between-requests) for more details
+> 詳細については、[リクエスト間でEloquent制約が保持されない](#eloquent-constraints-arent-preserved-between-requests)を参照してください。
 
-Here's a quick example of setting properties as these various types:
+これらのさまざまなタイプとしてプロパティを設定する例を次に示します。
 
 ```php
 public function mount()
 {
-    $this->todos = collect([]); // Collection
+    $this->todos = collect([]); // コレクション
 
-    $this->todos = Todos::all(); // Eloquent Collection
+    $this->todos = Todos::all(); // Eloquentコレクション
 
-    $this->todo = Todos::first(); // Model
+    $this->todo = Todos::first(); // モデル
 
     $this->date = new DateTime('now'); // DateTime
 
@@ -257,20 +258,20 @@ public function mount()
 }
 ```
 
-### Supporting custom types
+### カスタムタイプのサポート
 
-Livewire allows your application to support custom types through two powerful mechanisms:
+Livewireは、2つの強力なメカニズムを介してアプリケーションがカスタムタイプをサポートすることを許可します。
 
 * Wireables
 * Synthesizers
 
-Wireables are simple and easy to use for most applications, so we'll explore them below. If you're an advanced user or package author wanting more flexibility, [Synthesizers are the way to go](/docs/synthesizers).
+Wireablesはほとんどのアプリケーションにとってシンプルで使いやすいものであるため、以下で詳しく説明します。より柔軟性を求める上級ユーザーやパッケージ作成者向けには、[Synthesizersが適しています](/docs/synthesizers)。
 
 #### Wireables
 
-Wireables are any class in your application that implements the `Wireable` interface.
+Wireablesは、アプリケーション内の`Wireable`インターフェースを実装する任意のクラスです。
 
-For example, let's imagine you have a `Customer` object in your application that contains the primary data about a customer:
+たとえば、アプリケーションに顧客に関する主要なデータを含む`Customer`オブジェクトがあると仮定します。
 
 ```php
 class Customer
@@ -286,7 +287,7 @@ class Customer
 }
 ```
 
-Attempting to set an instance of this class to a Livewire component property will result in an error telling you that the `Customer` property type isn't supported:
+このクラスのインスタンスをLivewireコンポーネントプロパティに設定しようとすると、`Customer`プロパティタイプがサポートされていないというエラーが発生します。
 
 ```php
 class ShowCustomer extends Component
@@ -300,7 +301,7 @@ class ShowCustomer extends Component
 }
 ```
 
-However, you can solve this by implementing the `Wireable` interface and adding a `toLivewire()` and `fromLivewire()` method to your class. These methods tell Livewire how to turn properties of this type into JSON and back again:
+ただし、`Wireable`インターフェースを実装し、クラスに`toLivewire()`メソッドと`fromLivewire()`メソッドを追加することで、これを解決できます。これらのメソッドは、LivewireにこのタイプのプロパティをJSONに変換し、再びPHPに戻す方法を指示します。
 
 ```php
 use Livewire\Wireable;
@@ -334,27 +335,27 @@ class Customer implements Wireable
 }
 ```
 
-Now you can freely set `Customer` objects on your Livewire components and Livewire will know how to convert these objects into JSON and back into PHP.
+これで、`Customer`オブジェクトをLivewireコンポーネントに自由に設定できるようになり、LivewireはこれらのオブジェクトをJSONに変換し、再びPHPに戻す方法を知っています。
 
-As mentioned earlier, if you want to support types more globally and powerfully, Livewire offers Synthesizers, its advanced internal mechanism for handling different property types. [Learn more about Synthesizers](/docs/synthesizers).
+前述のように、よりグローバルで強力なタイプサポートを提供するために、LivewireはSynthesizersを提供しています。これは、さまざまなプロパティタイプを処理するための高度な内部メカニズムです。 [Synthesizersの詳細](/docs/synthesizers)をご覧ください。
 
-## Accessing properties from JavaScript
+## JavaScriptからのプロパティへのアクセス
 
-Because Livewire properties are also available in the browser via JavaScript, you can access and manipulate their JavaScript representations from [AlpineJS](https://alpinejs.dev/).
+Livewireプロパティはブラウザでも利用可能なため、AlpineJSからそのJavaScript表現にアクセスし、操作できます。
 
-Alpine is a lightweight JavaScript library that is included with Livewire. Alpine provides a way to build lightweight interactions into your Livewire components without making full server roundtrips.
+Alpineは、Livewireに含まれる軽量のJavaScriptライブラリです。 Alpineは、完全なサーバー往復を行うことなく、Livewireコンポーネントに軽量のインタラクションを構築する方法を提供します。
 
-Internally, Livewire's frontend is built on top of Alpine. In fact, every Livewire component is actually an Alpine component under-the-hood. This means that you can freely utilize Alpine inside your Livewire components.
+内部的に、LivewireのフロントエンドはAlpineの上に構築されています。 実際、すべてのLivewireコンポーネントは、実際にはAlpineコンポーネントです。 つまり、Livewireコンポーネント内でAlpineを自由に利用できるということです。
 
-The rest of this page assumes a basic familiarity with Alpine. If you're unfamiliar with Alpine, [take a look at the Alpine documentation](https://alpinejs.dev/docs).
+このページの残りの部分では、Alpineに関する基本的な知識があることを前提としています。 Alpineに不慣れな場合は、[Alpineのドキュメント](https://alpinejs.dev/docs)を参照してください。
 
-### Accessing properties
+### プロパティへのアクセス
 
-Livewire exposes a magic `$wire` object to Alpine. You can access the `$wire` object from any Alpine expression inside your Livewire component.
+LivewireはAlpineに`$wire`というマジックオブジェクトを公開しています。 この`$wire`オブジェクトには、Livewireコンポーネント内の任意のAlpine式からアクセスできます。
 
-The `$wire` object can be treated like a JavaScript version of your Livewire component. It has all the same properties and methods as the PHP version of your component, but also contains a few dedicated methods to perform specific functions in your template.
+`$wire`オブジェクトは、JavaScript版のLivewireコンポーネントのように扱うことができます。 PHP版のコンポーネントと同じプロパティとメソッドをすべて持っていますが、テンプレート内で特定の機能を実行するためのいくつかの専用メソッドも含まれています。
 
-For example, we can use `$wire` to show a live character count of the `todo` input field:
+たとえば、`$wire`を使用して`todo`入力フィールドのライブ文字数を表示してみましょう。
 
 ```blade
 <div>
@@ -364,9 +365,9 @@ For example, we can use `$wire` to show a live character count of the `todo` inp
 </div>
 ```
 
-As the user types in the field, the character length of the current todo being written will be shown and live-updated on the page, all without sending a network request to the server.
+ユーザーがフィールドに入力すると、現在書き込まれているtodoの文字数がページ上に表示され、ライブで更新されます。これにより、サーバーへのネットワークリクエストを送信することなく、リアルタイムでのフィードバックが可能になります。
 
-If you prefer, you can use the more explicit `.get()` method to accomplish the same thing:
+好みに応じて、同じことを達成するためにより明示的な`.get()`メソッドを使用することもできます。
 
 ```blade
 <div>
@@ -376,11 +377,11 @@ If you prefer, you can use the more explicit `.get()` method to accomplish the s
 </div>
 ```
 
-### Manipulating properties
+### プロパティの操作
 
-Similarly, you can manipulate your Livewire component properties in JavaScript using `$wire`.
+同様に、JavaScriptを使用して`$wire`を介してLivewireコンポーネントプロパティを操作できます。
 
-For example, let's add a "Clear" button to the `TodoList` component to allow the user to reset the input field using only JavaScript:
+たとえば、`TodoList`コンポーネントに「クリア」ボタンを追加して、ユーザーがJavaScriptのみを使用して入力フィールドをリセットできるようにしてみましょう。
 
 ```blade
 <div>
@@ -390,30 +391,31 @@ For example, let's add a "Clear" button to the `TodoList` component to allow the
 </div>
 ```
 
-After the user clicks "Clear", the input will be reset to an empty string, without sending a network request to the server.
+ユーザーが「クリア」をクリックすると、入力は空の文字列にリセットされ、サーバーへのネットワークリクエストを送信することなく、即座にフィードバックが得られます。
 
-On the subsequent request, the server-side value of `$todo` will be updated and synchronized.
+その後のリクエストで、サーバー側の`$todo`の値が更新され、同期されます。
 
-If you prefer, you can also use the more explicit `.set()` method for setting properties client-side. However, you should note that using `.set()` by default immediately triggers a network request and synchronizes the state with the server. If that is desired, then this is an excellent API:
+好みに応じて、クライアント側のプロパティを設定するために、より明示的な`.set()`メソッドを使用することもできます。ただし、デフォルトで`.set()`を使用すると、ネットワークリクエストが即座にトリガーされ、サーバーと状態が同期されることに注意してください。これが望ましい場合は、これは優れたAPIです。
 
 ```blade
 <button x-on:click="$wire.set('todo', '')">Clear</button>
 ```
 
-In order to update the property without sending a network request to the server, you can pass a third bool parameter. This will defer the network request and on a subsequent request, the state will be synchronized on the server-side:
+ネットワークリクエストをサーバーに送信せずにプロパティを更新するには、3番目のブール値のパラメータを渡すことができます。これにより、ネットワークリクエストが遅延され、次のリクエストでサーバー側で状態が同期されます。
+
 ```blade
 <button x-on:click="$wire.set('todo', '', false)">Clear</button>
 ```
 
-## Security concerns
+## セキュリティに関する懸念
 
-While Livewire properties are a powerful feature, there are a few security considerations that you should be aware of before using them.
+Livewireプロパティは強力な機能ですが、使用する前に認識しておくべきいくつかのセキュリティ上の考慮事項があります。
 
-In short, always treat public properties as user input — as if they were request input from a traditional endpoint. In light of this, it's essential to validate and authorize properties before persisting them to a database — just like you would do when working with request input in a controller.
+簡単に言うと、常にpublicプロパティをユーザー入力として扱い、従来のエンドポイントからのリクエスト入力として扱う必要があります。この観点から、データベースに永続化する前に、プロパティを検証および認可することが重要です。これは、コントローラーでリクエスト入力を扱うときと同様です。
 
-### Don't trust property values
+### プロパティ値を信頼しない
 
-To demonstrate how neglecting to authorize and validate properties can introduce security holes in your application, the following `UpdatePost` component is vulnerable to attack:
+プロパティの認可と検証を怠ることでアプリケーションにセキュリティホールが生じる様子を示すために、次の`UpdatePost`コンポーネントは攻撃に対して脆弱です。
 
 ```php
 <?php
@@ -464,11 +466,9 @@ class UpdatePost extends Component
 </form>
 ```
 
-At first glance, this component may look completely fine. But, let's walk through how an attacker could use the component to do unauthorized things in your application.
+一見すると、このコンポーネントは完全に正常に見えます。しかし、攻撃者がこのコンポーネントを使用してアプリケーション内で不正な操作を行う方法を見てみましょう。
 
-Because we are storing the `id` of the post as a public property on the component, it can be manipulated on the client just the same as the `title` and `content` properties.
-
-It doesn't matter that we didn't write an input with `wire:model="id"`. A malicious user can easily change the view to the following using their browser DevTools:
+`id`をプロパティとして公開しているため、クライアント側で`id`を変更することができます。これにより、悪意のあるユーザーは、次のようにブラウザのDevToolsを使用してビューを簡単に変更できます。
 
 ```blade
 <form wire:submit="update">
@@ -480,16 +480,16 @@ It doesn't matter that we didn't write an input with `wire:model="id"`. A malici
 </form>
 ```
 
-Now the malicious user can update the `id` input to the ID of a different post model. When the form is submitted and `update()` is called, `Post::findOrFail()` will return and update a post the user is not the owner of.
+これで、悪意のあるユーザーは、別の投稿モデルのIDに`id`入力を更新できます。フォームが送信され、`update()`が呼び出されると、`Post::findOrFail()`は、ユーザーが所有していない投稿を返して更新します。
 
-To prevent this kind of attack, we can use one or both of the following strategies:
+この種の攻撃を防ぐために、次のいずれかまたは両方の戦略を使用できます。
 
-* Authorize the input
-* Lock the property from updates
+* 入力を認可する
+* プロパティの更新をロックする
 
-#### Authorizing the input
+#### 入力の認可
 
-Because `$id` can be manipulated client-side with something like `wire:model`, just like in a controller, we can use [Laravel's authorization](https://laravel.com/docs/authorization) to make sure the current user can update the post:
+`wire:model`のようにクライアント側で変更可能な`$id`は、Laravelの[認可](https://laravel.com/docs/authorization)を使用して、現在のユーザーが投稿を更新できるかどうかを確認できます。
 
 ```php
 public function update()
@@ -502,11 +502,11 @@ public function update()
 }
 ```
 
-If a malicious user mutates the `$id` property, the added authorization will catch it and throw an error.
+悪意のあるユーザーが`$id`プロパティを変更しても、追加された認可により、それがキャッチされてエラーがスローされます。
 
-#### Locking the property
+#### プロパティのロック
 
-Livewire also allows you to "lock" properties in order to prevent properties from being modified on the client-side. You can "lock" a property from client-side manipulation using the `#[Locked]` attribute:
+Livewireは、クライアント側でのプロパティの変更を防ぐためにプロパティを「ロック」することもできます。プロパティをクライアント側の操作からロックするには、`#[Locked]`属性を使用します。
 
 ```php
 use Livewire\Attributes\Locked;
@@ -521,15 +521,15 @@ class UpdatePost extends Component
 }
 ```
 
-Now, if a user tries to modify `$id` on the front end, an error will be thrown.
+これで、ユーザーがフロントエンドで`$id`を変更しようとすると、エラーがスローされます。
 
-By using `#[Locked]`, you can assume this property has not been manipulated anywhere outside your component's class.
+`#[Locked]`を使用することで、このプロパティがコンポーネントのクラスの外部で変更されていないと仮定できます。
 
-For more information on locking properties, [consult the Locked properties documentation](/docs/locked).
+プロパティのロックに関する詳細は、[ロックされたプロパティのドキュメント](/docs/locked)を参照してください。
 
-#### Eloquent models and locking
+#### Eloquentモデルとロック
 
-When an Eloquent model is assigned to a Livewire component property, Livewire will automatically lock the property and ensure the ID isn't changed, so that you are safe from these kinds of attacks:
+EloquentモデルがLivewireコンポーネントプロパティに割り当てられると、Livewireは自動的にプロパティをロックし、IDが変更されないようにします。これにより、この種の攻撃から保護されます。
 
 ```php
 <?php
@@ -569,11 +569,11 @@ class UpdatePost extends Component
 }
 ```
 
-### Properties expose system information to the browser
+### プロパティはシステム情報をブラウザに公開します
 
-Another essential thing to remember is that Livewire properties are serialized or "dehydrated" before they are sent to the browser. This means that their values are converted to a format that can be sent over the wire and understood by JavaScript. This format can expose information about your application to the browser, including the names and class names of your properties.
+もう1つ重要なことは、Livewireプロパティはブラウザに送信される前にシリアル化または「脱水」されることです。これにより、プロパティの値がワイヤー越しに送信され、JavaScriptによって理解される形式に変換されます。この形式は、アプリケーションに関する情報、プロパティの名前やクラス名を含む可能性があります。
 
-For example, suppose you have a Livewire component that defines a public property named `$post`. This property contains an instance of a `Post` model from your database. In this case, the dehydrated value of this property sent over the wire might look something like this:
+たとえば、Livewireコンポーネントに`$post`という名前のpublicプロパティが定義されているとします。このプロパティには、データベースから取得した`Post`モデルのインスタンスが含まれています。この場合、このプロパティの脱水された値は、次のようになります。
 
 ```json
 {
@@ -584,9 +584,9 @@ For example, suppose you have a Livewire component that defines a public propert
 }
 ```
 
-As you can see, the dehydrated value of the `$post` property includes the class name of the model (`App\Models\Post`) as well as the ID and any relationships that have been eager-loaded.
+ご覧のとおり、`$post`プロパティの脱水された値には、モデルのクラス名（`App\Models\Post`）やID、事前にロードされたリレーションシップなどが含まれています。
 
-If you don't want to expose the class name of the model, you can use Laravel's "morphMap" functionality from a service provider to assign an alias to a model class name:
+クラス名を公開したくない場合は、サービスプロバイダからLaravelの「morphMap」機能を使用して、モデルクラス名にエイリアスを割り当てることができます。
 
 ```php
 <?php
@@ -607,7 +607,7 @@ class AppServiceProvider extends ServiceProvider
 }
 ```
 
-Now, when the Eloquent model is "dehydrated" (serialized), the original class name won't be exposed, only the "post" alias:
+これで、Eloquentモデルが「脱水」されると、元のクラス名は公開されず、代わりに「post」エイリアスだけが公開されます。
 
 ```json
 {
@@ -619,13 +619,13 @@ Now, when the Eloquent model is "dehydrated" (serialized), the original class na
 }
 ```
 
-### Eloquent constraints aren't preserved between requests
+### Eloquent制約はリクエスト間で保持されません
 
-Typically, Livewire is able to preserve and recreate server-side properties between requests; however, there are certain scenarios where preserving values are impossible between requests.
+通常、Livewireはリクエスト間でサーバー側のプロパティを保持および再作成できます。ただし、リクエスト間で値を保持できない特定のシナリオがあります。
 
-For example, when storing Eloquent collections as Livewire properties, additional query constraints like `select(...)` will not be re-applied on subsequent requests.
+たとえば、LivewireプロパティとしてEloquentコレクションを格納する場合、`select(...)`のような追加のクエリ制約は、後続のリクエストでは再適用されません。
 
-To demonstrate, consider the following `ShowTodos` component with a `select()` constraint applied to the `Todos` Eloquent collection:
+次の`ShowTodos`コンポーネントを考えてみてください。このコンポーネントには、`Todos` Eloquentコレクションに対して`select()`制約が適用されています。
 
 ```php
 <?php
@@ -654,15 +654,15 @@ class ShowTodos extends Component
 }
 ```
 
-When this component is initially loaded, the `$todos` property will be set to an Eloquent collection of the user's todos; however, only the `title` and `content` fields of each row in the database will have been queried and loaded into each of the models.
+このコンポーネントが最初に読み込まれると、`$todos`プロパティはユーザーのtodosのEloquentコレクションに設定されます。ただし、各データベース行の`title`と`content`フィールドのみがクエリされ、モデルにロードされます。
 
-When Livewire _hydrates_ the JSON of this property back into PHP on a subsequent request, the select constraint will have been lost.
+Livewireが後続のリクエストでこのプロパティのJSONをPHPに「再水和」するとき、select制約は失われます。
 
-To ensure the integrity of Eloquent queries, we recommend that you use [computed properties](/docs/computed-properties) instead of properties.
+Eloquentクエリの整合性を確保するために、プロパティの代わりに[計算プロパティ](/docs/computed-properties)を使用することをお勧めします。
 
-Computed properties are methods in your component marked with the `#[Computed]` attribute. They can be accessed as a dynamic property that isn't stored as part of the component's state but is instead evaluated on-the-fly.
+計算プロパティは、`#[Computed]`属性でマークされたコンポーネント内のメソッドです。これらは、コンポーネントの状態の一部として保存されず、オンザフライで評価される動的プロパティとしてアクセスできます。
 
-Here's the above example re-written using a computed property:
+次のように、計算プロパティを使用して上記の例を書き換えます。
 
 ```php
 <?php
@@ -691,7 +691,7 @@ class ShowTodos extends Component
 }
 ```
 
-Here's how you would access these _todos_ from the Blade view:
+これらの_ todos_にBladeビューからアクセスする方法は次のとおりです。
 
 ```blade
 <ul>
@@ -701,9 +701,9 @@ Here's how you would access these _todos_ from the Blade view:
 </ul>
 ```
 
-Notice, inside your views, you can only access computed properties on the `$this` object like so: `$this->todos`.
+ビュー内では、常に`$this`オブジェクトのように、`$this->todos`の計算プロパティにアクセスできることに注意してください。
 
-You can also access `$todos` from inside your class. For example, if you had a `markAllAsComplete()` action:
+クラス内からも`$todos`にアクセスできます。たとえば、`markAllAsComplete()`アクションがある場合：
 
 ```php
 <?php
@@ -737,8 +737,8 @@ class ShowTodos extends Component
 }
 ```
 
-You might wonder why not just call `$this->todos()` as a method directly where you need to? Why use `#[Computed]` in the first place?
+なぜ必要なときに直接`$this->todos()`メソッドを呼び出さないのか疑問に思うかもしれません。なぜ`#[Computed]`を使用するのか？
 
-The reason is that computed properties have a performance advantage, since they are automatically cached after their first usage during a single request. This means you can freely access `$this->todos` within your component and be assured that the actual method will only be called once, so that you don't run an expensive query multiple times in the same request.
+その理由は、計算プロパティにはパフォーマンス上の利点があるからです。なぜなら、リクエスト中に最初に使用された後は自動的にキャッシュされるからです。これにより、コンポーネント内で自由に`$this->todos`にアクセスでき、実際のメソッドが複数回呼び出されることはなく、同じリクエスト内で高価なクエリが複数回実行されることがありません。
 
-For more information, [visit the computed properties documentation](/docs/computed-properties).
+詳細については、[計算プロパティのドキュメント](/docs/computed-properties)をご覧ください。

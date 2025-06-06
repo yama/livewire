@@ -1,26 +1,25 @@
+Livewireを使うと、まるでサーバーサイドのPHPクラスを直接Webブラウザに接続しているかのように感じられます。ボタンを押すだけでサーバーサイドの関数を直接呼び出せるなど、この“錯覚”を支える仕組みが用意されています。しかし、実際にはこれはあくまで“錯覚”にすぎません。
 
-Using Livewire feels like attaching a server-side PHP class directly to a web browser. Things like calling server-side functions directly from button presses support this illusion. But in reality, it is just that: an illusion.
+実際のLivewireは、一般的なWebアプリケーションとよく似た動作をしています。静的なHTMLをブラウザにレンダリングし、ブラウザ上のイベントを監視し、サーバーサイドのコードを呼び出すためにAJAXリクエストを送信します。
 
-In the background, Livewire actually behaves much more like a standard web application. It renders static HTML to the browser, listens for browser events, then makes AJAX requests to invoke server-side code.
+Livewireがサーバーに送る各AJAXリクエストは「ステートレス」（＝コンポーネントの状態を保持する長時間稼働のバックエンドプロセスが存在しない）であるため、Livewireは更新のたびにコンポーネントの直近の状態を再現する必要があります。
 
-Because each AJAX request Livewire makes to the server is "stateless" (meaning there isn't a long running backend process keeping the state of a component alive), Livewire must re-create the last-known state of a component before making any updates.
+このため、Livewireはサーバーサイドで更新が発生するたびにPHPコンポーネントの「スナップショット」を取得し、次回のリクエスト時にそのスナップショットからコンポーネントを再生成（または“再開”）できるようにしています。
 
-It does this by taking "snapshots" of the PHP component after each server-side update so that the component can be re-created or _resumed_ on the next request.
+このドキュメントでは、スナップショットを取得するプロセスを「デハイドレーション」、スナップショットからコンポーネントを再生成するプロセスを「ハイドレーション」と呼びます。
 
-Throughout this documentation, we will refer to the process of taking the snapshot as "dehydration" and the process of re-creating a component from a snapshot as "hydration".
+## デハイドレーション（Dehydrating）
 
-## Dehydrating
+Livewireがサーバーサイドコンポーネントを「デハイドレート」する際、主に次の2つの処理を行います：
 
-When Livewire _dehydrates_ a server-side component, it does two things:
+* コンポーネントのテンプレートをHTMLにレンダリングする
+* コンポーネントのJSONスナップショットを作成する
 
-* Renders the component's template to HTML
-* Creates a JSON snapshot of the component
+### HTMLのレンダリング
 
-### Rendering HTML
+コンポーネントがマウントされた直後や更新が発生した後、Livewireはコンポーネントの`render()`メソッドを呼び出し、Bladeテンプレートを生のHTMLに変換します。
 
-After a component is mounted or an update has been made, Livewire calls a component's `render()` method to convert the Blade template to raw HTML.
-
-Take the following `Counter` component for example:
+例えば、次のような`Counter`コンポーネントを考えてみましょう：
 
 ```php
 class Counter extends Component

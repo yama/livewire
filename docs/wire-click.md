@@ -1,7 +1,7 @@
+<!-- filepath: /home/yamamoto/oss/translations/livewire/docs/wire-click.md -->
+Livewireでは、ページ上の特定の要素がクリックされたときにコンポーネントのメソッド（アクション）を呼び出すためのシンプルなディレクティブ `wire:click` を提供しています。
 
-Livewire provides a simple `wire:click` directive for calling component methods (aka actions) when a user clicks a specific element on the page.
-
-For example, given the `ShowInvoice` component below:
+例えば、以下の `ShowInvoice` コンポーネントを考えてみましょう。
 
 ```php
 <?php
@@ -24,7 +24,7 @@ class ShowInvoice extends Component
 }
 ```
 
-You can trigger the `download()` method from the class above when a user clicks a "Download Invoice" button by adding `wire:click="download"`:
+上記のクラスで「Download Invoice」ボタンがクリックされたときに `download()` メソッドを実行したい場合、ボタンに `wire:click="download"` を追加します。
 
 ```html
 <button type="button" wire:click="download"> <!-- [tl! highlight] -->
@@ -32,14 +32,14 @@ You can trigger the `download()` method from the class above when a user clicks 
 </button>
 ```
 
-## Using `wire:click` on links
+## `wire:click` をリンクに使う場合
 
-When using `wire:click` on `<a>` tags, you must append `.prevent` to prevent the default handling of a link in the browser. Otherwise, the browser will visit the provided link and update the page's URL.
+`<a>` タグで `wire:click` を使う場合は、ブラウザのデフォルトのリンク動作を防ぐために `.prevent` を付与する必要があります。これを付けないと、ブラウザがリンク先に遷移し、ページのURLが更新されてしまいます。
 
 ```html
 <a href="#" wire:click.prevent="...">
 ```
 
-## Going deeper
+## さらに詳しく
 
-The `wire:click` directive is just one of many different available event listeners in Livewire. For full documentation on its (and other event listeners) capabilities, visit [the Livewire actions documentation page](/docs/actions).
+`wire:click` はLivewireで利用できる多くのイベントリスナーのひとつです。他のイベントリスナーも含めた詳細な使い方は、[Livewireアクションのドキュメントページ](/docs/actions) をご覧ください。

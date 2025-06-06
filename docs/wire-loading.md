@@ -1,57 +1,54 @@
+ローディングインジケーターは、良いユーザーインターフェースを作る上で重要な要素です。サーバーへのリクエスト中に視覚的なフィードバックを与えることで、処理中であることをユーザーに伝えられます。
 
-Loading indicators are an important part of crafting good user interfaces. They give users visual feedback when a request is being made to the server, so they know they are waiting for a process to complete.
+## 基本的な使い方
 
-## Basic usage
+Livewireでは、`wire:loading` を使うことでローディングインジケーターを簡単かつ強力に制御できます。`wire:loading` を要素に追加すると、その要素はデフォルトで非表示（CSSの `display: none`）になり、サーバーへのリクエスト時に表示されます。
 
-Livewire provides a simple yet extremely powerful syntax for controlling loading indicators: `wire:loading`. Adding `wire:loading` to any element will hide it by default (using `display: none` in CSS) and show it when a request is sent to the server.
-
-Below is a basic example of a `CreatePost` component's form with `wire:loading` being used to toggle a loading message:
+以下は、`CreatePost` コンポーネントのフォームで `wire:loading` を使ってローディングメッセージを表示する基本例です。
 
 ```blade
 <form wire:submit="save">
     <!-- ... -->
 
-    <button type="submit">Save</button>
+    <button type="submit">保存</button>
 
     <div wire:loading> <!-- [tl! highlight:2] -->
-        Saving post...
+        投稿を保存中...
     </div>
 </form>
 ```
 
-When a user presses "Save", the "Saving post..." message will appear below the button while the "save" action is being executed. The message will disappear when the response is received from the server and processed by Livewire.
+「保存」ボタンが押されると、「投稿を保存中...」メッセージがボタンの下に表示され、`save` アクションの実行中のみ表示されます。レスポンスが返ってくると自動的に非表示になります。
 
-### Removing elements
+### 要素の非表示（remove）
 
-Alternatively, you can append `.remove` for the inverse effect, showing an element by default and hiding it during requests to the server:
+逆に、`.remove` を付与すると、デフォルトで要素を表示し、サーバーへのリクエスト中だけ非表示にできます。
 
 ```blade
 <div wire:loading.remove>...</div>
 ```
 
-## Toggling classes
+## クラスのトグル
 
-In addition to toggling the visibility of entire elements, it's often useful to change the styling of an existing element by toggling CSS classes on and off during requests to the server. This technique can be used for things like changing background colors, lowering opacity, triggering spinning animations, and more.
-
-Below is a simple example of using the [Tailwind](https://tailwindcss.com/) class `opacity-50` to make the "Save" button fainter while the form is being submitted:
+要素全体の表示・非表示だけでなく、リクエスト中に特定のCSSクラスを付与・削除してスタイルを変えることも可能です。例えば、フォーム送信中に「保存」ボタンの透明度を下げる例です。
 
 ```blade
-<button wire:loading.class="opacity-50">Save</button>
+<button wire:loading.class="opacity-50">保存</button>
 ```
 
-Like toggling an element, you can perform the inverse class operation by appending `.remove` to the `wire:loading` directive. In the example below, the button's `bg-blue-500` class will be removed when the "Save" button is pressed:
+逆に、`.remove` を付与すると、リクエスト中だけクラスを削除できます。下記の例では、ボタンの `bg-blue-500` クラスが「保存」ボタン押下時に一時的に外れます。
 
 ```blade
 <button class="bg-blue-500" wire:loading.class.remove="bg-blue-500">
-    Save
+    保存
 </button>
 ```
 
-## Toggling attributes
+## 属性のトグル
 
-By default, when a form is submitted, Livewire will automatically disable the submit button and add the `readonly` attribute to each input element while the form is being processed.
+デフォルトで、フォーム送信時はLivewireが自動的に送信ボタンを無効化し、各入力欄に `readonly` 属性を付与します。
 
-However, in addition to this default behavior, Livewire offers the `.attr` modifier to allow you to toggle other attributes on an element or toggle attributes on elements that are outside of forms:
+さらに、`.attr` モディファイアを使えば、他の属性もトグルしたり、フォーム外の要素にも属性を付与できます。
 
 ```blade
 <button
@@ -59,41 +56,41 @@ However, in addition to this default behavior, Livewire offers the `.attr` modif
     wire:click="remove"
     wire:loading.attr="disabled"
 >
-    Remove
+    削除
 </button>
 ```
 
-Because the button above isn't a submit button, it won't be disabled by Livewire's default form handling behavior when pressed. Instead, we manually added `wire:loading.attr="disabled"` to achieve this behavior.
+上記のボタンは送信ボタンではないため、Livewireのデフォルト動作では無効化されませんが、`wire:loading.attr="disabled"` を追加することで同様の挙動を実現できます。
 
-## Targeting specific actions
+## 特定のアクションを対象にする
 
-By default, `wire:loading` will be triggered whenever a component makes a request to the server.
+デフォルトでは、`wire:loading` はコンポーネントがサーバーにリクエストを送るたびにトリガーされます。
 
-However, in components with multiple elements that can trigger server requests, you should scope your loading indicators down to individual actions.
+しかし、サーバーリクエストをトリガーする要素が複数あるコンポーネントでは、ローディングインジケーターを個々のアクションにスコープするべきです。
 
-For example, consider the following "Save post" form. In addition to a "Save" button that submits the form, there might also be a "Remove" button that executes a "remove" action on the component.
+例えば、以下の「投稿を保存」フォームを考えてみてください。「保存」ボタンの他に、コンポーネントの「remove」アクションを実行する「削除」ボタンもあります。
 
-By adding `wire:target` to the following `wire:loading` element, you can instruct Livewire to only show the loading message when the "Remove" button is clicked:
+以下のように `wire:target` を追加することで、特定のアクションにのみローディングメッセージを表示できます。
 
 ```blade
 <form wire:submit="save">
     <!-- ... -->
 
-    <button type="submit">Save</button>
+    <button type="submit">保存</button>
 
-    <button type="button" wire:click="remove">Remove</button>
+    <button type="button" wire:click="remove">削除</button>
 
     <div wire:loading wire:target="remove">  <!-- [tl! highlight:2] -->
-        Removing post...
+        投稿を削除中...
     </div>
 </form>
 ```
 
-When the above "Remove" button is pressed, the "Removing post..." message will be displayed to the user. However, the message will not be displayed when the "Save" button is pressed.
+上記の「削除」ボタンが押されると、「投稿を削除中...」メッセージが表示されますが、「保存」ボタンが押されたときには表示されません。
 
-### Targeting multiple actions
+### 複数のアクションを対象にする
 
-You may find yourself in a situation where you would like `wire:loading` to react to some, but not all, actions on a page. In these cases you can pass multiple actions into `wire:target` separated by a comma. For example:
+ページ上のいくつかのアクションに対してのみ `wire:loading` を反応させたい場合、カンマで区切って複数のアクションを `wire:target` に渡すことができます。例えば：
 
 ```blade
 <form wire:submit="save">
@@ -101,21 +98,21 @@ You may find yourself in a situation where you would like `wire:loading` to reac
 
     <!-- ... -->
 
-    <button type="submit">Save</button>
+    <button type="submit">保存</button>
 
-    <button type="button" wire:click="remove">Remove</button>
+    <button type="button" wire:click="remove">削除</button>
 
     <div wire:loading wire:target="save, remove">  <!-- [tl! highlight:2] -->
-        Updating post...
+        投稿を更新中...
     </div>
 </form>
 ```
 
-The loading indicator ("Updating post...") will now only be shown when the "Remove" or "Save" button are pressed, and not when the `$title` field is being sent to the server.
+ローディングインジケーター（「投稿を更新中...」）は、今や「削除」または「保存」ボタンが押されたときのみ表示され、`$title` フィールドがサーバーに送信されるときには表示されません。
 
-### Targeting action parameters
+### アクションのパラメータを対象にする
 
-In situations where the same action is triggered with different parameters from multiple places on a page, you can further scope `wire:target` to a specific action by passing in additional parameters. For example, consider the following scenario where a "Remove" button exists for each post on the page:
+同じアクションがページ上の複数の場所から異なるパラメータでトリガーされる場合、追加のパラメータを渡すことで `wire:target` を特定のアクションにさらにスコープできます。例えば、ページ上の各投稿に「削除」ボタンがあるシナリオを考えてみてください。
 
 ```blade
 <div>
@@ -123,25 +120,25 @@ In situations where the same action is triggered with different parameters from 
         <div wire:key="{{ $post->id }}">
             <h2>{{ $post->title }}</h2>
 
-            <button wire:click="remove({{ $post->id }})">Remove</button>
+            <button wire:click="remove({{ $post->id }})">削除</button>
 
             <div wire:loading wire:target="remove({{ $post->id }})">  <!-- [tl! highlight:2] -->
-                Removing post...
+                投稿を削除中...
             </div>
         </div>
     @endforeach
 </div>
 ```
 
-Without passing `{{ $post->id }}` to `wire:target="remove"`, the "Removing post..." message would show when any of the buttons on the page are clicked.
+`wire:target="remove"` に `{{ $post->id }}` を渡さなければ、「投稿を削除中...」メッセージはページ上の任意のボタンがクリックされたときに表示されます。
 
-However, because we are passing in unique parameters to each instance of `wire:target`, Livewire will only show the loading message when the matching parameters are passed to the "remove" action.
+しかし、各インスタンスの `wire:target` にユニークなパラメータを渡すことで、Livewire はマッチするパラメータが「削除」アクションに渡されたときのみローディングメッセージを表示します。
 
-### Targeting property updates
+### プロパティの更新を対象にする
 
-Livewire also allows you to target specific component property updates by passing the property's name to the `wire:target` directive.
+Livewire は、プロパティの名前を `wire:target` ディレクティブに渡すことで、特定のコンポーネントプロパティの更新を対象にすることも可能です。
 
-Consider the following example where a form input named `username` uses `wire:model.live` for real-time validation as a user types:
+例えば、ユーザーが入力するたびにリアルタイムでバリデーションを行う `username` という名前のフォーム入力を考えてみてください。
 
 ```blade
 <form wire:submit="save">
@@ -149,36 +146,36 @@ Consider the following example where a form input named `username` uses `wire:mo
     @error('username') <span>{{ $message }}</span> @enderror
 
     <div wire:loading wire:target="username"> <!-- [tl! highlight:2] -->
-        Checking availability of username...
+        ユーザー名の使用可能性を確認中...
     </div>
 
     <!-- ... -->
 </form>
 ```
 
-The "Checking availability..." message will show when the server is updated with the new username as the user types into the input field.
+サーバーがユーザー名の新しい値で更新されると、入力フィールドにユーザーがタイプするたびに「確認中...」メッセージが表示されます。
 
-### Excluding specific loading targets
+### 特定のローディングターゲットを除外する
 
-Sometimes you may wish to display a loading indicator for every Livewire request _except_ a specific property or action. In these cases you can use the `wire:target.except` modifier like so:
+すべてのLivewireリクエストに対してローディングインジケーターを表示したいが、特定のプロパティやアクションに対しては表示したくない場合、`wire:target.except` モディファイアを次のように使用できます。
 
 ```blade
 <div wire:loading wire:target.except="download">...</div>
 ```
 
-The above loading indicator will now be shown for every Livewire update request on the component _except_ the "download" action.
+上記のローディングインジケーターは、コンポーネント上のすべてのLivewire更新リクエストに対して表示されますが、「download」アクションに対しては表示されません。
 
-## Customizing CSS display property
+## CSSのdisplayプロパティのカスタマイズ
 
-When `wire:loading` is added to an element, Livewire updates the CSS `display` property of the element to show and hide the element. By default, Livewire uses `none` to hide and `inline-block` to show.
+`wire:loading` が要素に追加されると、Livewire はその要素のCSS `display` プロパティを更新して表示・非表示を切り替えます。デフォルトでは、Livewire は非表示にするために `none` を、表示するために `inline-block` を使用します。
 
-If you are toggling an element that uses a display value other than `inline-block`, like `flex` in the following example, you can append `.flex` to `wire:loading`:
+`inline-block` 以外の表示値を持つ要素をトグルする場合、例えば以下のように `.flex` を `wire:loading` に追加できます。
 
 ```blade
 <div class="flex" wire:loading.flex>...</div>
 ```
 
-Below is the complete list of available display values:
+以下は、利用可能な表示値の完全なリストです。
 
 ```blade
 <div wire:loading.inline-flex>...</div>
@@ -189,19 +186,19 @@ Below is the complete list of available display values:
 <div wire:loading.grid>...</div>
 ```
 
-## Delaying a loading indicator
+## ローディングインジケーターの遅延
 
-On fast connections, updates often happen so quickly that loading indicators only flash briefly on the screen before being removed. In these cases, the indicator is more of a distraction than a helpful affordance.
+高速な接続では、更新が非常に迅速に行われるため、ローディングインジケーターが画面に一瞬だけ表示されてすぐに消えてしまうことがあります。この場合、インジケーターは役に立つ手がかりというよりは、むしろ気を散らすものになってしまいます。
 
-For this reason, Livewire provides a `.delay` modifier to delay the showing of an indicator. For example, if you add `wire:loading.delay` to an element like so:
+このため、Livewire では `.delay` モディファイアを提供しており、インジケーターの表示を遅らせることができます。例えば、次のように要素に `wire:loading.delay` を追加すると：
 
 ```blade
 <div wire:loading.delay>...</div>
 ```
 
-The above element will only appear if the request takes over 200 milliseconds. The user will never see the indicator if the request completes before then.
+上記の要素は、リクエストに200ミリ秒以上かかる場合にのみ表示されます。それよりも早くリクエストが完了した場合、ユーザーはインジケーターを見ることはありません。
 
-To customize the amount of time to delay the loading indicator, you can use one of Livewire's helpful interval aliases:
+ローディングインジケーターの遅延時間をカスタマイズするには、Livewire の便利なインターバルエイリアスのいずれかを使用できます。
 
 ```blade
 <div wire:loading.delay.shortest>...</div> <!-- 50ms -->

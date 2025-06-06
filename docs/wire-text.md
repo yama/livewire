@@ -1,11 +1,10 @@
+`wire:text`は、コンポーネントのプロパティや式に基づいて要素のテキスト内容を動的に更新するディレクティブです。Bladeの`{{ }}`構文と異なり、`wire:text`はコンポーネントの再描画やネットワークリクエストなしで内容を即座に更新できます。
 
-`wire:text` is a directive that dynamically updates an element's text content based on a component property or expression. Unlike using Blade's `{{ }}` syntax, `wire:text` updates the content without requiring a network roundtrip to re-render the component.
+Alpineの`x-text`ディレクティブに馴染みがある方は、ほぼ同じ感覚で使えます。
 
-If you are familiar with Alpine's `x-text` directive, the two are essentially the same.
+## 基本的な使い方
 
-## Basic usage
-
-Here's an example of using `wire:text` to optimistically show updates to a Livewire property without waiting for a network roundtrip.
+Livewireプロパティの値をネットワークリクエストを待たずに楽観的に表示したい場合、`wire:text`が便利です。
 
 ```php
 use Livewire\Component;
@@ -39,6 +38,6 @@ class ShowPost extends Component
 </div>
 ```
 
-When the button is clicked, `$wire.likes++` immediately updates the displayed count through `wire:text`, while `wire:click="like"` persists the change to the database in the background.
+ボタンをクリックすると、`$wire.likes++`によって`wire:text`経由で表示が即座に更新され、`wire:click="like"`で裏側のデータベースも更新されます。
 
-This pattern makes `wire:text` perfect for building optimistic UIs in Livewire.
+このように、`wire:text`はLivewireで楽観的UIを構築するのに最適です。

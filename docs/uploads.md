@@ -1,8 +1,8 @@
-Livewire offers powerful support for uploading files within your components.
+Livewireは、コンポーネント内でファイルアップロードを強力にサポートしています。
 
-First, add the `WithFileUploads` trait to your component. Once this trait has been added to your component, you can use `wire:model` on file inputs as if they were any other input type and Livewire will take care of the rest.
+まず、コンポーネントに `WithFileUploads` トレイトを追加してください。このトレイトを追加すると、ファイル入力にも他の入力と同じように `wire:model` を使うことができ、Livewireがアップロード処理を自動で行います。
 
-Here's an example of a simple component that handles uploading a photo:
+以下は、写真のアップロードを扱うシンプルなコンポーネントの例です。
 
 ```php
 <?php
@@ -37,28 +37,28 @@ class UploadPhoto extends Component
 </form>
 ```
 
-> [!warning] The "upload" method is reserved
-> Notice the above example uses a "save" method instead of an "upload" method. This is a common "gotcha". The term "upload" is reserved by Livewire. You cannot use it as a method or property name in your component.
+> [!warning] 「upload」メソッドは予約語です
+> 上記の例では「save」メソッドを使っていますが、「upload」という名前はLivewireで予約されているため、メソッドやプロパティ名として使用できません。
 
-From the developer's perspective, handling file inputs is no different than handling any other input type: Add `wire:model` to the `<input>` tag and everything else is taken care of for you.
+開発者の視点では、ファイル入力の扱いは他の入力と変わりません。`<input>`タグに `wire:model` を付与するだけで、あとはLivewireが処理してくれます。
 
-However, more is happening under the hood to make file uploads work in Livewire. Here's a glimpse at what goes on when a user selects a file to upload:
+ただし、ファイルアップロードの裏側では、Livewireがさまざまな処理を行っています。ユーザーがファイルを選択した際の流れは次の通りです。
 
-1. When a new file is selected, Livewire's JavaScript makes an initial request to the component on the server to get a temporary "signed" upload URL.
-2. Once the URL is received, JavaScript does the actual "upload" to the signed URL, storing the upload in a temporary directory designated by Livewire and returning the new temporary file's unique hash ID.
-3. Once the file is uploaded and the unique hash ID is generated, Livewire's JavaScript makes a final request to the component on the server, telling it to "set" the desired public property to the new temporary file.
-4. Now, the public property (in this case, `$photo`) is set to the temporary file upload and is ready to be stored or validated at any point.
+1. 新しいファイルが選択されると、LivewireのJavaScriptがサーバー上のコンポーネントに一時的な「署名付き」アップロードURLをリクエストします。
+2. URLを受け取ると、JavaScriptが実際のアップロードを行い、Livewireが指定する一時ディレクトリにファイルを保存し、新しい一時ファイルのユニークなハッシュIDを返します。
+3. ファイルのアップロードとハッシュIDの生成が完了すると、LivewireのJavaScriptがサーバー上のコンポーネントに最終リクエストを送り、対象のパブリックプロパティに新しい一時ファイルをセットします。
+4. これで、パブリックプロパティ（この例では `$photo`）に一時ファイルがセットされ、いつでも保存やバリデーションが可能になります。
 
-## Storing uploaded files
+## アップロードしたファイルの保存
 
-The previous example demonstrates the most basic storage scenario: moving the temporarily uploaded file to the "photos" directory on the application's default filesystem disk.
+前述の例は、アップロードされたファイルをアプリケーションのデフォルトファイルシステムの「photos」ディレクトリに移動する最も基本的な保存方法です。
 
-However, you may want to customize the file name of the stored file or even specify a specific storage "disk" to keep the file on (such as S3).
+ファイル名をカスタマイズしたり、特定のストレージ「ディスク」（例：S3）を指定したい場合もあるでしょう。
 
-> [!tip] Original file names
-> You can access the original file name of a temporary upload, by calling its `->getClientOriginalName()` method.
+> [!tip] 元のファイル名の取得
+> 一時アップロードファイルの元のファイル名は、`->getClientOriginalName()` メソッドで取得できます。
 
-Livewire honors the same APIs Laravel uses for storing uploaded files, so feel free to consult [Laravel's file upload documentation](https://laravel.com/docs/filesystem#file-uploads). However, below are a few common storage scenarios and examples:
+LivewireはLaravelのファイルアップロードAPIと同じものを利用しているため、[Laravelのファイルアップロードドキュメント](https://laravel.com/docs/filesystem#file-uploads)も参考にしてください。以下によくある保存パターンの例を示します。
 
 ```php
 public function save()
@@ -83,11 +83,11 @@ public function save()
 }
 ```
 
-## Handling multiple files
+## 複数ファイルの扱い
 
-Livewire automatically handles multiple file uploads by detecting the `multiple` attribute on the `<input>` tag.
+`<input>`タグに `multiple` 属性を付与すると、Livewireは自動的に複数ファイルのアップロードをサポートします。
 
-For example, below is a component with an array property named `$photos`. By adding `multiple` to the form's file input, Livewire will automatically append new files to this array:
+例えば、`$photos` という配列プロパティを持つコンポーネントで、フォームのファイル入力に `multiple` を付けると、新しいファイルが自動的にこの配列に追加されます。
 
 ```php
 use Livewire\Component;
@@ -120,25 +120,25 @@ class UploadPhotos extends Component
 </form>
 ```
 
-## File validation
+## ファイルバリデーション
 
-Like we've discussed, validating file uploads with Livewire is the same as handling file uploads from a standard Laravel controller.
+Livewireでのファイルアップロードのバリデーションは、通常のLaravelコントローラーでのファイルバリデーションと同じです。
 
-> [!warning] Ensure S3 is properly configured
-> Many of the validation rules relating to files require access to the file. When [uploading directly to S3](#uploading-directly-to-amazon-s3), these validation rules will fail if the S3 file object is not publicly accessible.
+> [!warning] S3の設定に注意
+> ファイル関連のバリデーションルールの多くは、ファイルへのアクセスが必要です。[S3へ直接アップロード](#uploading-directly-to-amazon-s3)する場合、S3のファイルオブジェクトが公開設定でないとバリデーションが失敗します。
 
-For more information on file validation, consult [Laravel's file validation documentation](https://laravel.com/docs/validation#available-validation-rules).
+詳細は [Laravelのファイルバリデーションドキュメント](https://laravel.com/docs/validation#available-validation-rules) をご覧ください。
 
-## Temporary preview URLs
+## 一時プレビューURL
 
-After a user chooses a file, you should typically show them a preview of that file before they submit the form and store the file.
+ユーザーがファイルを選択した後、フォーム送信前にプレビューを表示したい場合が多いでしょう。
 
-Livewire makes this trivial by using the `->temporaryUrl()` method on uploaded files.
+Livewireでは、アップロードファイルの `->temporaryUrl()` メソッドを使うことで簡単にプレビューが可能です。
 
-> [!info] Temporary URLs are restricted to images
-> For security reasons, temporary preview URLs are only supported on files with image MIME types.
+> [!info] 一時URLは画像のみ対応
+> セキュリティ上の理由から、一時プレビューURLは画像MIMEタイプのファイルのみサポートされています。
 
-Let's explore an example of a file upload with an image preview:
+以下は画像プレビュー付きファイルアップロードの例です。
 
 ```php
 use Livewire\Component;
@@ -170,20 +170,20 @@ class UploadPhoto extends Component
 </form>
 ```
 
-As previously discussed, Livewire stores temporary files in a non-public directory; therefore, typically there's no simple way to expose a temporary, public URL to your users for image previewing.
+Livewireは一時ファイルを非公開ディレクトリに保存するため、通常は一時的な公開URLを簡単に発行できません。
 
-However, Livewire solves this issue by providing a temporary, signed URL that pretends to be the uploaded image so your page can show an image preview to your users.
+しかし、Livewireは一時的な署名付きURLを発行し、アップロード画像のプレビューをページ上で表示できるようにしています。
 
-This URL is protected against showing files in directories above the temporary directory. And, because it's signed, users can't abuse this URL to preview other files on your system.
+このURLは一時ディレクトリより上の階層のファイルを表示できないよう保護されており、署名付きのため他のファイルのプレビューに悪用される心配もありません。
 
-> [!tip] S3 temporary signed URLs
-> If you've configured Livewire to use S3 for temporary file storage, calling `->temporaryUrl()` will generate a temporary, signed URL to S3 directly so that image previews aren't loaded from your Laravel application server.
+> [!tip] S3の一時署名付きURL
+> 一時ファイル保存先をS3に設定している場合、`->temporaryUrl()` を呼び出すとS3の署名付き一時URLが発行され、画像プレビューがLaravelアプリケーションサーバーを経由せず直接S3から読み込まれます。
 
-## Testing file uploads
+## ファイルアップロードのテスト
 
-You can use Laravel's existing file upload testing helpers to test file uploads.
+Laravelのファイルアップロード用テストヘルパーを使って、Livewireのファイルアップロードもテストできます。
 
-Below is a complete example of testing the `UploadPhoto` component with Livewire:
+以下は `UploadPhoto` コンポーネントのテスト例です。
 
 ```php
 <?php
@@ -213,7 +213,7 @@ class UploadPhotoTest extends TestCase
 }
 ```
 
-Below is an example of the `UploadPhoto` component required to make the previous test pass:
+次は、上記テストをパスさせるための `UploadPhoto` コンポーネント例です。
 
 ```php
 use Livewire\Component;
@@ -234,17 +234,17 @@ class UploadPhoto extends Component
 }
 ```
 
-For more information on testing file uploads, please consult [Laravel's file upload testing documentation](https://laravel.com/docs/http-tests#testing-file-uploads).
+ファイルアップロードのテストについては [Laravelのファイルアップロードテストドキュメント](https://laravel.com/docs/http-tests#testing-file-uploads) もご参照ください。
 
-## Uploading directly to Amazon S3
+## Amazon S3への直接アップロード
 
-As previously discussed, Livewire stores all file uploads in a temporary directory until the developer permanently stores the file.
+前述の通り、Livewireはすべてのファイルアップロードを一時ディレクトリに保存します。
 
-By default, Livewire uses the default filesystem disk configuration (usually `local`) and stores the files within a `livewire-tmp/` directory.
+デフォルトでは、Livewireはデフォルトのファイルシステムディスク（通常は `local`）の `livewire-tmp/` ディレクトリにファイルを保存します。
 
-Consequently, file uploads are always utilizing your application server, even if you choose to store the uploaded files in an S3 bucket later.
+そのため、アップロードは常にアプリケーションサーバーを経由しますが、後でS3バケットに保存することも可能です。
 
-If you wish to bypass your application server and instead store Livewire's temporary uploads in an S3 bucket, you can configure that behavior in your application's `config/livewire.php` configuration file. First, set `livewire.temporary_file_upload.disk` to `s3` (or another custom disk that uses the `s3` driver):
+もしアップロードをアプリケーションサーバー経由ではなく、直接S3バケットに保存したい場合は、`config/livewire.php` で `livewire.temporary_file_upload.disk` を `s3`（または `s3` ドライバを使うカスタムディスク）に設定してください。
 
 ```php
 return [
@@ -256,34 +256,34 @@ return [
 ];
 ```
 
-Now, when a user uploads a file, the file will never actually be stored on your server. Instead, it will be uploaded directly to your S3 bucket within the `livewire-tmp/` sub-directory.
+これで、ユーザーがファイルをアップロードした際、ファイルはサーバーには保存されず、直接S3バケットの `livewire-tmp/` サブディレクトリに保存されます。
 
-> [!info] Publishing Livewire's configuration file
-> Before customizing the file upload disk, you must first publish Livewire's configuration file to your application's `/config` directory by running the following command:
+> [!info] Livewireの設定ファイル公開
+> ファイルアップロードディスクをカスタマイズする前に、以下のコマンドでLivewireの設定ファイルを `/config` ディレクトリに公開してください。
 > ```shell
 > php artisan livewire:publish --config
 > ```
 
-### Configuring automatic file cleanup
+### 自動ファイルクリーンアップの設定
 
-Livewire's temporary upload directory will fill up with files quickly; therefore, it's essential to configure S3 to clean up files older than 24 hours.
+Livewireの一時アップロードディレクトリはすぐにファイルでいっぱいになるため、S3で24時間以上経過したファイルを自動削除する設定が重要です。
 
-To configure this behavior, run the following Artisan command from the environment that is utilizing an S3 bucket for file uploads:
+S3を利用している環境で、以下のArtisanコマンドを実行してください。
 
 ```shell
 php artisan livewire:configure-s3-upload-cleanup
 ```
 
-Now, any temporary files older than 24 hours will be cleaned up by S3 automatically.
+これで、24時間以上経過した一時ファイルはS3側で自動的に削除されます。
 
 > [!info]
-> If you are not using S3 for file storage, Livewire will handle file cleanup automatically and there is no need to run the command above.
+> S3以外のストレージを使っている場合は、Livewireが自動でクリーンアップを行うため、上記コマンドは不要です。
 
-## Loading indicators
+## ローディングインジケーター
 
-Although `wire:model` for file uploads works differently than other `wire:model` input types under the hood, the interface for showing loading indicators remains the same.
+ファイルアップロードの `wire:model` は内部的には他の入力と異なる動作をしますが、ローディングインジケーターの表示方法は同じです。
 
-You can display a loading indicator scoped to the file upload like so:
+ファイルアップロード専用のローディングインジケーターは次のように記述できます。
 
 ```blade
 <input type="file" wire:model="photo">
@@ -291,23 +291,23 @@ You can display a loading indicator scoped to the file upload like so:
 <div wire:loading wire:target="photo">Uploading...</div>
 ```
 
-Now, while the file is uploading, the "Uploading..." message will be shown and then hidden when the upload is finished.
+アップロード中は「Uploading...」のメッセージが表示され、完了すると非表示になります。
 
-For more information on loading states, check out our comprehensive [loading state documentation](/docs/wire-loading).
+ローディング状態の詳細は [ローディング状態のドキュメント](/docs/wire-loading) をご覧ください。
 
-## Progress indicators
+## 進捗インジケーター
 
-Every Livewire file upload operation dispatches JavaScript events on the corresponding `<input>` element, allowing custom JavaScript to intercept the events:
+Livewireのファイルアップロード操作では、対応する `<input>` 要素上でJavaScriptイベントが発火します。これにより、カスタムJavaScriptで進捗状況を取得できます。
 
-Event | Description
+イベント | 説明
 --- | ---
-`livewire-upload-start` | Dispatched when the upload starts
-`livewire-upload-finish` | Dispatched if the upload is successfully finished
-`livewire-upload-cancel` | Dispatched if the upload was cancelled prematurely
-`livewire-upload-error` | Dispatched if the upload fails
-`livewire-upload-progress` | An event containing the upload progress percentage as the upload progresses
+`livewire-upload-start` | アップロード開始時に発火
+`livewire-upload-finish` | アップロード完了時に発火
+`livewire-upload-cancel` | アップロードがキャンセルされた場合に発火
+`livewire-upload-error` | アップロード失敗時に発火
+`livewire-upload-progress` | アップロード進行中に進捗率を含んで発火
 
-Below is an example of wrapping a Livewire file upload in an Alpine component to display an upload progress bar:
+以下は、AlpineコンポーネントでLivewireファイルアップロードの進捗バーを表示する例です。
 
 ```blade
 <form wire:submit="save">
@@ -332,11 +332,11 @@ Below is an example of wrapping a Livewire file upload in an Alpine component to
 </form>
 ```
 
-## Cancelling an upload
+## アップロードのキャンセル
 
-If an upload is taking a long time, a user may want to cancel it. You can provide this functionality with Livewire's `$cancelUpload()` function in JavaScript.
+アップロードに時間がかかる場合、ユーザーがキャンセルしたいこともあります。Livewireの `$cancelUpload()` 関数を使えば、これが可能です。
 
-Here's an example of creating a "Cancel Upload" button in a Livewire component using `wire:click` to handle the click event:
+以下は、`wire:click` でキャンセルボタンを作成する例です。
 
 ```blade
 <form wire:submit="save">
@@ -350,21 +350,21 @@ Here's an example of creating a "Cancel Upload" button in a Livewire component u
 </form>
 ```
 
-When "Cancel upload" is pressed, the file upload will request will be aborted and the file input will be cleared. The user can now attempt another upload with a different file.
+「Cancel upload」ボタンが押されると、アップロードリクエストが中断され、ファイル入力がクリアされます。ユーザーは別のファイルで再度アップロードを試みることができます。
 
-Alternatively, you can call `cancelUpload(...)` from Alpine like so:
+また、Alpineから `cancelUpload(...)` を呼び出すことも可能です。
 
 ```blade
 <button type="button" x-on:click="$wire.cancelUpload('photo')">Cancel Upload</button>
 ```
 
-## JavaScript upload API
+## JavaScriptアップロードAPI
 
-Integrating with third-party file-uploading libraries often requires more control than a simple `<input type="file" wire:model="...">` element.
+サードパーティのファイルアップロードライブラリと連携する場合、単純な `<input type="file" wire:model="...">` だけでは制御が足りないことがあります。
 
-For these scenarios, Livewire exposes dedicated JavaScript functions.
+そのような場合のために、Livewireは専用のJavaScript関数を提供しています。
 
-These functions exist on a JavaScript component object, which can be accessed using Livewire's convenient `$wire` object from within your Livewire component's template:
+これらの関数は、Livewireコンポーネントのテンプレート内で `$wire` オブジェクト経由で利用できます。
 
 ```blade
 @script
@@ -395,15 +395,15 @@ These functions exist on a JavaScript component object, which can be accessed us
 @endscript
 ```
 
-## Configuration
+## 設定
 
-Because Livewire stores all file uploads temporarily before the developer can validate or store them, it assumes some default handling behavior for all file uploads.
+Livewireは、ファイルアップロードを一時的に保存してからバリデーションや保存を行うため、すべてのファイルアップロードに対してデフォルトの処理を想定しています。
 
-### Global validation
+### グローバルバリデーション
 
-By default, Livewire will validate all temporary file uploads with the following rules: `file|max:12288` (Must be a file less than 12MB).
+デフォルトでは、Livewireはすべての一時ファイルアップロードに `file|max:12288`（12MB未満のファイル）というルールでバリデーションを行います。
 
-If you wish to customize these rules, you can do so inside your application's `config/livewire.php` file:
+このルールをカスタマイズしたい場合は、`config/livewire.php` で設定できます。
 
 ```php
 'temporary_file_upload' => [
@@ -412,9 +412,9 @@ If you wish to customize these rules, you can do so inside your application's `c
 ],
 ```
 
-### Global middleware
+### グローバルミドルウェア
 
-The temporary file upload endpoint is assigned a throttling middleware by default. You can customize exactly what middleware this endpoint uses via the following configuration option:
+一時ファイルアップロード用エンドポイントには、デフォルトでスロットリングミドルウェアが割り当てられています。どのミドルウェアを使うかは、以下の設定でカスタマイズ可能です。
 
 ```php
 'temporary_file_upload' => [
@@ -423,9 +423,9 @@ The temporary file upload endpoint is assigned a throttling middleware by defaul
 ],
 ```
 
-### Temporary upload directory
+### 一時アップロードディレクトリ
 
-Temporary files are uploaded to the specified disk's `livewire-tmp/` directory. You can customize this directory via the following configuration option:
+一時ファイルは、指定したディスクの `livewire-tmp/` ディレクトリにアップロードされます。このディレクトリは以下の設定で変更できます。
 
 ```php
 'temporary_file_upload' => [

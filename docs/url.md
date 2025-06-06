@@ -1,8 +1,8 @@
-Livewire allows you to store component properties in the URL's query string. For example, you may want a `$search` property in your component to be included in the URL: `https://example.com/users?search=bob`. This is particularly useful for things like filtering, sorting, and pagination, as it allows users to share and bookmark specific states of a page.
+Livewireでは、コンポーネントのプロパティをURLのクエリ文字列に保存できます。たとえば、`$search`プロパティをURLに含めることで、`https://example.com/users?search=bob`のように状態を共有・ブックマークできるようになります。これは、フィルタ・ソート・ページネーションなど、ページの特定状態を共有したい場合に特に便利です。
 
-## Basic usage
+## 基本的な使い方
 
-Below is a `ShowUsers` component that allows you to search users by their name via a simple text input:
+以下は、ユーザー名で検索できる`ShowUsers`コンポーネントの例です：
 
 ```php
 <?php
@@ -38,11 +38,11 @@ class ShowUsers extends Component
 </div>
 ```
 
-As you can see, because the text input uses `wire:model.live="search"`, as a user types into the field, network requests will be sent to update the `$search` property and show a filtered set of users on the page.
+このように、テキスト入力で`wire:model.live="search"`を使うと、入力のたびにネットワークリクエストが送信され、`$search`プロパティが更新されてページ上のユーザー一覧が絞り込まれます。
 
-However, if the visitor refreshes the page, the search value and results will be lost.
+ただし、ページをリロードすると検索値や結果は失われてしまいます。
 
-To preserve the search value across page loads so that a visitor can refresh the page or share the URL, we can store the search value in the URL's query string by adding the `#[Url]` attribute above the `$search` property like so:
+検索値をページリロードやURL共有時にも保持したい場合は、`#[Url]`属性を`$search`プロパティの上に追加します：
 
 ```php
 <?php
@@ -67,19 +67,19 @@ class ShowUsers extends Component
 }
 ```
 
-Now, if a user types "bob" into the search field, the URL bar in the browser will show:
+これで、たとえば「bob」と入力すると、ブラウザのURLバーは次のようになります：
 
 ```
 https://example.com/users?search=bob
 ```
 
-If they now load this URL from a new browser window, "bob" will be filled in the search field, and the user results will be filtered accordingly.
+このURLを新しいウィンドウで開くと、「bob」が検索欄に自動入力され、結果も絞り込まれます。
 
-## Initializing properties from the URL
+## URLからプロパティを初期化
 
-As you saw in the previous example, when a property uses `#[Url]`, not only does it store its updated value in the query string of the URL, it also references any existing query string values on page load.
+`#[Url]`を使うと、値が更新されるたびにクエリ文字列へ保存されるだけでなく、ページロード時に既存のクエリ値も参照されます。
 
-For example, if a user visits the URL `https://example.com/users?search=bob`, Livewire will set the initial value of `$search` to "bob".
+たとえば、`https://example.com/users?search=bob`でアクセスすると、`$search`の初期値は「bob」になります。
 
 ```php
 use Livewire\Attributes\Url;
@@ -94,11 +94,9 @@ class ShowUsers extends Component
 }
 ```
 
-### Nullable properties
+### null許容プロパティ
 
-By default, if a page is loaded with an empty query string entry like `?search=`, Livewire will treat that value as an empty string. In many cases, this is expected, however there are times when you want `?search=` to be treated as `null`.
-
-In these cases, you can use a nullable typehint like so:
+デフォルトでは、`?search=`のように空のクエリ値があると、Livewireはそれを空文字列として扱います。ただし、`?search=`を`null`として扱いたい場合は、nullable型ヒントを使います：
 
 ```php
 use Livewire\Attributes\Url;
@@ -113,15 +111,11 @@ class ShowUsers extends Component
 }
 ```
 
-Because `?` is present in the above typehint, Livewire will see `?search=` and set `$search` to `null` instead of an empty string.
+上記のように型ヒントに`?`がある場合、Livewireは`?search=`を`null`として扱います。逆に、アプリケーション内で`$this->search = null`とした場合も、クエリ文字列は`?search=`となります。
 
-This works the other way around as well, if you set `$this->search = null` in your application, it will be represented in the query string as `?search=`.
+## エイリアスの利用
 
-## Using an alias
-
-Livewire gives you full control over what name displays in the URL's query string. For example, you may have a `$search` property but want to either obfuscate the actual property name or shorten it to `q`.
-
-You can specify a query string alias by providing the `as` parameter to the `#[Url]` attribute:
+クエリ文字列で表示される名前は自由に変更できます。たとえば、`$search`プロパティを`q`という短い名前でURLに出したい場合、`#[Url]`属性の`as`パラメータを使います：
 
 ```php
 use Livewire\Attributes\Url;
@@ -136,13 +130,13 @@ class ShowUsers extends Component
 }
 ```
 
-Now, when a user types "bob" into the search field, the URL will show: `https://example.com/users?q=bob` instead of `?search=bob`.
+これで「bob」と入力すると、URLは`https://example.com/users?q=bob`となります。
 
-## Excluding certain values
+## 特定の値を除外
 
-By default, Livewire will only put an entry in the query string when it's value has changed from what it was at initialization. Most of the time, this is the desired behavior, however, there are certain scenarios where you may want more control over which value Livewire excludes from the query string. In these cases you can use the `except` parameter.
+デフォルトでは、Livewireは初期値から変更があった場合のみクエリ文字列に値を出力します。より細かく制御したい場合は、`except`パラメータを使います。
 
-For example, in the component below, the initial value of `$search` is modified in `mount()`. To ensure the browser will only ever exclude `search` from the query string if the `search` value is an empty string, the `except` parameter has been added to `#[Url]`:
+たとえば、`mount()`で初期値を変更している場合、`except: ''`を指定すると、`search`が空文字列のときだけクエリから除外されます：
 
 ```php
 use Livewire\Attributes\Url;
@@ -161,13 +155,11 @@ class ShowUsers extends Component
 }
 ```
 
-Without `except` in the above example, Livewire would remove the `search` entry from the query string any time the value of `search` is equal to the initial value of `auth()->user()->username`. Instead, because `except: ''` has been used, Livewire will preserve all query string values except when `search` is an empty string.
+`except`がない場合、`search`が`auth()->user()->username`と同じ値になった時点でクエリから除外されますが、`except: ''`を使うことで空文字列のときだけ除外されるようになります。
 
-## Display on page load
+## ページロード時も常に表示
 
-By default, Livewire will only display a value in the query string after the value has been changed on the page. For example, if the default value for `$search` is an empty string: `""`, when the actual search input is empty, no value will appear in the URL.
-
-If you want the `?search` entry to always be included in the query string, even when the value is empty, you can provide the `keep` parameter to the `#[Url]` attribute:
+デフォルトでは、`$search`の初期値が空文字列の場合、URLに`?search`は表示されません。値が空でも常にクエリ文字列に出したい場合は、`keep`パラメータを使います：
 
 ```php
 use Livewire\Attributes\Url;
@@ -182,15 +174,15 @@ class ShowUsers extends Component
 }
 ```
 
-Now, when the page loads, the URL will be changed to the following: `https://example.com/users?search=`
+これでページロード時も`https://example.com/users?search=`のように常にクエリが表示されます。
 
-## Storing in history
+## 履歴への保存
 
-By default, Livewire uses [`history.replaceState()`](https://developer.mozilla.org/en-US/docs/Web/API/History/replaceState) to modify the URL instead of [`history.pushState()`](https://developer.mozilla.org/en-US/docs/Web/API/History/pushState). This means that when Livewire updates the query string, it modifies the current entry in the browser's history state instead of adding a new one.
+デフォルトでは、Livewireは[`history.replaceState()`](https://developer.mozilla.org/en-US/docs/Web/API/History/replaceState)でURLを書き換えます。つまり、クエリ更新時にブラウザの履歴を新規追加せず、現在の履歴エントリを上書きします。
 
-Because Livewire "replaces" the current history, pressing the "back" button in the browser will go to the previous page rather than the previous `?search=` value.
+そのため、ブラウザの「戻る」ボタンを押すと、前の`?search=`値ではなく前のページに戻ります。
 
-To force Livewire to use `history.pushState` when updating the URL, you can provide the `history` parameter to the `#[Url]` attribute:
+URL更新時に`history.pushState`を使いたい場合は、`history`パラメータを指定します：
 
 ```php
 use Livewire\Attributes\Url;
@@ -205,11 +197,11 @@ class ShowUsers extends Component
 }
 ```
 
-In the example above, when a user changes the search value from "bob" to "frank" and then clicks the browser's back button, the search value (and the URL) will be set back to "bob" instead of navigating to the previously visited page.
+この例では、ユーザーが検索値を「bob」から「frank」に変更し、ブラウザの戻るボタンをクリックすると、検索値（およびURL）は「bob」に戻ります。
 
-## Using the queryString method
+## queryStringメソッドの利用
 
-The query string can also be defined as a method on the component. This can be useful if some properties have dynamic options.
+クエリ文字列はコンポーネントのメソッドとして定義することもできます。これは、一部のプロパティに動的オプションがある場合に便利です。
 
 ```php
 use Livewire\Component;
@@ -229,9 +221,9 @@ class ShowUsers extends Component
 }
 ```
 
-## Trait hooks
+## トレイトフック
 
-Livewire offers [hooks](/docs/lifecycle-hooks) for query strings as well.
+Livewireはクエリ文字列用の[フック](/docs/lifecycle-hooks)も提供しています。
 
 ```php
 trait WithSorting

@@ -1,18 +1,17 @@
+LivewireのDOM差分更新（DOM diffing）は、ページ上の既存要素を効率的に更新するのに便利ですが、場合によっては内部状態をリセットするために、要素を一から再描画したいことがあります。
 
-Livewire's DOM diffing is useful for updating existing elements on your page, but occasionally you may need to force some elements to render from scratch to reset internal state.
+このようなケースでは、`wire:replace`ディレクティブを使うことで、Livewireに対して要素の子要素のDOM差分更新をスキップし、サーバーから新しい要素で完全に置き換えるよう指示できます。
 
-In these cases, you can use the `wire:replace` directive to instruct Livewire to skip DOM diffing on the children of an element, and instead completely replace the content with the new elements from the server.
+特に、サードパーティ製のJavaScriptライブラリやカスタムWebコンポーネントと連携する場合、または要素の再利用によって状態管理に問題が生じる場合に有効です。
 
-This is most useful in the context of working with third-party javascript libraries and custom web components, or when element re-use could cause problems when keeping state.
-
-Below is an example of wrapping a web component with a shadow DOM `wire:replace` so that Livewire completely replaces the element allowing the custom element to handle its own life-cycle:
+以下は、シャドウDOMを持つWebコンポーネントを`wire:replace`でラップし、Livewireが要素全体を置き換えることで、カスタム要素が独自のライフサイクルを管理できるようにする例です。
 
 ```blade
 <form>
     <!-- ... -->
 
     <div wire:replace>
-        <!-- This custom element would have its own internal state -->
+        <!-- このカスタム要素は独自の内部状態を持ちます -->
         <json-viewer>@json($someProperty)</json-viewer>
     </div>
 
@@ -20,10 +19,10 @@ Below is an example of wrapping a web component with a shadow DOM `wire:replace`
 </form>
 ```
 
-You can also instruct Livewire to replace the target element as well as all children with `wire:replace.self`.
+また、`wire:replace.self`を使うと、対象要素自身とその子要素すべてを置き換えるようLivewireに指示できます。
 
 ```blade
 <div x-data="{open: false}" wire:replace.self>
-  <!-- Ensure that the "open" state is reset to false on each render -->
+  <!-- レンダリングごとに「open」状態が必ずfalseにリセットされます -->
 </div>
 ```

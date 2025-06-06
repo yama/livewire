@@ -1,7 +1,6 @@
+`wire:current` ディレクティブを使うと、ページ内で現在アクティブなリンクを簡単に検出し、スタイルを適用できます。
 
-The `wire:current` directive allows you to easily detect and style currently active links on a page.
-
-Here's a simple example of adding `wire:current` to links in a navbar so that the currently active link has a stronger font weight:
+例えば、ナビゲーションバーのリンクに `wire:current` を追加し、現在のページのリンクだけフォントを太くする例です。
 
 ```blade
 <nav>
@@ -11,19 +10,17 @@ Here's a simple example of adding `wire:current` to links in a navbar so that th
 </nav>
 ```
 
-Now when a user visits `/posts`, the "Posts" link will have a stronger font treatment than the other links.
+この場合、ユーザーが `/posts` にアクセスしているときは「Posts」リンクだけが強調表示されます。
 
-You should note that `wire:current` works out of the box with `wire:navigate` links and page changes.
+`wire:current` は `wire:navigate` リンクやページ遷移にもそのまま対応しています。
 
-## Exact matching
+## 厳密一致（Exact matching）
 
-By default, `wire:current` uses a partial matching strategy, meaning it will be applied if the link and current page share the beginning portion of the Url's path.
+デフォルトでは、`wire:current` は部分一致で判定します。つまり、リンクのパスと現在のページのパスが先頭で一致していれば適用されます。
 
-For example, if the link is `/posts`, and the current page is `/posts/1`, the `wire:current` directive will be applied.
+例えば、リンクが `/posts` で現在のページが `/posts/1` の場合も `wire:current` が適用されます。
 
-If you wish to use exact matching, you can add the `.exact` modifier to the directive.
-
-Here's an example where you might want to use exact matching to prevent the "Dashboard" link from being highlighted when the user visits `/posts`:
+完全一致でのみ適用したい場合は `.exact` モディファイアを追加します。
 
 ```blade
 <nav>
@@ -31,11 +28,11 @@ Here's an example where you might want to use exact matching to prevent the "Das
 </nav>
 ```
 
-## Strict matching
+## 厳格一致（Strict matching）
 
-By default, `wire:current` will remove trailing slashes (`/`) from its comparison.
+デフォルトでは、`wire:current` は比較時に末尾のスラッシュ（`/`）を無視します。
 
-If you'd like to disable this behavior and force a stract path string comparison, you can append the `.strict` modifier:
+この動作を無効にしてパス文字列を厳格に比較したい場合は `.strict` モディファイアを付与します。
 
 ```blade
 <nav>
@@ -43,9 +40,9 @@ If you'd like to disable this behavior and force a stract path string comparison
 </nav>
 ```
 
-## Troubleshooting
+## トラブルシューティング
 
-If `wire:current` is not detecting the current link correctly, ensure the following:
+`wire:current` で現在のリンクが正しく検出されない場合は、以下を確認してください。
 
-* You have at least one Livewire component on the page, or have hardcoded `@livewireScripts` in your layout
-* You have a `href` attribute on the link.
+* ページ内に少なくとも1つのLivewireコンポーネントがある、またはレイアウトに `@livewireScripts` を記述している
+* リンクに `href` 属性が設定されている

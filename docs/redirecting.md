@@ -1,12 +1,12 @@
-After a user performs some action — like submitting a form — you may want to redirect them to another page in your application.
+ユーザーがフォーム送信などの操作を行った後、別のページへリダイレクトしたい場合があります。
 
-Because Livewire requests aren't standard full-page browser requests, standard HTTP redirects won't work. Instead, you need to trigger redirects via JavaScript. Fortunately, Livewire exposes a simple `$this->redirect()` helper method to use within your components. Internally, Livewire will handle the process of redirecting on the frontend.
+Livewireのリクエストは通常のブラウザによるページ遷移とは異なるため、標準的なHTTPリダイレクトは機能しません。その代わり、JavaScript経由でリダイレクトを実現する必要があります。Livewireでは、コンポーネント内で`$this->redirect()`ヘルパーメソッドを使うことで簡単にリダイレクトが可能です。内部的には、Livewireがフロントエンド側でリダイレクト処理を行います。
 
-If you prefer, you can use [Laravel's built-in redirect utilities](https://laravel.com/docs/responses#redirects) within your components as well.
+また、[Laravel標準のリダイレクト機能](https://laravel.com/docs/responses#redirects)もコンポーネント内で利用できます。
 
-## Basic usage
+## 基本的な使い方
 
-Below is an example of a `CreatePost` Livewire component that redirects the user to another page after they submit the form to create a post:
+以下は、投稿作成フォーム送信後に別ページへリダイレクトする`CreatePost`コンポーネントの例です。
 
 ```php
 <?php
@@ -39,13 +39,13 @@ class CreatePost extends Component
 }
 ```
 
-As you can see, when the `save` action is triggered, a redirect will also be triggered to `/posts`. When Livewire receives this response, it will redirect the user to the new URL on the frontend.
+このように、`save`アクションが実行されると同時に`/posts`へリダイレクトされます。Livewireはこのレスポンスを受け取ると、フロントエンドで自動的に指定したURLへ遷移します。
 
-## Redirect to Route
+## ルート名でリダイレクト
 
-In case you want to redirect to a page using its route name you can use the `redirectRoute`.
+ページのルート名を使ってリダイレクトしたい場合は、`redirectRoute`メソッドを利用できます。
 
-For example, if you have a page with the route named `'profile'` like this: 
+たとえば、`'profile'`という名前のルートがある場合：
 
 ```php
     Route::get('/user/profile', function () {
@@ -53,31 +53,31 @@ For example, if you have a page with the route named `'profile'` like this:
     })->name('profile');
 ```
 
-You can use `redirectRoute` to redirect to that page using the name of the route like so:
+このページへリダイレクトするには、次のように記述します。
 
 ```php
     $this->redirectRoute('profile');
 ```
 
-In case you need to pass parameters to the route you may use the second argument of the method `redirectRoute` like so:
+ルートにパラメータを渡したい場合は、`redirectRoute`の第2引数に配列で指定できます。
 
 ```php
     $this->redirectRoute('profile', ['id' => 1]);
 ```
 
-## Redirect to intended
+## 元のページへリダイレクト
 
-In case you want to redirect the user back to the previous page they were on you can use `redirectIntended`. It accepts an optional default URL as its first argument which is used as a fallback if no previous page can be determined:
+ユーザーを直前のページに戻したい場合は、`redirectIntended`を使います。第1引数にデフォルトのURLを指定でき、前のページ情報がない場合はそのURLに遷移します。
 
 ```php
     $this->redirectIntended('/default/url');
 ```
 
-## Redirecting to full-page components
+## フルページコンポーネントへのリダイレクト
 
-Because Livewire uses Laravel's built-in redirection feature, you can use all of the redirection methods available to you in a typical Laravel application.
+LivewireはLaravelのリダイレクト機能を利用しているため、Laravelアプリケーションで利用できるすべてのリダイレクト手法が使えます。
 
-For example, if you are using a Livewire component as a full-page component for a route like so:
+たとえば、Livewireコンポーネントをルートにフルページで割り当てている場合：
 
 ```php
 use App\Livewire\ShowPosts;
@@ -85,7 +85,7 @@ use App\Livewire\ShowPosts;
 Route::get('/posts', ShowPosts::class);
 ```
 
-You can redirect to the component by providing the component name to the `redirect()` method:
+このコンポーネントへリダイレクトしたい場合は、`redirect()`メソッドにコンポーネント名を渡します。
 
 ```php
 public function save()
@@ -96,11 +96,11 @@ public function save()
 }
 ```
 
-## Flash messages
+## フラッシュメッセージ
 
-In addition to allowing you to use Laravel's built-in redirection methods, Livewire also supports Laravel's [session flash data utilities](https://laravel.com/docs/session#flash-data).
+Laravelのリダイレクト機能と同様に、Livewireでも[セッションのフラッシュデータ](https://laravel.com/docs/session#flash-data)が利用できます。
 
-To pass flash data along with a redirect, you can use Laravel's `session()->flash()` method like so:
+リダイレクト時にフラッシュデータを渡すには、Laravelの`session()->flash()`メソッドを使います。
 
 ```php
 use Livewire\Component;
@@ -120,7 +120,7 @@ class UpdatePost extends Component
 }
 ```
 
-Assuming the page being redirected to contain the following Blade snippet, the user will see a "Post successfully updated." message after updating the post:
+リダイレクト先のページで以下のBladeスニペットがあれば、ユーザーは「Post successfully updated.」というメッセージを確認できます。
 
 ```blade
 @if (session('status'))

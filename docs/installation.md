@@ -1,31 +1,31 @@
-Livewire is a Laravel package, so you will need to have a Laravel application up and running before you can install and use Livewire. If you need help setting up a new Laravel application, please see the [official Laravel documentation](https://laravel.com/docs/installation).
+LivewireはLaravelのパッケージです。そのため、Livewireをインストールして利用するには、あらかじめLaravelアプリケーションが動作している必要があります。Laravelアプリケーションのセットアップ方法については、[公式Laravelドキュメント](https://laravel.com/docs/installation)をご覧ください。
 
-To install Livewire, open your terminal and navigate to your Laravel application directory, then run the following command:
+Livewireのインストールは、ターミナルでLaravelアプリケーションのディレクトリに移動し、次のコマンドを実行するだけです。
 
 ```shell
 composer require livewire/livewire
 ```
 
-That's it — really. If you want more customization options, keep reading. Otherwise, you can jump right into using Livewire.
+本当にこれだけで完了です。さらに細かいカスタマイズをしたい場合は、このまま読み進めてください。特に必要がなければ、すぐにLivewireの利用を始められます。
 
-> [!warning] `/livewire/livewire.js` returning a 404 status code
-> By default, Livewire exposes a route in your application to serve its JavaScript assets from: `/livewire/livewire.js`. This is fine for most applications, however, if you are using Nginx with a custom configuration, you may receive a 404 from this endpoint. To fix this issue, you can either [compile Livewire's JavaScript assets yourself](#manually-bundling-livewire-and-alpine), or [configure Nginx to allow for this](https://benjamincrozat.com/livewire-js-404-not-found).
+> [!warning] `/livewire/livewire.js` が404になる場合
+> 通常、Livewireはアプリケーション内に `/livewire/livewire.js` というパスでJavaScriptアセットを配信するルートを自動的に用意します。多くの環境では問題ありませんが、Nginxで独自の設定をしている場合、このエンドポイントで404エラーが発生することがあります。その場合は、[LivewireのJavaScriptアセットを自分でビルドする](#manually-bundling-livewire-and-alpine)か、[Nginxの設定を調整する](https://benjamincrozat.com/livewire-js-404-not-found)ことで解決できます。
 
-## Publishing the configuration file
+## 設定ファイルの公開
 
-Livewire is "zero-config", meaning you can use it by following conventions, without any additional configuration. However, if needed, you can publish and customize Livewire's configuration file by running the following Artisan command:
+Livewireは「ゼロコンフィグ」設計のため、特別な設定をしなくても、推奨される使い方に従えばそのまま利用できます。ただし、必要に応じて設定ファイルを公開し、カスタマイズすることも可能です。設定ファイルを公開するには、以下のArtisanコマンドを実行してください。
 
 ```shell
 php artisan livewire:publish --config
 ```
 
-This will create a new `livewire.php` file in your Laravel application's `config` directory.
+このコマンドを実行すると、Laravelアプリケーションの `config` ディレクトリに `livewire.php` ファイルが作成されます。
 
-## Manually including Livewire's frontend assets
+## Livewireのフロントエンドアセットを手動で読み込む
 
-By default, Livewire injects the JavaScript and CSS assets it needs into each page that includes a Livewire component.
+通常、Livewireは必要なJavaScriptやCSSアセットを、Livewireコンポーネントを含む各ページに自動で挿入します。
 
-If you want more control over this behavior, you can manually include the assets on a page using the following Blade directives:
+もし、この動作を手動で制御したい場合は、次のBladeディレクティブを使用してページにアセットを手動で読み込むことができます。
 
 ```blade
 <html>
@@ -40,30 +40,30 @@ If you want more control over this behavior, you can manually include the assets
 </html>
 ```
 
-By including these assets manually on a page, Livewire knows not to inject the assets automatically.
+これらのアセットをページに手動で含めることで、Livewireは自動的にアセットを挿入しないようになります。
 
-> [!warning] AlpineJS is bundled with Livewire
-> Because Alpine is bundled with Livewire's JavaScript assets, you must include @verbatim`@livewireScripts`@endverbatim on every page you wish to use Alpine. Even if you're not using Livewire on that page.
+> [!warning] AlpineJSはLivewireにバンドルされています
+> AlpineはLivewireのJavaScriptアセットにバンドルされているため、Alpineを使用するすべてのページに `@verbatim`@livewireScripts`@endverbatim` を含める必要があります。たとえそのページでLivewireを使用していなくてもです。
 
-Though rarely required, you may disable Livewire's auto-injecting asset behavior by updating the `inject_assets` [configuration option](#publishing-the-configuration-file) in your application's `config/livewire.php` file:
+ほとんどの場合必要ありませんが、アプリケーションの `config/livewire.php` ファイル内の `inject_assets` [設定オプション](#publishing-the-configuration-file) を更新することで、Livewireの自動挿入アセット動作を無効にすることができます。
 
 ```php
 'inject_assets' => false,
 ```
 
-If you'd rather force Livewire to inject its assets on a single page or multiple pages, you can call the following global method from the current route or from a service provider.
+もし、特定のページまたは複数のページでLivewireにアセットを強制的に挿入させたい場合は、現在のルートまたはサービスプロバイダーから次のグローバルメソッドを呼び出すことができます。
 
 ```php
 \Livewire\Livewire::forceAssetInjection();
 ```
 
-## Configuring Livewire's update endpoint
+## Livewireの更新エンドポイントの設定
 
-Every update in a Livewire component sends a network request to the server at the following endpoint: `https://example.com/livewire/update`
+Livewireコンポーネントの更新は、次のエンドポイントにネットワークリクエストを送信します: `https://example.com/livewire/update`
 
-This can be a problem for some applications that use localization or multi-tenancy.
+これは、ローカリゼーションやマルチテナンシーを使用しているアプリケーションにとって問題になることがあります。
 
-In those cases, you can register your own endpoint however you like, and as long as you do it inside `Livewire::setUpdateRoute()`,  Livewire will know to use this endpoint for all component updates:
+その場合は、好きなように独自のエンドポイントを登録でき、`Livewire::setUpdateRoute()` 内でそれを行う限り、Livewireはすべてのコンポーネント更新にこのエンドポイントを使用することを知っています。
 
 ```php
 Livewire::setUpdateRoute(function ($handle) {
@@ -71,9 +71,9 @@ Livewire::setUpdateRoute(function ($handle) {
 });
 ```
 
-Now, instead of using `/livewire/update`, Livewire will send component updates to `/custom/livewire/update`.
+これで、`/livewire/update` の代わりに、Livewireは `/custom/livewire/update` にコンポーネントの更新を送信します。
 
-Because Livewire allows you to register your own update route, you can declare any additional middleware you want Livewire to use directly inside `setUpdateRoute()`:
+Livewireは独自の更新ルートを登録できるため、`setUpdateRoute()` 内で直接Livewireに使用させたい追加のミドルウェアを宣言することもできます。
 
 ```php
 Livewire::setUpdateRoute(function ($handle) {
@@ -82,17 +82,17 @@ Livewire::setUpdateRoute(function ($handle) {
 });
 ```
 
-## Customizing the asset URL
+## アセットURLのカスタマイズ
 
-By default, Livewire will serve its JavaScript assets from the following URL: `https://example.com/livewire/livewire.js`. Additionally, Livewire will reference this asset from a script tag like so:
+デフォルトでは、Livewireは次のURLからJavaScriptアセットを配信します: `https://example.com/livewire/livewire.js`。さらに、Livewireは次のようにスクリプトタグからこのアセットを参照します。
 
 ```blade
 <script src="/livewire/livewire.js" ...
 ```
 
-If your application has global route prefixes due to localization or multi-tenancy, you can register your own endpoint that Livewire should use internally when fetching its JavaScript.
+アプリケーションにローカリゼーションやマルチテナンシーによるグローバルルートプレフィックスがある場合、LivewireがJavaScriptを取得する際に内部的に使用する独自のエンドポイントを登録できます。
 
-To use a custom JavaScript asset endpoint, you can register your own route inside `Livewire::setScriptRoute()`:
+カスタムJavaScriptアセットエンドポイントを使用するには、`Livewire::setScriptRoute()` 内で独自のルートを登録できます。
 
 ```php
 Livewire::setScriptRoute(function ($handle) {
@@ -100,18 +100,18 @@ Livewire::setScriptRoute(function ($handle) {
 });
 ```
 
-Now, Livewire will load its JavaScript like so:
+これで、Livewireは次のようにJavaScriptを読み込みます。
 
 ```blade
 <script src="/custom/livewire/livewire.js" ...
 ```
 
-## Manually bundling Livewire and Alpine
+## LivewireとAlpineの手動バンドル
 
-By default, Alpine and Livewire are loaded using the `<script src="livewire.js">` tag, which means you have no control over the order in which these libraries are loaded. Consequently, importing and registering Alpine plugins, as shown in the example below, will no longer function:
+デフォルトでは、AlpineとLivewireは `<script src="livewire.js">` タグを使用して読み込まれます。これでは、これらのライブラリが読み込まれる順序を制御できません。その結果、以下の例のようにAlpineプラグインをインポートして登録することができなくなります。
 
 ```js
-// Warning: This snippet demonstrates what NOT to do...
+// 警告: このスニペットは、絶対にやってはいけないことを示しています...
 
 import Alpine from 'alpinejs'
 import Clipboard from '@ryangjchandler/alpine-clipboard'
@@ -120,7 +120,7 @@ Alpine.plugin(Clipboard)
 Alpine.start()
 ```
 
-To address this issue, we need to inform Livewire that we want to use the ESM (ECMAScript module) version ourselves and prevent the injection of the `livewire.js` script tag. To achieve this, we must add the `@livewireScriptConfig` directive to our layout file (`resources/views/components/layouts/app.blade.php`):
+この問題を解決するために、Livewireに対してESM（ECMAScriptモジュール）バージョンを自分たちで使用することを通知し、`livewire.js` スクリプトタグの挿入を防ぐ必要があります。そのためには、レイアウトファイル（`resources/views/components/layouts/app.blade.php`）に `@livewireScriptConfig` ディレクティブを追加します。
 
 ```blade
 <html>
@@ -137,9 +137,9 @@ To address this issue, we need to inform Livewire that we want to use the ESM (E
 </html>
 ```
 
-When Livewire detects the `@livewireScriptConfig` directive, it will refrain from injecting the Livewire and Alpine scripts. If you are using the `@livewireScripts` directive to manually load Livewire, be sure to remove it. Make sure to add the `@livewireStyles` directive if it is not already present.
+Livewireが `@livewireScriptConfig` ディレクティブを検出すると、LivewireとAlpineのスクリプトの挿入を控えるようになります。もし、Livewireを手動で読み込むために `@livewireScripts` ディレクティブを使用している場合は、それを削除してください。まだ存在しない場合は、`@livewireStyles` ディレクティブを追加してください。
 
-The final step is importing Alpine and Livewire in our `app.js` file, allowing us to register any custom resources, and ultimately starting Livewire and Alpine:
+最後のステップは、`app.js` ファイル内でAlpineとLivewireをインポートし、カスタムリソースを登録し、最終的にLivewireとAlpineを起動することです。
 
 ```js
 import { Livewire, Alpine } from '../../vendor/livewire/livewire/dist/livewire.esm';
@@ -150,30 +150,30 @@ Alpine.plugin(Clipboard)
 Livewire.start()
 ```
 
-> [!tip] Rebuild your assets after composer update
-> Make sure that if you are manually bundling Livewire and Alpine, that you rebuild your assets whenever you run `composer update`.
+> [!tip] Composer update後にアセットを再ビルド
+> LivewireとAlpineを手動でバンドルしている場合は、`composer update` を実行するたびにアセットを再ビルドすることを確認してください。
 
-> [!warning] Not compatible with Laravel Mix
-> Laravel Mix will not work if you are manually bundling Livewire and AlpineJS. Instead, we recommend that you [switch to Vite](https://laravel.com/docs/vite).
+> [!warning] Laravel Mixとは互換性がありません
+> LivewireとAlpineJSを手動でバンドルしている場合、Laravel Mixは機能しません。その代わりに、[Viteに切り替えることをお勧めします](https://laravel.com/docs/vite)。
 
-## Publishing Livewire's frontend assets
+## Livewireのフロントエンドアセットの公開
 
-> [!warning] Publishing assets isn't necessary
-> Publishing Livewire's assets isn't necessary for Livewire to run. Only do this if you have a specific need for it.
+> [!warning] アセットの公開は必須ではありません
+> Livewireを実行するためにアセットを公開する必要はありません。特定の必要がある場合のみ行ってください。
 
-If you prefer the JavaScript assets to be served by your web server not through Laravel, use the `livewire:publish` command:
+JavaScriptアセットをLaravel経由ではなく、Webサーバーから直接配信させたい場合は、`livewire:publish` コマンドを使用します。
 
 ```bash
 php artisan livewire:publish --assets
 ```
 
-To keep assets up-to-date and avoid issues in future updates, we strongly recommend that you add the following command to your composer.json file:
+アセットを最新の状態に保ち、将来のアップデートでの問題を避けるために、次のコマンドをcomposer.jsonファイルに追加することを強くお勧めします。
 
 ```json
 {
     "scripts": {
         "post-update-cmd": [
-            // Other scripts
+            // 他のスクリプト
             "@php artisan vendor:publish --tag=livewire:assets --ansi --force"
         ]
     }

@@ -1,11 +1,11 @@
+<!-- filepath: /home/yamamoto/oss/translations/livewire/docs/wire-show.md -->
+Livewireの`wire:show`ディレクティブを使えば、式の結果に応じて要素の表示・非表示を簡単に切り替えられます。
 
-Livewire's `wire:show` directive makes it easy to show and hide elements based on the result of an expression.
+`wire:show`はBladeの`@if`と異なり、要素自体をDOMから削除するのではなく、CSS（`display: none`）で表示・非表示を切り替えます。これにより、要素はページ上に残ったまま非表示となり、サーバーとの通信なしでスムーズなトランジションが可能です。
 
-The `wire:show` directive is different than using `@if` in Blade in that it toggles an element's visibility using CSS (`display: none`) rather than removing the element from the DOM entirely. This means the element remains in the page but is hidden, allowing for smoother transitions without requiring a server round-trip.
+## 基本的な使い方
 
-## Basic usage
-
-Here's a practical example of using `wire:show` to toggle a "Create Post" modal:
+「投稿作成」モーダルの表示・非表示を`wire:show`で切り替える実用例を紹介します。
 
 ```php
 use Livewire\Component;
@@ -42,11 +42,11 @@ class CreatePost extends Component
 </div>
 ```
 
-When the "Create New Post" button is clicked, the modal appears without a server roundtrip. After successfully saving the post, the modal is hidden and the form is reset.
+「Create New Post」ボタンをクリックすると、サーバーとの通信なしでモーダルが表示されます。投稿の保存が完了すると、モーダルが非表示になりフォームもリセットされます。
 
-## Using transitions
+## トランジションの利用
 
-You can combine `wire:show` with Alpine.js transitions to create smooth show/hide animations. Since `wire:show` only toggles the CSS `display` property, Alpine's `x-transition` directives work perfectly with it:
+`wire:show`はAlpine.jsのトランジションと組み合わせて、なめらかな表示・非表示アニメーションを実現できます。`wire:show`はCSSの`display`プロパティのみを切り替えるため、Alpineの`x-transition`ディレクティブと相性抜群です。
 
 ```blade
 <div>
@@ -61,6 +61,6 @@ You can combine `wire:show` with Alpine.js transitions to create smooth show/hid
 </div>
 ```
 
-The Alpine.js transition classes above will create a fade and scale effect when the modal shows and hides.
+上記のAlpine.jsトランジションにより、モーダルの表示・非表示時にフェードやスケールの効果が加わります。
 
-[View the full x-transition documentation →](https://alpinejs.dev/directives/transition)
+[Alpine.jsのx-transition公式ドキュメントはこちら →](https://alpinejs.dev/directives/transition)

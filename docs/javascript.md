@@ -1,15 +1,14 @@
+## LivewireコンポーネントでJavaScriptを使う
 
-## Using JavaScript in Livewire components
+LivewireやAlpineには、HTML内で動的なコンポーネントを構築するための多くのユーティリティが用意されていますが、時にはHTMLから離れて、コンポーネント用に純粋なJavaScriptを実行したい場面もあります。Livewireの`@script`および`@assets`ディレクティブを使えば、こうした処理を予測可能かつ保守しやすい方法で実現できます。
 
-Livewire and Alpine provide plenty of utilities for building dynamic components directly in your HTML, however, there are times when it's helpful to break out of the HTML and execute plain JavaScript for your component. Livewire's `@script` and `@assets` directive allow you to do this in a predictable, maintainable way.
+### スクリプトの実行
 
-### Executing scripts
+Livewireコンポーネント内で独自のJavaScriptを実行したい場合は、`<script>`要素を`@script`と`@endscript`で囲むだけです。これにより、LivewireがこのJavaScriptの実行を管理します。
 
-To execute bespoke JavaScript in your Livewire component, simply wrap a `<script>` element with `@script` and `@endscript`. This will tell Livewire to handle the execution of this JavaScript.
+`@script`内のスクリプトはLivewireによって処理されるため、ページの読み込み後、Livewireコンポーネントがレンダリングされる前の最適なタイミングで実行されます。これにより、従来のように`document.addEventListener('...')`でラップする必要がなくなります。
 
-Because scripts inside `@script` are handled by Livewire, they are executed at the perfect time after the page has loaded, but before the Livewire component has rendered. This means you no longer need to wrap your scripts in `document.addEventListener('...')` to load them properly.
-
-This also means that lazily or conditionally loaded Livewire components are still able to execute JavaScript after the page has initialized.
+また、遅延読み込みや条件付きで読み込まれるLivewireコンポーネントでも、ページの初期化後にJavaScriptを実行できます。
 
 ```blade
 <div>
@@ -18,12 +17,12 @@ This also means that lazily or conditionally loaded Livewire components are stil
 
 @script
 <script>
-    // This Javascript will get executed every time this component is loaded onto the page...
+    // このJavaScriptは、コンポーネントがページに読み込まれるたびに実行されます...
 </script>
 @endscript
 ```
 
-Here's a more full example where you can do something like register a JavaScript action that is used in your Livewire component.
+Livewireコンポーネント内で使うJavaScriptアクションを登録するような、もう少し実践的な例も紹介します。
 
 ```blade
 <div>
@@ -39,15 +38,15 @@ Here's a more full example where you can do something like register a JavaScript
 @endscript
 ```
 
-To learn more about JavaScript actions, [visit the actions documentation](/docs/actions#javascript-actions).
+JavaScriptアクションの詳細については、[アクションに関するドキュメント](/docs/actions#javascript-actions)を参照してください。
 
-### Using `$wire` from scripts
+### スクリプトからの`$wire`の使用
 
-Another helpful feature of using `@script` for your JavaScript is that you automatically have access to your Livewire component's `$wire` object.
+JavaScriptに`@script`を使用するもう一つの利点は、Livewireコンポーネントの`$wire`オブジェクトに自動的にアクセスできることです。
 
-Here's an example of using a simple `setInterval` to refresh the component every 2 seconds (You could easily do this with [`wire:poll`](/docs/wire-poll), but it's a simple way to demonstrate the point):
+例えば、シンプルな`setInterval`を使って2秒ごとにコンポーネントを更新する例を示します（これは[`wire:poll`](/docs/wire-poll)を使って簡単に実現できますが、ポイントを示す簡単な方法です）：
 
-You can learn more about `$wire` on the [`$wire` documentation](#the-wire-object).
+`$wire`の詳細については、[`$wire`ドキュメント](#the-wire-object)を参照してください。
 
 ```blade
 @script
@@ -59,13 +58,13 @@ You can learn more about `$wire` on the [`$wire` documentation](#the-wire-object
 @endscript
 ```
 
-### Evaluating one-off JavaScript expressions
+### 一時的なJavaScript式の評価
 
-In addition to designating entire methods to be evaluated in JavaScript, you can use the `js()` method to evaluate smaller, individual expressions on the backend.
+JavaScriptでの評価が必要な一時的な式を指定するために、`js()`メソッドを使用することもできます。
 
-This is generally useful for performing some kind of client-side follow-up after a server-side action is performed.
+これは、サーバー側のアクションが実行された後にクライアント側で何らかのフォローアップを行うのに一般的に役立ちます。
 
-For example, here is an example of a `CreatePost` component that triggers a client-side alert dialog after the post is saved to the database:
+例えば、以下は`CreatePost`コンポーネントの例で、データベースに投稿が保存された後にクライアント側のアラートダイアログをトリガーします：
 
 ```php
 <?php
@@ -87,15 +86,15 @@ class CreatePost extends Component
 }
 ```
 
-The JavaScript expression `alert('Post saved!')` will now be executed on the client after the post has been saved to the database on the server.
+JavaScript式`alert('Post saved!')`は、投稿がデータベースに保存された後にクライアント側で実行されます。
 
-You can access the current component's `$wire` object inside the expression.
+式の中で現在のコンポーネントの`$wire`オブジェクトにアクセスできます。
 
-### Loading assets
+### アセットの読み込み
 
-The `@script` directive is useful for executing a bit of JavaScript every time a Livewire component loads, however, there are times you might want to load entire script and style assets on the page along with the component.
+`@script`ディレクティブは、Livewireコンポーネントが読み込まれるたびに少しのJavaScriptを実行するのに便利ですが、コンポーネントと一緒にページ上に完全なスクリプトやスタイルアセットを読み込みたい場合もあります。
 
-Here is an example of using `@assets` to load a date picker library called [Pikaday](https://github.com/Pikaday/Pikaday) and initialize it inside your component using `@script`:
+以下は、日付ピッカーライブラリ[Pikaday](https://github.com/Pikaday/Pikaday)を読み込み、`@script`を使用してコンポーネント内で初期化するための`@assets`の使用例です：
 
 ```blade
 <div>
@@ -114,78 +113,76 @@ Here is an example of using `@assets` to load a date picker library called [Pika
 @endscript
 ```
 
-When this component loads, Livewire will make sure any `@assets` are loaded on that page before evaluating `@script`s. In addition, it will ensure the provided `@assets` are only loaded once per page no matter how many instances of this component there are, unlike `@script`, which will evaluate for every component instance on the page.
+このコンポーネントが読み込まれると、Livewireはページ上で`@assets`が`@script`よりも先に読み込まれるようにし、さらに、このコンポーネントのインスタンスがページ上にいくつあっても、提供された`@assets`が一度だけ読み込まれることを保証します。
 
-## Global Livewire events
+## グローバルLivewireイベント
 
-Livewire dispatches two helpful browser events for you to register any custom extension points from outside scripts:
+Livewireは、外部スクリプトからのカスタム拡張ポイントを登録するための2つの便利なブラウザイベントを発火させます：
 
 ```html
 <script>
     document.addEventListener('livewire:init', () => {
-        // Runs after Livewire is loaded but before it's initialized
-        // on the page...
+        // Livewireが読み込まれた後、しかしページ上で初期化される前に実行されます...
     })
 
     document.addEventListener('livewire:initialized', () => {
-        // Runs immediately after Livewire has finished initializing
-        // on the page...
+        // Livewireがページ上での初期化を完了した直後に実行されます...
     })
 </script>
 ```
 
 > [!info]
-> It is often beneficial to register any [custom directives](#registering-custom-directives) or [lifecycle hooks](#javascript-hooks) inside of `livewire:init` so that they are available before Livewire begins initializing on the page.
+> `livewire:init`内でカスタム[ディレクティブ](#registering-custom-directives)や[lifecycle hooks](#javascript-hooks)を登録すると、Livewireがページ上で初期化を開始する前にそれらが利用可能になるため、しばしば有益です。
 
-## The `Livewire` global object
+## `Livewire`グローバルオブジェクト
 
-Livewire's global object is the best starting point for interacting with Livewire from external scripts.
+Livewireのグローバルオブジェクトは、外部スクリプトからLivewireと対話するための最良の出発点です。
 
-You can access the global `Livewire` JavaScript object on `window` from anywhere inside your client-side code.
+クライアント側のコードのどこからでも、`window`上のグローバル`Livewire`JavaScriptオブジェクトにアクセスできます。
 
-It is often helpful to use `window.Livewire` inside a `livewire:init` event listener
+`window.Livewire`を`livewire:init`イベントリスナー内で使用すると便利です。
 
-### Accessing components
+### コンポーネントへのアクセス
 
-You can use the following methods to access specific Livewire components loaded on the current page:
+現在のページに読み込まれている特定のLivewireコンポーネントにアクセスするには、以下のメソッドを使用できます：
 
 ```js
-// Retrieve the $wire object for the first component on the page...
+// ページ上の最初のコンポーネントの$wireオブジェクトを取得...
 let component = Livewire.first()
 
-// Retrieve a given component's `$wire` object by its ID...
+// IDによって特定のコンポーネントの`$wire`オブジェクトを取得...
 let component = Livewire.find(id)
 
-// Retrieve an array of component `$wire` objects by name...
+// 名前によってコンポーネントの`$wire`オブジェクトの配列を取得...
 let components = Livewire.getByName(name)
 
-// Retrieve $wire objects for every component on the page...
+// ページ上のすべてのコンポーネントの$wireオブジェクトを取得...
 let components = Livewire.all()
 ```
 
 > [!info]
-> Each of these methods returns a `$wire` object representing the component's state in Livewire.
+> これらのメソッドのそれぞれは、コンポーネントのLivewire内での状態を表す`$wire`オブジェクトを返します。
 > <br><br>
-> You can learn more about these objects in [the `$wire` documentation](#the-wire-object).
+> これらのオブジェクトの詳細については、[`$wire`ドキュメント](#the-wire-object)を参照してください。
 
-### Interacting with events
+### イベントとの対話
 
-In addition to dispatching and listening for events from individual components in PHP, the global `Livewire` object allows you to interact with [Livewire's event system](/docs/events) from anywhere in your application:
+個々のコンポーネントからPHP経由でイベントを発火させたりリッスンしたりするだけでなく、グローバル`Livewire`オブジェクトを使用すると、アプリケーションのどこからでも[Livewireのイベントシステム](/docs/events)と対話できます：
 
 ```js
-// Dispatch an event to any Livewire components listening...
+// リッスンしている任意のLivewireコンポーネントにイベントを発火させる...
 Livewire.dispatch('post-created', { postId: 2 })
 
-// Dispatch an event to a given Livewire component by name...
+// 名前によって特定のLivewireコンポーネントにイベントを発火させる...
 Livewire.dispatchTo('dashboard', 'post-created', { postId: 2 })
 
-// Listen for events dispatched from Livewire components...
+// Livewireコンポーネントから発火されたイベントをリッスンする...
 Livewire.on('post-created', ({ postId }) => {
     // ...
 })
 ```
 
-In certain scenarios, you might need to unregister global Livewire events. For instance, when working with Alpine components and `wire:navigate`, multiple listeners may be registered as `init` is called when navigating between pages. To address this, utilize the `destroy` function, automatically invoked by Alpine. Loop through all your listeners within this function to unregister them and prevent any unwanted accumulation.
+特定のシナリオでは、グローバルLivewireイベントの登録を解除する必要があるかもしれません。例えば、Alpineコンポーネントと`wire:navigate`を使用しているとき、ページ間をナビゲートする際に`init`が呼び出されるため、複数のリスナーが登録される可能性があります。これに対処するために、Alpineによって自動的に呼び出される`destroy`関数を利用します。この関数内でリスナーをすべてループし、登録を解除して不要な蓄積を防ぎます。
 
 ```js
 Alpine.data('MyComponent', () => ({
@@ -193,7 +190,7 @@ Alpine.data('MyComponent', () => ({
     init() {
         this.listeners.push(
             Livewire.on('post-created', (options) => {
-                // Do something...
+                // 何かをする...
             })
         );
     },
@@ -204,37 +201,37 @@ Alpine.data('MyComponent', () => ({
     }
 }));
 ```
-### Using lifecycle hooks
+### ライフサイクルフックの使用
 
-Livewire allows you to hook into various parts of its global lifecycle using `Livewire.hook()`:
+Livewireは、`Livewire.hook()`を使用して、そのグローバルライフサイクルのさまざまな部分にフックすることを許可します：
 
 ```js
-// Register a callback to execute on a given internal Livewire hook...
+// 特定の内部Livewireフックで実行されるコールバックを登録...
 Livewire.hook('component.init', ({ component, cleanup }) => {
     // ...
 })
 ```
 
-More information about Livewire's JavaScript hooks can be [found below](#javascript-hooks).
+LivewireのJavaScriptフックの詳細については、[以下](#javascript-hooks)を参照してください。
 
-### Registering custom directives
+### カスタムディレクティブの登録
 
-Livewire allows you to register custom directives using `Livewire.directive()`.
+Livewireは、`Livewire.directive()`を使用してカスタムディレクティブを登録することを許可します。
 
-Below is an example of a custom `wire:confirm` directive that uses JavaScript's `confirm()` dialog to confirm or cancel an action before it is sent to the server:
+以下は、JavaScriptの`confirm()`ダイアログを使用してアクションの確認またはキャンセルを行うカスタム`wire:confirm`ディレクティブの例です：
 
 ```html
 <button wire:confirm="Are you sure?" wire:click="delete">Delete post</button>
 ```
 
-Here is the implementation of `wire:confirm` using `Livewire.directive()`:
+`Livewire.directive()`を使用した`wire:confirm`の実装は以下の通りです：
 
 ```js
 Livewire.directive('confirm', ({ el, directive, component, cleanup }) => {
     let content =  directive.expression
 
-    // The "directive" object gives you access to the parsed directive.
-    // For example, here are its values for: wire:click.prevent="deletePost(1)"
+    // "directive"オブジェクトは、解析されたディレクティブにアクセスするためのものです。
+    // 例えば、ここにある値は： wire:click.prevent="deletePost(1)"
     //
     // directive.raw = wire:click.prevent
     // directive.value = "click"
@@ -250,26 +247,25 @@ Livewire.directive('confirm', ({ el, directive, component, cleanup }) => {
 
     el.addEventListener('click', onClick, { capture: true })
 
-    // Register any cleanup code inside `cleanup()` in the case
-    // where a Livewire component is removed from the DOM while
-    // the page is still active.
+    // ページがまだアクティブな間にLivewireコンポーネントがDOMから削除された場合に備えて、
+    // `cleanup()`内にクリーンアップコードを登録します。
     cleanup(() => {
         el.removeEventListener('click', onClick)
     })
 })
 ```
 
-## Object schemas
+## オブジェクトスキーマ
 
-When extending Livewire's JavaScript system, it's important to understand the different objects you might encounter.
+LivewireのJavaScriptシステムを拡張する際に遭遇する可能性のあるさまざまなオブジェクトを理解することは重要です。
 
-Here is an exhaustive reference of each of Livewire's relevant internal properties.
+以下は、Livewireの関連する内部プロパティの各オブジェクトの網羅的なリファレンスです。
 
-As a reminder, the average Livewire user may never interact with these. Most of these objects are available for Livewire's internal system or advanced users.
+一般的に、平均的なLivewireユーザーはこれらと対話する必要はありません。これらのオブジェクトのほとんどは、Livewireの内部システムまたは上級ユーザー向けに利用可能です。
 
-### The `$wire` object
+### `$wire`オブジェクト
 
-Given the following generic `Counter` component:
+以下の一般的な`Counter`コンポーネントがあるとします：
 
 ```php
 <?php
@@ -294,234 +290,221 @@ class Counter extends Component
 }
 ```
 
-Livewire exposes a JavaScript representation of the server-side component in the form of an object that is commonly referred to as `$wire`:
+Livewireは、一般に`$wire`と呼ばれるオブジェクトの形でサーバー側コンポーネントのJavaScript表現を公開します：
 
 ```js
 let $wire = {
-    // All component public properties are directly accessible on $wire...
+    // すべてのコンポーネントの公開プロパティに直接アクセス可能...
     count: 0,
 
-    // All public methods are exposed and callable on $wire...
+    // すべての公開メソッドは$wire上で公開され、呼び出すことができる...
     increment() { ... },
 
-    // Access the `$wire` object of the parent component if one exists...
+    // 親コンポーネントの`$wire`オブジェクトにアクセス（存在する場合）...
     $parent,
 
-    // Access the root DOM element of the Livewire component...
+    // LivewireコンポーネントのルートDOM要素にアクセス...
     $el,
 
-    // Access the ID of the current Livewire component...
+    // 現在のLivewireコンポーネントのIDにアクセス...
     $id,
 
-    // Get the value of a property by name...
-    // Usage: $wire.$get('count')
+    // 名前によってプロパティの値を取得...
+    // 使用法: $wire.$get('count')
     $get(name) { ... },
 
-    // Set a property on the component by name...
-    // Usage: $wire.$set('count', 5)
+    // 名前によってコンポーネントにプロパティを設定...
+    // 使用法: $wire.$set('count', 5)
     $set(name, value, live = true) { ... },
 
-    // Toggle the value of a boolean property...
+    // ブール値プロパティの値をトグル...
     $toggle(name, live = true) { ... },
 
-    // Call the method...
-    // Usage: $wire.$call('increment')
+    // メソッドを呼び出す...
+    // 使用法: $wire.$call('increment')
     $call(method, ...params) { ... },
 
-    // Define a JavaScript action...
-    // Usage: $wire.$js('increment', () => { ... })
+    // JavaScriptアクションを定義...
+    // 使用法: $wire.$js('increment', () => { ... })
     $js(name, callback) { ... },
 
-    // Entangle the value of a Livewire property with a different,
-    // arbitrary, Alpine property...
-    // Usage: <div x-data="{ count: $wire.$entangle('count') }">
+    // Livewireプロパティの値を異なるAlpineプロパティと結びつける...
+    // 使用法: <div x-data="{ count: $wire.$entangle('count') }">
     $entangle(name, live = false) { ... },
 
-    // Watch the value of a property for changes...
-    // Usage: Alpine.$watch('count', (value, old) => { ... })
+    // プロパティの値の変化を監視...
+    // 使用法: Alpine.$watch('count', (value, old) => { ... })
     $watch(name, callback) { ... },
 
-    // Refresh a component by sending a commit to the server
-    // to re-render the HTML and swap it into the page...
+    // コミットを送信してコンポーネントを更新し、HTMLを再レンダリングしてページにスワップ...
     $refresh() { ... },
 
-    // Identical to the above `$refresh`. Just a more technical name...
+    // 上記の`$refresh`と同一。より技術的な名前...
     $commit() { ... },
 
-    // Listen for a an event dispatched from this component or its children...
-    // Usage: $wire.$on('post-created', () => { ... })
+    // このコンポーネントまたはその子から発信されたイベントをリッスン...
+    // 使用法: $wire.$on('post-created', () => { ... })
     $on(event, callback) { ... },
 
-    // Listen for a lifecycle hook triggered from this component or the request...
-    // Usage: $wire.$hook('commit', () => { ... })
+    // このコンポーネントまたはリクエストからトリガーされたライフサイクルフックをリッスン...
+    // 使用法: $wire.$hook('commit', () => { ... })
     $hook(name, callback) { ... },
 
-    // Dispatch an event from this component...
-    // Usage: $wire.$dispatch('post-created', { postId: 2 })
+    // このコンポーネントからイベントを発火...
+    // 使用法: $wire.$dispatch('post-created', { postId: 2 })
     $dispatch(event, params = {}) { ... },
 
-    // Dispatch an event onto another component...
-    // Usage: $wire.$dispatchTo('dashboard', 'post-created', { postId: 2 })
+    // 別のコンポーネントにイベントを発火...
+    // 使用法: $wire.$dispatchTo('dashboard', 'post-created', { postId: 2 })
     $dispatchTo(otherComponentName, event, params = {}) { ... },
 
-    // Dispatch an event onto this component and no others...
+    // このコンポーネントにのみイベントを発火...
     $dispatchSelf(event, params = {}) { ... },
 
-    // A JS API to upload a file directly to component
-    // rather than through `wire:model`...
+    // コンポーネントに直接ファイルをアップロードするためのJS API
+    // `wire:model`を介してではなく...
     $upload(
-        name, // The property name
-        file, // The File JavaScript object
-        finish = () => { ... }, // Runs when the upload is finished...
-        error = () => { ... }, // Runs if an error is triggered mid-upload...
-        progress = (event) => { // Runs as the upload progresses...
-            event.detail.progress // An integer from 1-100...
+        name, // プロパティ名
+        file, // File JavaScriptオブジェクト
+        finish = () => { ... }, // アップロードが完了したときに実行...
+        error = () => { ... }, // アップロード中にエラーが発生した場合に実行...
+        progress = (event) => { // アップロードが進行中に実行...
+            event.detail.progress // 1-100の整数...
         },
     ) { ... },
 
-    // API to upload multiple files at the same time...
+    // 同時に複数のファイルをアップロードするためのAPI...
     $uploadMultiple(name, files, finish, error, progress) { },
 
-    // Remove an upload after it's been temporarily uploaded but not saved...
+    // 一時的にアップロードされたが保存されていないアップロードを削除...
     $removeUpload(name, tmpFilename, finish, error) { ... },
 
-    // Retrieve the underlying "component" object...
+    // 基礎となる"component"オブジェクトを取得...
     __instance() { ... },
 }
 ```
 
-You can learn more about `$wire` in [Livewire's documentation on accessing properties in JavaScript](/docs/properties#accessing-properties-from-javascript).
+`$wire`の詳細については、[LivewireのJavaScriptからのプロパティへのアクセスに関するドキュメント](/docs/properties#accessing-properties-from-javascript)を参照してください。
 
-### The `snapshot` object
+### `snapshot`オブジェクト
 
-Between each network request, Livewire serializes the PHP component into an object that can be consumed in JavaScript. This snapshot is used to unserialize the component back into a PHP object and therefore has mechanisms built in to prevent tampering:
+各ネットワークリクエストの間、LivewireはPHPコンポーネントをJavaScriptで消費可能なオブジェクトにシリアライズします。このスナップショットは、コンポーネントをPHPオブジェクトに再シリアライズするために使用されるため、改ざんを防ぐメカニズムが組み込まれています：
 
 ```js
 let snapshot = {
-    // The serialized state of the component (public properties)...
+    // コンポーネントのシリアライズされた状態（公開プロパティ）...
     data: { count: 0 },
 
-    // Long-standing information about the component...
+    // コンポーネントに関する長期的な情報...
     memo: {
-        // The component's unique ID...
+        // コンポーネントの一意のID...
         id: '0qCY3ri9pzSSMIXPGg8F',
 
-        // The component's name. Ex. <livewire:[name] />
+        // コンポーネントの名前。例： <livewire:[name] />
         name: 'counter',
 
-        // The URI, method, and locale of the web page that the
-        // component was originally loaded on. This is used
-        // to re-apply any middleware from the original request
-        // to subsequent component update requests (commits)...
+        // コンポーネントが最初に読み込まれたウェブページのURI、メソッド、およびロケール。
+        // これは、元のリクエストからのミドルウェアを再適用するために使用されます...
         path: '/',
         method: 'GET',
         locale: 'en',
 
-        // A list of any nested "child" components. Keyed by
-        // internal template ID with the component ID as the values...
+        // ネストされた"子"コンポーネントのリスト。コンポーネントIDを値とする内部テンプレートIDによってキー付け...
         children: [],
 
-        // Weather or not this component was "lazy loaded"...
+        // このコンポーネントが"遅延読み込み"されたかどうか...
         lazyLoaded: false,
 
-        // A list of any validation errors thrown during the
-        // last request...
+        // 最後のリクエスト中に発生した検証エラーのリスト...
         errors: [],
     },
 
-    // A securely encrypted hash of this snapshot. This way,
-    // if a malicious user tampers with the snapshot with
-    // the goal of accessing un-owned resources on the server,
-    // the checksum validation will fail and an error will
-    // be thrown...
+    // このスナップショットの安全に暗号化されたハッシュ。
+    // これにより、悪意のあるユーザーがスナップショットを改ざんして
+    // サーバー上の所有していないリソースにアクセスしようとした場合に、
+    // チェックサム検証が失敗し、エラーがスローされます...
     checksum: '1bc274eea17a434e33d26bcaba4a247a4a7768bd286456a83ea6e9be2d18c1e7',
 }
 ```
 
-### The `component` object
+### `component`オブジェクト
 
-Every component on a page has a corresponding component object behind the scenes keeping track of its state and exposing its underlying functionality. This is one layer deeper than `$wire`. It is only meant for advanced usage.
+ページ上の各コンポーネントには、その状態を追跡し、基礎となる機能を公開する対応するコンポーネントオブジェクトがあります。これは`$wire`よりも一層深いレイヤーです。これは上級者向けの使用のみを意図しています。
 
-Here's an actual component object for the above `Counter` component with descriptions of relevant properties in JS comments:
+以下は、上記の`Counter`コンポーネントの実際のコンポーネントオブジェクトで、JSコメントで関連プロパティの説明が付いています：
 
 ```js
 let component = {
-    // The root HTML element of the component...
+    // コンポーネントのルートHTML要素...
     el: HTMLElement,
 
-    // The unique ID of the component...
+    // コンポーネントの一意のID...
     id: '0qCY3ri9pzSSMIXPGg8F',
 
-    // The component's "name" (<livewire:[name] />)...
+    // コンポーネントの"name"（<livewire:[name] />）...
     name: 'counter',
 
-    // The latest "effects" object. Effects are "side-effects" from server
-    // round-trips. These include redirects, file downloads, etc...
+    // 最新の"effects"オブジェクト。エフェクトはサーバーとの
+    // やり取りからの"副作用"です。これにはリダイレクトやファイルダウンロードなどが含まれます...
     effects: {},
 
-    // The component's last-known server-side state...
+    // コンポーネントの最後に知られているサーバー側の状態...
     canonical: { count: 0 },
 
-    // The component's mutable data object representing its
-    // live client-side state...
+    // コンポーネントの可変データオブジェクトで、ライブのクライアント側の状態を表します...
     ephemeral: { count: 0 },
 
-    // A reactive version of `this.ephemeral`. Changes to
-    // this object will be picked up by AlpineJS expressions...
+    // `this.ephemeral`のリアクティブなバージョン。これに対する変更は
+    // AlpineJSの式によって検出されます...
     reactive: Proxy,
 
-    // A Proxy object that is typically used inside Alpine
-    // expressions as `$wire`. This is meant to provide a
-    // friendly JS object interface for Livewire components...
+    // 通常Alpineの式内で`$wire`として使用されるプロキシオブジェクト。
+    // これはLivewireコンポーネントのフレンドリーなJSオブジェクトインターフェースを提供することを意図しています...
     $wire: Proxy,
 
-    // A list of any nested "child" components. Keyed by
-    // internal template ID with the component ID as the values...
+    // ネストされた"子"コンポーネントのリスト。コンポーネントIDを値とする内部テンプレートIDによってキー付け...
     children: [],
 
-    // The last-known "snapshot" representation of this component.
-    // Snapshots are taken from the server-side component and used
-    // to re-create the PHP object on the backend...
+    // このコンポーネントの最後に知られている"スナップショット"表現。
+    // スナップショットはサーバー側のコンポーネントから取得され、PHPオブジェクトをバックエンドで再作成するために使用されます...
     snapshot: {...},
 
-    // The un-parsed version of the above snapshot. This is used to send back to the
-    // server on the next roundtrip because JS parsing messes with PHP encoding
-    // which often results in checksum mis-matches.
+    // 上記スナップショットの未解析バージョン。これは次の往復でサーバーに送信するために使用されます。
+    // JSの解析はPHPのエンコーディングを妨げるため、しばしばチェックサムの不一致を引き起こします。
     snapshotEncoded: '{"data":{"count":0},"memo":{"id":"0qCY3ri9pzSSMIXPGg8F","name":"counter","path":"\/","method":"GET","children":[],"lazyLoaded":true,"errors":[],"locale":"en"},"checksum":"1bc274eea17a434e33d26bcaba4a247a4a7768bd286456a83ea6e9be2d18c1e7"}',
 }
 ```
 
-### The `commit` payload
+### `commit`ペイロード
 
-When an action is performed on a Livewire component in the browser, a network request is triggered. That network request contains one or many components and various instructions for the server. Internally, these component network payloads are called "commits".
+ブラウザでLivewireコンポーネントにアクションが実行されると、ネットワークリクエストがトリガーされます。そのネットワークリクエストには、1つまたは複数のコンポーネントとサーバーへのさまざまな指示が含まれています。内部的に、これらのコンポーネントネットワークペイロードは"コミット"と呼ばれます。
 
-The term "commit" was chosen as a helpful way to think about Livewire's relationship between frontend and backend. A component is rendered and manipulated on the frontend until an action is performed that requires it to "commit" its state and updates to the backend.
+"commit"という用語は、フロントエンドとバックエンド間のLivewireの関係を考えるのに役立つ方法として選ばれました。コンポーネントはフロントエンドでレンダリングおよび操作され、アクションが実行されてバックエンドに"コミット"する必要がある状態と更新を要求します。
 
-You will recognize this schema from the payload in the network tab of your browser's DevTools, or [Livewire's JavaScript hooks](#javascript-hooks):
+これらのスキーマは、ブラウザのDevToolsのネットワークタブや、LivewireのJavaScriptフック（#javascript-hooks）で認識することができます：
 
 ```js
 let commit = {
-    // Snapshot object...
+    // スナップショットオブジェクト...
     snapshot: { ... },
 
-    // A key-value pair list of properties
-    // to update on the server...
+    // サーバー上で更新するためのプロパティのキーと値のペアリスト...
     updates: {},
 
-    // An array of methods (with parameters) to call server-side...
+    // サーバー側で呼び出すメソッドの配列（パラメータ付き）...
     calls: [
         { method: 'increment', params: [] },
     ],
 }
 ```
 
-## JavaScript hooks
+## JavaScriptフック
 
-For advanced users, Livewire exposes its internal client-side "hook" system. You can use the following hooks to extend Livewire's functionality or gain more information about your Livewire application.
+上級ユーザー向けに、Livewireは内部のクライアント側の"フック"システムを公開しています。これらのフックを使用して、Livewireの機能を拡張したり、Livewireアプリケーションに関する詳細情報を取得したりできます。
 
-### Component initialization
+### コンポーネントの初期化
 
-Every time a new component is discovered by Livewire — whether on the initial page load or later on — the `component.init` event is triggered. You can hook into `component.init` to intercept or initialize anything related to the new component:
+新しいコンポーネントがLivewireによって発見されるたびに（初期ページ読み込み時または後で）、`component.init`イベントがトリガーされます。このイベントにフックすることで、新しいコンポーネントに関連する何かを傍受または初期化することができます：
 
 ```js
 Livewire.hook('component.init', ({ component, cleanup }) => {
@@ -529,13 +512,13 @@ Livewire.hook('component.init', ({ component, cleanup }) => {
 })
 ```
 
-For more information, please consult the [documentation on the component object](#the-component-object).
+詳細については、[コンポーネントオブジェクトに関するドキュメント](#the-component-object)を参照してください。
 
-### DOM element initialization
+### DOM要素の初期化
 
-In addition to triggering an event when new components are initialized, Livewire triggers an event for each DOM element within a given Livewire component.
+新しいコンポーネントが初期化されるときに、Livewireは各DOM要素に対してもイベントをトリガーします。
 
-This can be used to provide custom Livewire HTML attributes within your application:
+これは、アプリケーション内でカスタムLivewire HTML属性を提供するために使用できます：
 
 ```js
 Livewire.hook('element.init', ({ component, el }) => {
@@ -543,9 +526,9 @@ Livewire.hook('element.init', ({ component, el }) => {
 })
 ```
 
-### DOM Morph hooks
+### DOMモーフィングフック
 
-During the DOM morphing phase—which occurs after Livewire completes a network roundtrip—Livewire triggers a series of events for every element that is mutated.
+DOMのモーフィングフェーズ中（Livewireがネットワーク往復を完了した後）、Livewireは変更される各要素に対して一連のイベントをトリガーします。
 
 ```js
 Livewire.hook('morph.updating',  ({ el, component, toEl, skip, childrenOnly }) => {
@@ -573,90 +556,88 @@ Livewire.hook('morph.added',  ({ el }) => {
 })
 ```
 
-In addition to the events fired per element, a `morph` and `morphed` event is fired for each Livewire component:
+要素ごとにトリガーされるイベントに加えて、各Livewireコンポーネントに対して`morph`および`morphed`イベントが発火します：
 
 ```js
 Livewire.hook('morph',  ({ el, component }) => {
-	// Runs just before the child elements in `component` are morphed
+	// `component`内の子要素がモーフィングされる直前に実行されます
 })
 
 Livewire.hook('morphed',  ({ el, component }) => {
-    // Runs after all child elements in `component` are morphed
+    // `component`内のすべての子要素がモーフィングされた後に実行されます
 })
 ```
 
-### Commit hooks
+### コミットフック
 
-Because Livewire requests contain multiple components, _request_ is too broad of a term to refer to an individual component's request and response payload. Instead, internally, Livewire refers to component updates as _commits_ — in reference to _committing_ component state to the server.
+Livewireリクエストには複数のコンポーネントが含まれるため、_リクエスト_という用語は、個々のコンポーネントのリクエストとレスポンスペイロードを指すには広すぎます。代わりに、内部的にLivewireはコンポーネントの更新を_コミット_と呼びます。これは、フロントエンドとバックエンド間のLivewireの関係を考えるのに役立ちます。
 
-These hooks expose `commit` objects. You can learn more about their schema by reading [the commit object documentation](#the-commit-payload).
+これらのフックは`commit`オブジェクトを公開します。これらのスキーマの詳細については、[commitオブジェクトのドキュメント](#the-commit-payload)を読むことで学ぶことができます。
 
-#### Preparing commits
+#### コミットの準備
 
-The `commit.prepare` hook will be triggered immediately before a request is sent to the server. This gives you a chance to add any last minute updates or actions to the outgoing request:
+`commit.prepare`フックは、リクエストがサーバーに送信される直前にトリガーされます。これにより、外向きのリクエストに最後の更新やアクションを追加するチャンスが与えられます：
 
 ```js
 Livewire.hook('commit.prepare', ({ component }) => {
-    // Runs before commit payloads are collected and sent to the server...
+    // コミットペイロードが収集され、サーバーに送信される前に実行されます...
 })
 ```
 
-#### Intercepting commits
+#### コミットの傍受
 
-Every time a Livewire component is sent to the server, a _commit_ is made. To hook into the lifecycle and contents of an individual commit, Livewire exposes a `commit` hook.
+Livewireコンポーネントがサーバーに送信されるたびに、_コミット_が行われます。ライフサイクルと個々のコミットの内容にフックするために、Livewireは`commit`フックを公開します。
 
-This hook is extremely powerful as it provides methods for hooking into both the request and response of a Livewire commit:
+このフックは非常に強力で、Livewireコミットのリクエストとレスポンスの両方にフックするためのメソッドを提供します：
 
 ```js
 Livewire.hook('commit', ({ component, commit, respond, succeed, fail }) => {
-    // Runs immediately before a commit's payload is sent to the server...
+    // コミットのペイロードがサーバーに送信される直前に実行されます...
 
     respond(() => {
-        // Runs after a response is received but before it's processed...
+        // レスポンスが受信された後、しかし処理される前に実行されます...
     })
 
     succeed(({ snapshot, effects }) => {
-        // Runs after a successful response is received and processed
-        // with a new snapshot and list of effects...
+        // 新しいスナップショットとエフェクトのリストを持つ成功したレスポンスが受信され、処理された後に実行されます...
     })
 
     fail(() => {
-        // Runs if some part of the request failed...
+        // リクエストの一部が失敗した場合に実行されます...
     })
 })
 ```
 
-## Request hooks
+## リクエストフック
 
-If you would like to instead hook into the entire HTTP request going and returning from the server, you can do so using the `request` hook:
+サーバーへの全体のHTTPリクエストの送信および返送にフックしたい場合は、`request`フックを使用できます：
 
 ```js
 Livewire.hook('request', ({ url, options, payload, respond, succeed, fail }) => {
-    // Runs after commit payloads are compiled, but before a network request is sent...
+    // コミットペイロードがコンパイルされた後、しかしネットワークリクエストが送信される前に実行されます...
 
     respond(({ status, response }) => {
-        // Runs when the response is received...
-        // "response" is the raw HTTP response object
-        // before await response.text() is run...
+        // レスポンスが受信されたときに実行されます...
+        // "response"は生のHTTPレスポンスオブジェクトです
+        // await response.text()が実行される前の状態...
     })
 
     succeed(({ status, json }) => {
-        // Runs when the response is received...
-        // "json" is the JSON response object...
+        // レスポンスが受信されたときに実行されます...
+        // "json"はJSONレスポンスオブジェクトです...
     })
 
     fail(({ status, content, preventDefault }) => {
-        // Runs when the response has an error status code...
-        // "preventDefault" allows you to disable Livewire's
-        // default error handling...
-        // "content" is the raw response content...
+        // レスポンスにエラーステータスコードがある場合に実行されます...
+        // "preventDefault"は、Livewireのデフォルトのエラーハンドリングを無効にすることを可能にします...
+        // "content"は生のレスポンスコンテンツです...
     })
 })
 ```
 
-### Customizing page expiration behavior
+### ページの有効期限切れ動作のカスタマイズ
 
-If the default page expired dialog isn't suitable for your application, you can implement a custom solution using the `request` hook:
+デフォルトのページ期限切れダイアログがアプリケーションに適していない場合は、`request`フックを使用してカスタムソリューションを実装できます：
 
 ```html
 <script>
@@ -664,7 +645,7 @@ If the default page expired dialog isn't suitable for your application, you can 
         Livewire.hook('request', ({ fail }) => {
             fail(({ status, preventDefault }) => {
                 if (status === 419) {
-                    confirm('Your custom page expiration behavior...')
+                    confirm('カスタムページ期限切れ動作...')
 
                     preventDefault()
                 }
@@ -674,4 +655,4 @@ If the default page expired dialog isn't suitable for your application, you can 
 </script>
 ```
 
-With the above code in your application, users will receive a custom dialog when their session has expired.
+上記のコードをアプリケーションに追加すると、ユーザーはセッションが期限切れになったときにカスタムダイアログを受け取ります。

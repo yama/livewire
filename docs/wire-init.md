@@ -1,5 +1,5 @@
-
-Livewire offers a `wire:init` directive to run an action as soon as the component is rendered. This can be helpful in cases where you don't want to hold up the entire page load, but want to load some data immediately after the page load.
+<!-- filepath: /home/yamamoto/oss/translations/livewire/docs/wire-init.md -->
+Livewireには、コンポーネントの描画直後にアクションを実行できる `wire:init` ディレクティブがあります。ページ全体の読み込みを待たず、ページ表示後すぐにデータを取得したい場合などに便利です。
 
 ```blade
 <div wire:init="loadPosts">
@@ -7,6 +7,6 @@ Livewire offers a `wire:init` directive to run an action as soon as the componen
 </div>
 ```
 
-The `loadPosts` action will be run immediately after the Livewire component renders on the page.
+この例では、Livewireコンポーネントの描画直後に `loadPosts` アクションが実行されます。
 
-In most cases however, [Livewire's lazy loading feature](/docs/lazy) is preferable to using `wire:init`.
+ただし、ほとんどの場合は [Livewireの遅延読み込み機能](/docs/lazy) の利用が推奨されます。

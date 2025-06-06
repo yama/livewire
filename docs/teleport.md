@@ -1,24 +1,24 @@
-Livewire allows you to _teleport_ part of your template to another part of the DOM on the page entirely.
+Livewireでは、テンプレートの一部をページ内の別のDOM位置へ「テレポート」できます。
 
-This is useful for things like nested dialogs. When nesting one dialog inside of another, the z-index of the parent modal is applied to the nested modal. This can cause problems with styling backdrops and overlays. To avoid this problem, you can use Livewire's `@teleport` directive to render each nested modal as siblings in the rendered DOM.
+これは、ネストしたダイアログのような場面で便利です。たとえば、ダイアログを入れ子にすると、親モーダルのz-indexが子モーダルにも適用され、バックドロップやオーバーレイのスタイルに問題が生じることがあります。こうした問題を避けるため、Livewireの`@teleport`ディレクティブを使えば、各モーダルをDOM上で兄弟要素としてレンダリングできます。
 
-This functionality is powered by [Alpine's `x-teleport` directive](https://alpinejs.dev/directives/teleport).
+この機能は[Alpineの`x-teleport`ディレクティブ](https://alpinejs.dev/directives/teleport)によって実現されています。
 
-## Basic usage
+## 基本的な使い方
 
-To _teleport_ a portion of your template to another part of the DOM, you can wrap it in Livewire's `@teleport` directive.
+テンプレートの一部を別のDOM位置へテレポートするには、Livewireの`@teleport`ディレクティブで囲みます。
 
-Below is an example of using `@teleport` to render a modal dialog's contents at the end of the `<body>` element on the page:
+以下は、`@teleport`を使ってモーダルダイアログの内容をページの`<body>`末尾にレンダリングする例です：
 
 ```blade
 <div>
-    <!-- Modal -->
+    <!-- モーダル -->
     <div x-data="{ open: false }">
-        <button @click="open = ! open">Toggle Modal</button>
+        <button @click="open = ! open">モーダルを切り替え</button>
 
         @teleport('body')
             <div x-show="open">
-                Modal contents...
+                モーダルの内容...
             </div>
         @endteleport
     </div>
@@ -26,24 +26,24 @@ Below is an example of using `@teleport` to render a modal dialog's contents at 
 ```
 
 > [!info]
-> The `@teleport` selector can be any string you would normally pass into something like `document.querySelector()`.
+> `@teleport`のセレクタは、通常`document.querySelector()`に渡す任意の文字列を指定できます。
 >
-> You can learn more about `document.querySelector()` by consulting its [MDN documentation](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector).
+> `document.querySelector()`の詳細は[MDNドキュメント](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector)をご覧ください。
 
-Now, when the above Livewire template is rendered on the page, the _contents_ portion of the modal will be rendered at the end of `<body>`:
+上記のLivewireテンプレートをページでレンダリングすると、モーダルの「内容」部分が`<body>`末尾に出力されます：
 
 ```html
 <body>
     <!-- ... -->
 
     <div x-show="open">
-        Modal contents...
+        モーダルの内容...
     </div>
 </body>
 ```
 
-> [!warning] You must teleport outside the component
-> Livewire only supports teleporting HTML outside your components. For example, teleporting a modal to the `<body>` tag is fine, but teleporting it to another element within your component will not work.
+> [!warning] コンポーネント外へのテレポートのみ対応
+> Livewireは、コンポーネント外へのHTMLテレポートのみをサポートしています。たとえば、モーダルを`<body>`タグへテレポートするのはOKですが、同じコンポーネント内の別要素へのテレポートは動作しません。
 
-> [!warning] Teleporting only works with a single root element
-> Make sure you only include a single root element inside your `@teleport` statement.
+> [!warning] テレポートはルート要素が1つのみ
+> `@teleport`内には必ず1つのルート要素だけを含めてください。

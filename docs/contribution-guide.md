@@ -1,41 +1,41 @@
-Hi there and welcome to the Livewire contribution guide. In this guide, we are going to take a look at how you can contribute to Livewire by submitting new features, fixing failing tests, or resolving bugs.
+こんにちは、Livewireへのコントリビューションガイドへようこそ。このガイドでは、新機能の追加、不具合の修正、テストの失敗対応など、Livewireへの貢献方法について説明します。
 
-## Setting up Livewire and Alpine locally
-To contribute, the easiest way is to ensure that the Livewire and Alpine repositories are set up on your local machine. This will allow you to make changes and run the test suite with ease.
+## LivewireとAlpineのローカル環境構築
+コントリビュートするには、LivewireとAlpineのリポジトリをローカル環境にセットアップするのが最も簡単です。これにより、変更を加えたりテストスイートを手軽に実行できるようになります。
 
-### Forking and cloning the repositories
-To get started, the first step is to fork and clone the repositories. The easiest way to do this is by using the [GitHub CLI](https://cli.github.com/), but you can also perform these steps manually by clicking the "Fork" button on the GitHub [repository page](https://github.com/livewire/livewire).
+### リポジトリのフォークとクローン
+まず最初に、リポジトリをフォークしてクローンします。最も簡単な方法は[GitHub CLI](https://cli.github.com/)を使うことですが、GitHubの[リポジトリページ](https://github.com/livewire/livewire)で「Fork」ボタンをクリックして手動で行うこともできます。
 
 ```shell
-# Fork and clone Livewire
+# Livewireをフォークしてクローン
 gh repo fork livewire/livewire --default-branch-only --clone=true --remote=false -- livewire
 
-# Switch the working directory to livewire
+# 作業ディレクトリをlivewireに移動
 cd livewire
 
-# Install all composer dependencies
+# composer依存パッケージをインストール
 composer install
 
-# Ensure Dusk is correctly configured
+# Duskの設定を確認
 vendor/bin/dusk-updater detect --no-interaction
 ```
 
-To set up Alpine, make sure you have [NPM](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) installed, and then run the following commands. If you prefer to fork manually, you can visit the [repository page](https://github.com/alpinejs/alpine).
+Alpineのセットアップには、[NPM](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)がインストールされている必要があります。以下のコマンドを実行してください。手動でフォークする場合は[リポジトリページ](https://github.com/alpinejs/alpine)を参照してください。
 
 ```shell
-# Fork and clone Alpine
+# Alpineをフォークしてクローン
 gh repo fork alpinejs/alpine --default-branch-only --clone=true --remote=false -- alpine
 
-# Switch the working directory to alpine
+# 作業ディレクトリをalpineに移動
 cd alpine
 
-# Install all npm dependencies
+# すべてのnpm依存パッケージをインストール
 npm install
 
-# Build all Alpine packages
+# すべてのAlpineパッケージをビルド
 npm run build
 
-# Link all Alpine packages locally
+# すべてのAlpineパッケージをローカルリンク
 cd packages/alpinejs && npm link && cd ../../
 cd packages/anchor && npm link && cd ../../
 cd packages/collapse && npm link && cd ../../
@@ -51,24 +51,24 @@ cd packages/persist && npm link && cd ../../
 cd packages/sort && npm link && cd ../../
 cd packages/ui && npm link && cd ../../
 
-# Switch the working directory back to livewire
+# 作業ディレクトリをlivewireに戻す
 cd ../livewire
 
-# Link all packages
+# すべてのパッケージをリンク
 npm link alpinejs @alpinejs/anchor @alpinejs/collapse @alpinejs/csp @alpinejs/docs @alpinejs/focus @alpinejs/history @alpinejs/intersect @alpinejs/mask @alpinejs/morph @alpinejs/navigate @alpinejs/persist @alpinejs/sort @alpinejs/ui
 
-# Build Livewire
+# Livewireをビルド
 npm run build
 ```
 
-## Contributing a Failing Test
+## テスト失敗のコントリビュート
 
-If you're encountering a bug and are unsure about how to solve it, especially given the complexity of the Livewire core, you might be wondering where to start. In such cases, the easiest approach is to contribute a failing test. This way, someone with more experience can assist in identifying and fixing the bug. Nonetheless, we do recommend that you also explore the core to gain a better understanding of how Livewire operates.
+バグに遭遇して解決方法がわからない場合、特にLivewireコアの複雑さを考えると、どこから始めればよいのか悩むかもしれません。そのような場合、最も簡単なアプローチは、失敗するテストをコントリビュートすることです。こうすることで、より経験豊富な誰かがバグの特定と修正を手伝ってくれるでしょう。それでも、Livewireの動作をよりよく理解するためにコアを探ることをお勧めします。
 
-Let's take a step-by-step approach.
+ステップバイステップで進めてみましょう。
 
-#### 1. Determine where to add your test
-The Livewire core is divided into different folders, each corresponding to specific Livewire features. For example:
+#### 1. テストを追加する場所を決定
+Livewireコアは、特定のLivewire機能に対応する異なるフォルダーに分かれています。例えば：
 
 ```shell
 src/Features/SupportAccessingParent
@@ -82,19 +82,19 @@ src/Features/SupportDataBinding
 //...
 ```
 
-Try to locate a feature that is related to the bug you are experiencing. If you can't find an appropriate folder or if you're unsure about which one to select, you can simply choose one and mention in your pull request that you require assistance with placing the test in the correct feature set.
+自分が経験しているバグに関連する機能を見つけてみてください。適切なフォルダーが見つからない場合や、どれを選べばよいかわからない場合は、単に1つを選択し、プルリクエストでテストを正しい機能セットに配置するのを手伝ってもらうように記載してください。
 
-#### 2. Determine the type of test
-The Livewire test suite consists of two types of tests:
+#### 2. テストの種類を決定
+Livewireのテストスイートは、2種類のテストで構成されています。
 
-1. **Unit tests**: These tests focus on the PHP implementation of Livewire.
-2. **Browser tests**: These tests run a series of steps inside a real browser and assert the correct outcome. They mainly focus on the Javascript implementation of Livewire.
+1. **ユニットテスト**: これらのテストは、LivewireのPHP実装に焦点を当てています。
+2. **ブラウザテスト**: これらのテストは、実際のブラウザ内で一連のステップを実行し、正しい結果をアサートします。主にLivewireのJavascript実装に焦点を当てています。
 
-If you're unsure about which type of test to choose or if you're unfamiliar with writing tests for Livewire, you can start with a browser test. Implement the steps you perform in your application and browser to reproduce the bug.
+どのテストタイプを選択すべきかわからない場合や、Livewireのテストを書くことに不慣れな場合は、ブラウザテストから始めることをお勧めします。バグを再現するためにアプリケーションやブラウザで実行するステップを実装してください。
 
-Unit tests should be added to the `UnitTest.php` file, and browser tests should be added to `BrowserTest.php`. If one or both of these files do not exist, you can create them yourself.
+ユニットテストは`UnitTest.php`ファイルに、ブラウザテストは`BrowserTest.php`ファイルに追加する必要があります。これらのファイルの1つまたは両方が存在しない場合は、自分で作成できます。
 
-**Unit test**
+**ユニットテスト**
 
 ```php
 use Tests\TestCase;
@@ -108,7 +108,7 @@ class UnitTest extends TestCase
 }
 ```
 
-**Browser test**
+**ブラウザテスト**
 
 ```php
 use Tests\BrowserTestCase;
@@ -122,21 +122,21 @@ class BrowserTest extends BrowserTestCase
 }
 ```
 
-> [!tip] Not sure how to write tests?
-> You can learn a lot by explore existing Unit and Browser tests to learn how tests are written. Even copying and pasting an existing test is a great starting point for writing your own test.
+> [!tip] テストの書き方がわからない？
+> 既存のユニットテストやブラウザテストを探検することで、多くのことを学ぶことができます。既存のテストをコピー＆ペーストするだけでも、自分のテストを書くための素晴らしい出発点になります。
 
-#### 3. Preparing your pull request branch
-Once you have completed your feature or failing test, it's time to submit your Pull Request (PR) to the Livewire repository. First, ensure that you commit your changes to a separate branch (avoid using `main`). To create a new branch, you can use the `git` command:
+#### 3. プルリクエスト用ブランチの準備
+機能や失敗したテストの追加が完了したら、Livewireリポジトリにプルリクエスト（PR）を送信する準備が整いました。まず、変更を別のブランチにコミットしていることを確認してください（`main`の使用は避けてください）。新しいブランチを作成するには、`git`コマンドを使用します。
 
 ```shell
 git checkout -b my-feature
 ```
 
-You can name your branch anything you want, but for future reference, it's helpful to use a descriptive name that reflects your feature or failing test.
+ブランチには任意の名前を付けることができますが、将来的な参照のために、機能や失敗したテストを反映した説明的な名前を使用することをお勧めします。
 
-Next, commit your changes to your branch. You can use `git add .` to stage all changes and then `git commit -m "Add my feature"` to commit all changes with a descriptive commit message.
+次に、変更をブランチにコミットします。`git add .`を使用してすべての変更をステージし、`git commit -m "Add my feature"`を使用して説明的なコミットメッセージとともにすべての変更をコミットできます。
 
-However, your branch is currently only available on your local machine. To create a Pull Request, you need to push your branch to your forked Livewire repository using `git push`.
+ただし、現在あなたのブランチはローカルマシンにのみ存在します。プルリクエストを作成するには、`git push`を使用してブランチをフォークしたLivewireリポジトリにプッシュする必要があります。
 
 ```shell
 git push origin my-feature
@@ -150,36 +150,36 @@ To github.com:Username/livewire.git
  * [new branch]        my-feature -> my-feature
 ```
 
-#### 4. Submitting your pull request
-We're almost there! Open your web browser and navigate to your forked Livewire repository (`https://github.com/<your-username>/livewire`). In the center of your screen, you will see a new notification: "**my-feature had recent pushes 1 minute ago**" along with a button that says "**Compare & pull request**." Click the button to open the pull request form.
+#### 4. プルリクエストの送信
+もう少しです！ウェブブラウザを開いて、フォークしたLivewireリポジトリ（`https://github.com/<your-username>/livewire`）に移動します。画面の中央に「**my-featureは1分前にプッシュされました**」という新しい通知と「**Compare & pull request**」というボタンが表示されます。ボタンをクリックしてプルリクエストフォームを開きます。
 
-In the form, provide a title that describes your pull request and then proceed to the description section. The text area already contains a predefined template. Try to answer every question:
+フォームに、プルリクエストを説明するタイトルを入力し、次に説明セクションに進みます。テキストエリアには、あらかじめ定義されたテンプレートが含まれています。すべての質問に答えるようにしてください：
 
 ```
-Review the contribution guide first at: https://livewire.laravel.com/docs/contribution-guide
+まずはコントリビューションガイドを確認してください: https://livewire.laravel.com/docs/contribution-guide
 
-1️⃣ Is this something that is wanted/needed? Did you create a discussion about it first?
-Yes, you can find the discussion here: https://github.com/livewire/livewire/discussions/999999
+1️⃣ これは必要とされているものですか？最初に議論を作成しましたか？
+はい、議論はここにあります: https://github.com/livewire/livewire/discussions/999999
 
-2️⃣ Did you create a branch for your fix/feature? (Main branch PR's will be closed)
-Yes, the branch is named `my-feature`
+2️⃣ 修正/機能のためのブランチを作成しましたか？ (メインブランチへのPRはクローズされます)
+はい、ブランチ名は`my-feature`です
 
-3️⃣ Does it contain multiple, unrelated changes? Please separate the PRs out.
-No, the changes are only related to my feature.
+3️⃣ 複数の無関係な変更が含まれていますか？PRを分けてください。
+いいえ、変更は私の機能に関連しています。
 
-4️⃣ Does it include tests? (Required)
-Yes
+4️⃣ テストは含まれていますか？ (必須)
+はい
 
-5️⃣ Please include a thorough description (including small code snippets if possible) of the improvement and reasons why it's useful.
+5️⃣ 改善点とその有用性について、詳細な説明（可能であれば小さなコードスニペットを含む）を含めてください。
 
-These changes will improve memory usage. You can see the benchmark results here:
+これらの変更により、メモリ使用量が改善されます。ベンチマーク結果はここにあります：
 
 // ...
 
 ```
 
-All set? Click on **Create pull request** 🚀 Congratulations! You've successfully created your first contribution 🎉
+すべて準備できましたか？ **プルリクエストを作成**をクリックしてください🚀 おめでとうございます！初めてのコントリビューションが成功しました🎉
 
-The maintainers will review your PR and may provide feedback or request changes. Please make an effort to address any feedback as soon as possible.
+メンテイナーがあなたのPRをレビューし、フィードバックを提供したり、変更をリクエストしたりすることがあります。フィードバックにはできるだけ早く対処するよう努めてください。
 
-Thank you for contributing to Livewire!
+Livewireへのコントリビューションに感謝します！

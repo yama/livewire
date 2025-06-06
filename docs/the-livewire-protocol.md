@@ -1,3 +1,4 @@
+<!-- Livewire プロトコルの例 -->
 ```json
 {
     "data": [

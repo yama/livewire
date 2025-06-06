@@ -1,15 +1,16 @@
-Laravel's pagination feature allows you to query a subset of data and provides your users with the ability to navigate between *pages* of those results.
+<!-- filepath: /home/yamamoto/oss/translations/livewire/docs/pagination.md -->
+Laravelのページネーション機能を使うと、データの一部だけを取得し、ユーザーがその結果の「ページ」を移動しながら閲覧できるようになります。
 
-Because Laravel's paginator was designed for static applications, in a non-Livewire app, each page navigation triggers a full browser visit to a new URL containing the desired page (`?page=2`).
+Laravelのページネーターは静的なアプリケーション向けに設計されているため、Livewireを使わない通常のアプリケーションでは、ページを移動するたびに新しいURL（例: `?page=2`）へのブラウザ遷移が発生します。
 
-However, when you use pagination inside a Livewire component, users can navigate between pages while remaining on the same page. Livewire will handle everything behind the scenes, including updating the URL query string with the current page.
+しかし、Livewireコンポーネント内でページネーションを利用すると、ユーザーは同じページ内でページ移動ができ、Livewireが裏側ですべてを処理します。これには、現在のページ番号をURLのクエリ文字列に反映することも含まれます。
 
-## Basic usage
+## 基本的な使い方
 
-Below is the most basic example of using pagination inside a `ShowPosts` component to only show ten posts at a time:
+以下は、`ShowPosts`コンポーネント内でページネーションを使い、１度に10件だけ投稿を表示する最も基本的な例です。
 
-> [!warning] You must use the `WithPagination` trait
-> To take advantage of Livewire's pagination features, each component containing pagination must use the `Livewire\WithPagination` trait.
+> [!warning] `WithPagination`トレイトの利用が必須です
+> Livewireのページネーション機能を利用するには、ページネーションを含む各コンポーネントで`Livewire\WithPagination`トレイトを使う必要があります。
 
 ```php
 <?php
@@ -45,15 +46,15 @@ class ShowPosts extends Component
 </div>
 ```
 
-As you can see, in addition to limiting the number of posts shown via the `Post::paginate()` method, we will also use `$posts->links()` to render page navigation links.
+このように、`Post::paginate()`メソッドを使って表示件数を制限するだけでなく、`$posts->links()`を使ってページ移動用のリンクを表示します。
 
-For more information on pagination using Laravel, check out [Laravel's comprehensive pagination documentation](https://laravel.com/docs/pagination).
+Laravelのページネーションに関する詳細は、[Laravelの包括的なページネーションドキュメント](https://laravel.com/docs/pagination)を参照してください。
 
-## Disabling URL query string tracking
+## URLのクエリ文字列追跡の無効化
 
-By default, Livewire's paginator tracks the current page in the browser URL's query string like so: `?page=2`.
+デフォルトでは、Livewireのページネーターは現在のページをブラウザのURLのクエリ文字列に`?page=2`のように追跡します。
 
-If you wish to still use Livewire's pagination utility, but disable query string tracking, you can do so using the `WithoutUrlPagination` trait:
+Livewireのページネーション機能を使いつつ、クエリ文字列による追跡を無効にしたい場合は、`WithoutUrlPagination`トレイトを使います。
 
 ```php
 use Livewire\WithoutUrlPagination;
@@ -68,31 +69,31 @@ class ShowPosts extends Component
 }
 ```
 
-Now, pagination will work as expected, but the current page won't show up in the query string. This also means the current page won't be persisted across page changes.
+これで、ページネーションは期待通りに動作しますが、現在のページはクエリ文字列に表示されなくなります。つまり、ページ変更時に現在のページが保持されなくなります。
 
-## Customizing scroll behavior
+## スクロール動作のカスタマイズ
 
-By default, Livewire's paginator scrolls to the top of the page after every page change.
+デフォルトでは、Livewireのページネーターはページ変更後にページのトップにスクロールします。
 
-You can disable this behavior by passing `false` to the `scrollTo` parameter of the `links()` method like so:
+この動作を無効にするには、`links()`メソッドの`scrollTo`パラメータに`false`を渡します。
 
 ```blade
 {{ $posts->links(data: ['scrollTo' => false]) }}
 ```
 
-Alternatively, you can provide any CSS selector to the `scrollTo` parameter, and Livewire will find the nearest element matching that selector and scroll to it after each navigation:
+または、`scrollTo`パラメータに任意のCSSセレクタを指定すると、Livewireはそのセレクタに一致する最寄りの要素を見つけて、各ナビゲーション後にそこにスクロールします。
 
 ```blade
 {{ $posts->links(data: ['scrollTo' => '#paginated-posts']) }}
 ```
 
-## Resetting the page
+## ページのリセット
 
-When sorting or filtering results, it is common to want to reset the page number back to `1`.
+結果のソートやフィルタリングを行う際、ページ番号を`1`にリセットしたくなることがよくあります。
 
-For this reason, Livewire provides the `$this->resetPage()` method, allowing you to reset the page number from anywhere in your component.
+このために、Livewireはどこからでもページ番号をリセットできる`$this->resetPage()`メソッドを提供しています。
 
-The following component demonstrates using this method to reset the page after the search form is submitted:
+以下のコンポーネントは、検索フォームが送信された後にページをリセットする方法を示しています。
 
 ```php
 <?php
@@ -141,24 +142,24 @@ class SearchPosts extends Component
 </div>
 ```
 
-Now, if a user was on page `5` of the results and then filtered the results further by pressing "Search posts", the page would be reset back to `1`.
+これで、ユーザーが結果のページ`5`にいて、「Search posts」を押してさらに結果をフィルタリングした場合、ページは`1`にリセットされます。
 
-### Available page navigation methods
+### 利用可能なページナビゲーションメソッド
 
-In addition to `$this->resetPage()`, Livewire provides other useful methods for navigating between pages programmatically from your component:
+`$this->resetPage()`に加えて、Livewireはコンポーネントからプログラム的にページ間を移動するための他の便利なメソッドも提供しています。
 
-| Method        | Description                               |
+| メソッド        | 説明                                   |
 |-----------------|-------------------------------------------|
-| `$this->setPage($page)`    | Set the paginator to a specific page number |
-| `$this->resetPage()`    | Reset the page back to 1 |
-| `$this->nextPage()`    | Go to the next page |
-| `$this->previousPage()`    | Go to the previous page |
+| `$this->setPage($page)`    | ページネーターを特定のページ番号に設定 |
+| `$this->resetPage()`    | ページを1にリセット |
+| `$this->nextPage()`    | 次のページに移動 |
+| `$this->previousPage()`    | 前のページに移動 |
 
-## Multiple paginators
+## 複数のページネーター
 
-Because both Laravel and Livewire use URL query string parameters to store and track the current page number, if a single page contains multiple paginators, it's important to assign them different names.
+LaravelとLivewireの両方がURLのクエリ文字列パラメータを使用して現在のページ番号を保存および追跡するため、1つのページに複数のページネーターがある場合は、それぞれに異なる名前を付けることが重要です。
 
-To demonstrate the problem more clearly, consider the following `ShowClients` component:
+問題をより明確に示すために、以下の`ShowClients`コンポーネントを考えてみましょう。
 
 ```php
 use Livewire\WithPagination;
@@ -178,13 +179,13 @@ class ShowClients extends Component
 }
 ```
 
-As you can see, the above component contains a paginated set of *clients*. If a user were to navigate to page `2` of this result set, the URL might look like the following:
+上記のコンポーネントには、ページネーションされた*クライアント*のセットがあります。ユーザーがこの結果セットのページ`2`に移動すると、URLは次のようになります。
 
 ```
 http://application.test/?page=2
 ```
 
-Suppose the page also contains a `ShowInvoices` component that also uses pagination. To independently track each paginator's current page, you need to specify a name for the second paginator like so:
+ページに`ShowInvoices`コンポーネントがあり、これもページネーションを使用しているとします。2番目のページネーターの現在のページを独立して追跡するには、次のようにページネームを指定する必要があります。
 
 ```php
 use Livewire\WithPagination;
@@ -204,13 +205,13 @@ class ShowInvoices extends Component
 }
 ```
 
-Now, because of the `pageName` parameter that has been added to the `paginate` method, when a user visits page `2` of the *invoices*, the URL will contain the following:
+これで、`paginate`メソッドに追加された`pageName`パラメータのおかげで、ユーザーが*請求書*のページ`2`を訪れると、URLには次のように表示されます。
 
 ```
 https://application.test/customers?page=2&invoices-page=2
 ```
 
-When using Livewire's page navigation methods on a named paginator, you must provide the page name as an additional parameter:
+名前付きページネーターでLivewireのページナビゲーションメソッドを使用する場合は、追加のパラメータとしてページ名を指定する必要があります。
 
 ```php
 $this->setPage(2, pageName: 'invoices-page');
@@ -222,9 +223,9 @@ $this->nextPage(pageName: 'invoices-page');
 $this->previousPage(pageName: 'invoices-page');
 ```
 
-## Hooking into page updates
+## ページ更新時のフック
 
-Livewire allows you to execute code before and after a page is updated by defining either of the following methods inside your component:
+Livewireを使うと、ページが更新される前後にコードを実行できます。これは、コンポーネント内に次のいずれかのメソッドを定義することで行います。
 
 ```php
 use Livewire\WithPagination;
@@ -235,12 +236,12 @@ class ShowPosts extends Component
 
     public function updatingPage($page)
     {
-        // Runs before the page is updated for this component...
+        // ページが更新される前にこのコンポーネント内で実行される...
     }
 
     public function updatedPage($page)
     {
-        // Runs after the page is updated for this component...
+        // ページが更新された後にこのコンポーネント内で実行される...
     }
 
     public function render()
@@ -252,11 +253,11 @@ class ShowPosts extends Component
 }
 ```
 
-### Named paginator hooks
+### 名前付きページネーターフック
 
-The previous hooks only apply to the default paginator. If you are using a named paginator, you must define the methods using the paginator's name.
+前述のフックはデフォルトのページネーターにのみ適用されます。名前付きページネーターを使用している場合は、ページネーターの名前を使用してメソッドを定義する必要があります。
 
-For example, below is an example of what a hook for a paginator named `invoices-page` would look like:
+たとえば、`invoices-page`という名前のページネーターのフックは次のようになります。
 
 ```php
 public function updatingInvoicesPage($page)
@@ -265,27 +266,27 @@ public function updatingInvoicesPage($page)
 }
 ```
 
-### General paginator hooks
+### 一般的なページネーターフック
 
-If you prefer to not reference the paginator name in the hook method name, you can use the more generic alternatives and simply receive the `$pageName` as a second argument to the hook method:
+フックメソッド名にページネーター名を参照したくない場合は、より一般的な代替手段を使用し、フックメソッドに`$pageName`を第二引数として受け取ることができます。
 
 ```php
 public function updatingPaginators($page, $pageName)
 {
-    // Runs before the page is updated for this component...
+    // ページが更新される前にこのコンポーネント内で実行される...
 }
 
 public function updatedPaginators($page, $pageName)
 {
-    // Runs after the page is updated for this component...
+    // ページが更新された後にこのコンポーネント内で実行される...
 }
 ```
 
-## Using the simple theme
+## シンプルテーマの使用
 
-You can use Laravel's `simplePaginate()` method instead of `paginate()` for added speed and simplicity.
+Laravelの`simplePaginate()`メソッドを`paginate()`の代わりに使用すると、速度とシンプルさが向上します。
 
-When paginating results using this method, only *next* and *previous* navigation links will be shown to the user instead of individual links for each page number:
+このメソッドを使用して結果をページネーションする場合、ユーザーには各ページ番号の個別リンクの代わりに*次へ*と*前へ*のナビゲーションリンクのみが表示されます。
 
 ```php
 public function render()
@@ -296,11 +297,11 @@ public function render()
 }
 ```
 
-For more information on simple pagination, check out [Laravel's "simplePaginator" documentation](https://laravel.com/docs/pagination#simple-pagination).
+シンプルページネーションの詳細については、[Laravelの「simplePaginator」ドキュメント](https://laravel.com/docs/pagination#simple-pagination)を参照してください。
 
-## Using cursor pagination
+## カーソルページネーションの使用
 
-Livewire also supports using Laravel's cursor pagination — a faster pagination method useful in large datasets:
+Livewireは、Laravelのカーソルページネーションもサポートしています。これは、大規模なデータセットに便利なより高速なページネーションメソッドです。
 
 ```php
 public function render()
@@ -311,69 +312,69 @@ public function render()
 }
 ```
 
-By using `cursorPaginate()` instead of `paginate()` or `simplePaginate()`, the query string in your application's URL will store an encoded *cursor* instead of a standard page number. For example:
+`paginate()`や`simplePaginate()`の代わりに`cursorPaginate()`を使用すると、アプリケーションのURLのクエリ文字列には、標準のページ番号の代わりにエンコードされた*カーソル*が保存されます。例えば：
 
 ```
 https://example.com/posts?cursor=eyJpZCI6MTUsIl9wb2ludHNUb05leHRJdGVtcyI6dHJ1ZX0
 ```
 
-For more information on cursor pagination, check out [Laravel's cursor pagination documentation](https://laravel.com/docs/pagination#cursor-pagination).
+カーソルページネーションの詳細については、[Laravelのカーソルページネーションドキュメント](https://laravel.com/docs/pagination#cursor-pagination)を参照してください。
 
-## Using Bootstrap instead of Tailwind
+## Tailwindの代わりにBootstrapを使用
 
-If you are using [Bootstrap](https://getbootstrap.com/) instead of [Tailwind](https://tailwindcss.com/) as your application's CSS framework, you can configure Livewire to use Bootstrap styled pagination views instead of the default Tailwind views.
+アプリケーションのCSSフレームワークとして[Bootstrap](https://getbootstrap.com/)を使用している場合、Livewireを構成してデフォルトのTailwindビューの代わりにBootstrapスタイルのページネーションビューを使用できます。
 
-To accomplish this, set the `pagination_theme` configuration value in your application's `config/livewire.php` file:
+これを行うには、アプリケーションの`config/livewire.php`ファイルで`pagination_theme`構成値を設定します。
 
 ```php
 'pagination_theme' => 'bootstrap',
 ```
 
-> [!info] Publishing Livewire's configuration file
-> Before customizing the pagination theme, you must first publish Livewire's configuration file to your application's `/config` directory by running the following command:
+> [!info] Livewireの構成ファイルの公開
+> ページネーションテーマをカスタマイズする前に、次のコマンドを実行してLivewireの構成ファイルをアプリケーションの`/config`ディレクトリに公開する必要があります。
 > ```shell
 > php artisan livewire:publish --config
 > ```
 
-## Modifying the default pagination views
+## デフォルトのページネーションビューの変更
 
-If you want to modify Livewire's pagination views to fit your application's style, you can do so by *publishing* them using the following command:
+Livewireのページネーションビューをアプリケーションのスタイルに合わせて変更したい場合は、次のコマンドを使用してそれらを*公開*できます。
 
 ```shell
 php artisan livewire:publish --pagination
 ```
 
-After running this command, the following four files will be inserted into the `resources/views/vendor/livewire` directory:
+このコマンドを実行すると、次の4つのファイルが`resources/views/vendor/livewire`ディレクトリに挿入されます。
 
-| View file name        | Description                               |
+| ビューファイル名        | 説明                                   |
 |-----------------|-------------------------------------------|
-| `tailwind.blade.php`    | The standard Tailwind pagination theme |
-| `tailwind-simple.blade.php`    | The *simple* Tailwind pagination theme |
-| `bootstrap.blade.php`    | The standard Bootstrap pagination theme |
-| `bootstrap-simple.blade.php`    | The *simple* Bootstrap pagination theme |
+| `tailwind.blade.php`    | 標準のTailwindページネーションテーマ |
+| `tailwind-simple.blade.php`    | *シンプル*なTailwindページネーションテーマ |
+| `bootstrap.blade.php`    | 標準のBootstrapページネーションテーマ |
+| `bootstrap-simple.blade.php`    | *シンプル*なBootstrapページネーションテーマ |
 
-Once the files have been published, you have complete control over them. When rendering pagination links using the paginated result's `->links()` method inside your template, Livewire will use these files instead of its own.
+ファイルが公開されると、それらを完全に制御できます。テンプレート内でページネーションリンクをレンダリングする際に、Livewireは自分の代わりにこれらのファイルを使用します。
 
-## Using custom pagination views
+## カスタムページネーションビューの使用
 
-If you wish to bypass Livewire's pagination views entirely, you can render your own in one of two ways:
+Livewireのページネーションビューを完全にバイパスしたい場合は、次の2つの方法のいずれかで独自のビューをレンダリングできます。
 
-1. The `->links()` method in your Blade view
-2. The `paginationView()` or `paginationSimpleView()` method in your component
+1. Bladeビュー内の`->links()`メソッド
+2. コンポーネント内の`paginationView()`または`paginationSimpleView()`メソッド
 
-### Via `->links()`
+### `->links()`経由
 
-The first approach is to simply pass your custom pagination Blade view name to the `->links()` method directly:
+最初のアプローチは、単にカスタムページネーションBladeビューの名前を`->links()`メソッドに直接渡すことです。
 
 ```blade
 {{ $posts->links('custom-pagination-links') }}
 ```
 
-When rendering the pagination links, Livewire will now look for a view at `resources/views/custom-pagination-links.blade.php`.
+ページネーションリンクをレンダリングする際に、Livewireは`resources/views/custom-pagination-links.blade.php`にビューを探します。
 
-### Via `paginationView()` or `paginationSimpleView()`
+### `paginationView()`または`paginationSimpleView()`経由
 
-The second approach is to declare a `paginationView` or `paginationSimpleView` method inside your component which returns the name of the view you would like to use:
+2番目のアプローチは、コンポーネント内に`paginationView`または`paginationSimpleView`メソッドを宣言し、使用したいビューの名前を返すことです。
 
 ```php
 public function paginationView()
@@ -387,11 +388,11 @@ public function paginationSimpleView()
 }
 ```
 
-### Sample pagination view
+### サンプルページネーションビュー
 
-Below is an unstyled sample of a simple Livewire pagination view for your reference.
+以下は、参考のためのスタイルなしのシンプルなLivewireページネーションビューのサンプルです。
 
-As you can see, you can use Livewire's page navigation helpers like `$this->nextPage()` directly inside your template by adding `wire:click="nextPage"` to buttons:
+このように、ボタンに`wire:click="nextPage"`を追加することで、テンプレート内でLivewireのページナビゲーションヘルパー`$this->nextPage()`を直接使用できます。
 
 ```blade
 <div>

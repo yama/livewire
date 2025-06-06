@@ -111,13 +111,13 @@ class ShowPosts extends Component
 }
 ```
 
-In the above component, the computed property is cached before a new post is created because the `createPost()` method accesses `$this->posts` before the new post is created. To ensure that `$this->posts` contains the most up-to-date contents when accessed inside the view, the cache is invalidated using `unset($this->posts)`.
+上記のコンポーネントでは、`createPost()` メソッドが新しい投稿を作成する前に `$this->posts` にアクセスしているため、コンピューテッドプロパティは新しい投稿が作成される前の状態でキャッシュされます。ビュー内で `$this->posts` を最新の内容にするには、`unset($this->posts)` を使ってキャッシュを無効化します。
 
-### Caching between requests
+### リクエスト間でのキャッシュ
 
-Sometimes you would like to cache the value of a computed property for the lifespan of a Livewire component, rather than it being cleared after every request. In these cases, you can use [Laravel's caching utilities](https://laravel.com/docs/cache#retrieve-store).
+Livewire コンポーネントのライフサイクル全体でコンピューテッドプロパティの値をキャッシュしたい場合もあります（リクエストごとにクリアされるのではなく）。このような場合は、[Laravel のキャッシュユーティリティ](https://laravel.com/docs/cache#retrieve-store)を利用できます。
 
-Below is an example of a computed property named `user()`, where instead of executing the Eloquent query directly, we wrap the query in `Cache::remember()` to ensure that any future requests retrieve it from Laravel's cache instead of re-executing the query:
+以下は `user()` というコンピューテッドプロパティの例です。Eloquent クエリを直接実行する代わりに、`Cache::remember()` でラップすることで、今後のリクエストではクエリを再実行せず Laravel のキャッシュから値を取得できるようにしています。
 
 ```php
 <?php
@@ -204,9 +204,9 @@ public function posts()
 
 ## When to use computed properties?
 
-In addition to offering performance advantages, there are a few other scenarios where computed properties are helpful.
+In addition to offering performance advantages, there are a few other scenarios where computed properties are helpful。
 
-Specifically, when passing data into your component's Blade template, there are a few occasions where a computed property is a better alternative. Below is an example of a simple component's `render()` method passing a collection of `posts` to a Blade template:
+特に、コンポーネントの Blade テンプレートにデータを渡すときに、コンピューテッドプロパティを使うことでより適したケースがいくつかあります。以下は、投稿のコレクションを Blade テンプレートに渡すシンプルなコンポーネントの `render()` メソッドの例です。
 
 ```php
 public function render()
@@ -225,13 +225,13 @@ public function render()
 </div>
 ```
 
-Although this is sufficient for many use cases, here are three scenarios where a computed property would be a better alternative:
+この方法でも多くのケースで十分ですが、コンピューテッドプロパティを使うことでより適したケースが３つあります。
 
-### Conditionally accessing values
+### 値への条件付きアクセス
 
-If you are conditionally accessing a value that is computationally expensive to retrieve in your Blade template, you can reduce performance overhead using a computed property.
+Blade テンプレート内で計算コストの高い値に条件付きでアクセスする場合、コンピューテッドプロパティを使うことでパフォーマンスの無駄を減らせます。
 
-Consider the following template without a computed property:
+以下はコンピューテッドプロパティを使わない場合のテンプレート例です。
 
 ```blade
 <div>
@@ -243,9 +243,9 @@ Consider the following template without a computed property:
 </div>
 ```
 
-If a user is restricted from viewing posts, the database query to retrieve the posts has already been made, yet the posts are never used in the template.
+この場合、ユーザーが投稿の閲覧を制限されていても、投稿を取得するためのデータベースクエリはすでに実行されてしまい、テンプレート内で実際には使われません。
 
-Here's a version of the above scenario using a computed property instead:
+次に、同じシナリオをコンピューテッドプロパティで書き直した例です。
 
 ```php
 use Livewire\Attributes\Computed;
@@ -273,13 +273,13 @@ public function render()
 </div>
 ```
 
-Now, because we are providing the posts to the template using a computed property, we only execute the database query when the data is needed.
+このように、コンピューテッドプロパティを使ってテンプレートにデータを渡すことで、必要なときだけデータベースクエリが実行されるようになります。
 
-### Using inline templates
+### インラインテンプレートの利用
 
-Another scenario when computed properties are helpful is using [inline templates](/docs/components#inline-components) in your component.
+コンピューテッドプロパティが役立つもう１つのケースは、[インラインテンプレート](/docs/components#inline-components)を使う場合です。
 
-Below is an example of an inline component where, because we are returning a template string directly inside `render()`, we never have an opportunity to pass data into the view:
+以下は `render()` メソッド内でテンプレート文字列を直接返しているインラインコンポーネントの例です。この場合、ビューにデータを渡す機会がありません。
 
 ```php
 <?php
@@ -309,15 +309,15 @@ class ShowPosts extends Component
 }
 ```
 
-In the above example, without a computed property, we would have no way to explicitly pass data into the Blade template.
+このような場合、コンピューテッドプロパティがなければ Blade テンプレートに明示的にデータを渡す方法がありません。
 
-### Omitting the render method
+### render メソッドの省略
 
-In Livewire, another way to cut down on boilerplate in your components is by omitting the `render()` method entirely. When omitted, Livewire will use its own `render()` method returning the corresponding Blade view by convention.
+Livewire では、コンポーネントの `render()` メソッド自体を省略して記述量を減らすこともできます。`render()` メソッドを省略した場合、Livewire は自動的に対応する Blade ビューを返す `render()` メソッドを内部的に利用します。
 
-In these case, you obviously don't have a `render()` method from which you can pass data into a Blade view.
+この場合、Blade ビューにデータを渡すための `render()` メソッドが存在しません。
 
-Rather than re-introducing the `render()` method into your component, you can instead provide that data to the view via computed properties:
+このようなときも、`render()` メソッドを再び追加するのではなく、コンピューテッドプロパティを使ってビューにデータを提供できます。
 
 ```php
 <?php

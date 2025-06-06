@@ -1,6 +1,7 @@
-Livewire actions are methods on your component that can be triggered by frontend interactions like clicking a button or submitting a form. They provide the developer experience of being able to call a PHP method directly from the browser, allowing you to focus on the logic of your application without getting bogged down writing boilerplate code connecting your application's frontend and backend.
+<!-- filepath: /home/yamamoto/oss/translations/livewire/docs/actions.md -->
+Livewireのアクションは、ボタンのクリックやフォーム送信など、フロントエンドの操作によってコンポーネント内のメソッドを呼び出す仕組みです。これにより、ブラウザから直接PHPメソッドを呼び出す感覚で開発でき、アプリケーションのロジックに集中しながら、フロントエンドとバックエンドをつなぐ煩雑なコードを書く必要がなくなります。
 
-Let's explore a basic example of calling a `save` action on a `CreatePost` component:
+ここでは、`CreatePost`コンポーネントの`save`アクションを呼び出す基本的な例を見てみましょう。
 
 ```php
 <?php
@@ -43,43 +44,43 @@ class CreatePost extends Component
 </form>
 ```
 
-In the above example, when a user submits the form by clicking "Save", `wire:submit` intercepts the `submit` event and calls the `save()` action on the server.
+上記の例では、ユーザーが「Save」をクリックしてフォームを送信すると、`wire:submit`が`submit`イベントをキャッチし、サーバー上の`save()`アクションを呼び出します。
 
-In essence, actions are a way to easily map user interactions to server-side functionality without the hassle of submitting and handling AJAX requests manually.
+要するに、アクションはユーザーの操作をサーバーサイドの機能に簡単にマッピングする方法であり、手動でAJAXリクエストを送信して処理する手間を省いてくれます。
 
-## Refreshing a component
+## コンポーネントのリフレッシュ
 
-Sometimes you may want to trigger a simple "refresh" of your component. For example, if you have a component checking the status of something in the database, you may want to show a button to your users allowing them to refresh the displayed results.
+時には、コンポーネントを単純に「リフレッシュ」したい場合もあるでしょう。例えば、データベースの何かのステータスをチェックしているコンポーネントがあり、ユーザーに結果を再表示するためのボタンを表示したい場合です。
 
-You can do this using Livewire's simple `$refresh` action anywhere you would normally reference your own component method:
+この場合、Livewireのシンプルな`$refresh`アクションを使用できます。これは、自分のコンポーネントメソッドを参照する場所ならどこでも使うことができます。
 
 ```blade
 <button type="button" wire:click="$refresh">...</button>
 ```
 
-When the `$refresh` action is triggered, Livewire will make a server-roundtrip and re-render your component without calling any methods.
+`$refresh`アクションがトリガーされると、Livewireはサーバーとの往復を行い、メソッドを呼び出すことなくコンポーネントを再レンダリングします。
 
-It's important to note that any pending data updates in your component (for example `wire:model` bindings) will be applied on the server when the component is refreshed.
+注意すべきは、コンポーネントがリフレッシュされるときに（例えば`wire:model`バインディングのような）保留中のデータ更新がサーバーで適用されるということです。
 
-Internally, Livewire uses the name "commit" to refer to any time a Livewire component is updated on the server. If you prefer this terminology, you can use the `$commit` helper instead of `$refresh`. The two are identical.
+内部的に、Livewireはコンポーネントがサーバーで更新されるたびに「コミット」という名前を使用します。この用語を好む場合は、`$refresh`の代わりに`$commit`ヘルパーを使用できます。両者は同じです。
 
 ```blade
 <button type="button" wire:click="$commit">...</button>
 ```
 
-You can also trigger a component refresh using AlpineJS in your Livewire component:
+また、Livewireコンポーネント内でAlpineJSを使用してコンポーネントのリフレッシュをトリガーすることもできます。
 
 ```blade
 <button type="button" x-on:click="$wire.$refresh()">...</button>
 ```
 
-Learn more by reading the [documentation for using Alpine inside Livewire](/docs/alpine).
+詳細は、[Livewire内でAlpineを使用するためのドキュメント](/docs/alpine)を参照してください。
 
-## Confirming an action
+## アクションの確認
 
-When allowing users to perform dangerous actions—such as deleting a post from the database—you may want to show them a confirmation alert to verify that they wish to perform that action.
+ユーザーにデータベースからポストを削除させるなどの危険なアクションを許可する場合、そのアクションを実行するかどうか確認するアラートを表示したいことがあります。
 
-Livewire makes this easy by providing a simple directive called `wire:confirm`:
+Livewireでは、`wire:confirm`というシンプルなディレクティブを提供することで、これを簡単に行えます。
 
 ```blade
 <button
@@ -91,44 +92,44 @@ Livewire makes this easy by providing a simple directive called `wire:confirm`:
 </button>
 ```
 
-When `wire:confirm` is added to an element containing a Livewire action, when a user tries to trigger that action, they will be presented with a confirmation dialog containing the provided message. They can either press "OK" to confirm the action, or press "Cancel" or hit the escape key.
+`wire:confirm`がLivewireアクションを含む要素に追加されると、そのアクションをトリガーしようとしたときに、ユーザーに確認ダイアログが表示されます。ユーザーは「OK」を押してアクションを確認するか、「キャンセル」やエスケープキーを押して中止できます。
 
-For more information, visit the [`wire:confirm` documentation page](/docs/wire-confirm).
+詳細については、[`wire:confirm`のドキュメントページ](/docs/wire-confirm)を訪れてください。
 
-## Event listeners
+## イベントリスナー
 
-Livewire supports a variety of event listeners, allowing you to respond to various types of user interactions:
+Livewireはさまざまなイベントリスナーをサポートしており、さまざまな種類のユーザー操作に応答できます。
 
-| Listener        | Description                               |
+| リスナー          | 説明                                       |
 |-----------------|-------------------------------------------|
-| `wire:click`    | Triggered when an element is clicked      |
-| `wire:submit`   | Triggered when a form is submitted        |
-| `wire:keydown`  | Triggered when a key is pressed down      |
-| `wire:keyup`  | Triggered when a key is released
-| `wire:mouseenter`| Triggered when the mouse enters an element |
-| `wire:*`| Whatever text follows `wire:` will be used as the event name of the listener |
+| `wire:click`    | 要素がクリックされたときにトリガーされる    |
+| `wire:submit`   | フォームが送信されたときにトリガーされる  |
+| `wire:keydown`  | キーが押されたときにトリガーされる        |
+| `wire:keyup`  | キーが離されたときにトリガーされる
+| `wire:mouseenter`| マウスが要素に入ったときにトリガーされる   |
+| `wire:*`| `wire:`の後に続くテキストは、リスナーのイベント名として使用されます |
 
-Because the event name after `wire:` can be anything, Livewire supports any browser event you might need to listen for. For example, to listen for `transitionend`, you can use `wire:transitionend`.
+`wire:`の後のイベント名は何でもよいため、Livewireは必要なブラウザイベントをリッスンすることをサポートしています。例えば、`transitionend`をリッスンするには、`wire:transitionend`を使用できます。
 
-### Listening for specific keys
+### 特定のキーのリスニング
 
-You can use one of Livewire's convenient aliases to narrow down key press event listeners to a specific key or combination of keys.
+Livewireの便利なエイリアスの1つを使用して、キー押下イベントリスナーを特定のキーまたはキーの組み合わせに絞り込むことができます。
 
-For example, to perform a search when a user hits `Enter` after typing into a search box, you can use `wire:keydown.enter`:
+例えば、ユーザーが検索ボックスに入力した後、`Enter`キーを押したときに検索を実行するには、`wire:keydown.enter`を使用できます。
 
 ```blade
 <input wire:model="query" wire:keydown.enter="searchPosts">
 ```
 
-You can chain more key aliases after the first to listen for combinations of keys. For example, if you would like to listen for the `Enter` key only while the `Shift` key is pressed, you may write the following:
+最初の後にさらに多くのキーエイリアスをチェーンして、キーの組み合わせをリッスンすることができます。例えば、`Shift`キーを押している間だけ`Enter`キーをリッスンしたい場合は、次のように書くことができます。
 
 ```blade
 <input wire:keydown.shift.enter="...">
 ```
 
-Below is a list of all the available key modifiers:
+以下は、利用可能なすべてのキー修飾子のリストです。
 
-| Modifier      | Key                          |
+| 修飾子        | キー                          |
 |---------------|------------------------------|
 | `.shift`      | Shift                        |
 | `.enter`      | Enter                        |
@@ -148,43 +149,43 @@ Below is a list of all the available key modifiers:
 | `.period`     | Period, `.`                  |
 | `.slash`      | Forward Slash, `/`           |
 
-### Event handler modifiers
+### イベントハンドラ修飾子
 
-Livewire also includes helpful modifiers to make common event-handling tasks trivial.
+Livewireには、一般的なイベント処理タスクを簡単にするための便利な修飾子も含まれています。
 
-For example, if you need to call `event.preventDefault()` from inside an event listener, you can suffix the event name with `.prevent`:
+例えば、イベントリスナー内から`event.preventDefault()`を呼び出す必要がある場合、イベント名の後に`.prevent`を付けることができます。
 
 ```blade
 <input wire:keydown.prevent="...">
 ```
 
-Here is a full list of all the available event listener modifiers and their functions:
+利用可能なすべてのイベントリスナー修飾子とその機能の完全なリストは次のとおりです。
 
-| Modifier         | Key                                                     |
+| 修飾子         | キー                                                     |
 |------------------|---------------------------------------------------------|
-| `.prevent`       | Equivalent of calling `.preventDefault()`               |
-| `.stop`          | Equivalent of calling `.stopPropagation()`              |
-| `.window`        | Listens for event on the `window` object                 |
-| `.outside`       | Only listens for clicks "outside" the element            |
-| `.document`      | Listens for events on the `document` object              |
-| `.once`          | Ensures the listener is only called once                 |
-| `.debounce`      | Debounce the handler by 250ms as a default               |
-| `.debounce.100ms`| Debounce the handler for a specific amount of time       |
-| `.throttle`      | Throttle the handler to being called every 250ms at minimum |
-| `.throttle.100ms`| Throttle the handler at a custom duration                |
-| `.self`          | Only call listener if event originated on this element, not children |
-| `.camel`         | Converts event name to camel case (`wire:custom-event` -> "customEvent") |
-| `.dot`           | Converts event name to dot notation (`wire:custom-event` -> "custom.event") |
-| `.passive`       | `wire:touchstart.passive` won't block scroll performance |
-| `.capture`       | Listen for event in the "capturing" phase                 |
+| `.prevent`       | `.preventDefault()`を呼び出すのと同等                   |
+| `.stop`          | `.stopPropagation()`を呼び出すのと同等                  |
+| `.window`        | `window`オブジェクト上のイベントをリッスン               |
+| `.outside`       | 要素の「外側」でのクリックのみをリッスン                 |
+| `.document`      | `document`オブジェクト上のイベントをリッスン            |
+| `.once`          | リスナーが1回だけ呼び出されることを保証                 |
+| `.debounce`      | デフォルトで250msの間隔でハンドラをデバウンス            |
+| `.debounce.100ms`| 特定の時間間隔でハンドラをデバウンス                   |
+| `.throttle`      | 最低でも250msごとにハンドラを呼び出すようにスロットル    |
+| `.throttle.100ms`| カスタムの時間間隔でハンドラをスロットル                |
+| `.self`          | イベントがこの要素で発生した場合にのみリスナーを呼び出す |
+| `.camel`         | イベント名をキャメルケースに変換 (`wire:custom-event` -> "customEvent") |
+| `.dot`           | イベント名をドット表記に変換 (`wire:custom-event` -> "custom.event") |
+| `.passive`       | `wire:touchstart.passive`はスクロールパフォーマンスをブロックしない |
+| `.capture`       | イベントを「キャプチャ」フェーズでリッスン               |
 
-Because `wire:` uses [Alpine's](https://alpinejs.dev) `x-on` directive under the hood, these modifiers are made available to you by Alpine. For more context on when you should use these modifiers, consult the [Alpine Events documentation](https://alpinejs.dev/essentials/events).
+`wire:`は内部的に[Alpine](https://alpinejs.dev)の`x-on`ディレクティブを使用しているため、これらの修飾子はAlpineによって提供されます。これらの修飾子を使用するタイミングについての詳細は、[Alpine Eventsのドキュメント](https://alpinejs.dev/essentials/events)を参照してください。
 
-### Handling third-party events
+### サードパーティイベントのハンドリング
 
-Livewire also supports listening for custom events fired by third-party libraries.
+Livewireは、サードパーティライブラリによって発火されたカスタムイベントをリッスンすることもサポートしています。
 
-For example, let's imagine you're using the [Trix](https://trix-editor.org/) rich text editor in your project and you want to listen for the `trix-change` event to capture the editor's content. You can accomplish this using the `wire:trix-change` directive:
+例えば、プロジェクトで[トリックス](https://trix-editor.org/)リッチテキストエディタを使用していて、`trix-change`イベントをリッスンしてエディタの内容をキャッチしたい場合、`wire:trix-change`ディレクティブを使用してこれを実現できます。
 
 ```blade
 <form wire:submit="save">
@@ -198,13 +199,13 @@ For example, let's imagine you're using the [Trix](https://trix-editor.org/) ric
 </form>
 ```
 
-In this example, the `setPostContent` action is called whenever the `trix-change` event is triggered, updating the `content` property in the Livewire component with the current value of the Trix editor.
+この例では、`trix-change`イベントがトリガーされるたびに`setPostContent`アクションが呼び出され、Livewireコンポーネント内の`content`プロパティがTrixエディタの現在の値で更新されます。
 
-> [!info] You can access the event object using `$event`
-> Within Livewire event handlers, you can access the event object via `$event`. This is useful for referencing information on the event. For example, you can access the element that triggered the event via `$event.target`.
+> [!info] イベントオブジェクトへのアクセス
+> Livewireのイベントハンドラ内では、イベントオブジェクトに`$event`を介してアクセスできます。これは、イベントに関する情報を参照するのに便利です。例えば、`$event.target`を介してイベントをトリガーした要素にアクセスできます。
 
 > [!warning]
-> The Trix demo code above is incomplete and only useful as a demonstration of event listeners. If used verbatim, a network request would be fired on every single keystroke. A more performant implementation would be:
+> 上記のTrixデモコードは不完全であり、イベントリスナーのデモンストレーションとしてのみ有用です。そのまま使用すると、毎回のキーストロークでネットワークリクエストが発火します。よりパフォーマンスに優れた実装は次のとおりです。
 >
 > ```blade
 > <trix-editor
@@ -212,35 +213,35 @@ In this example, the `setPostContent` action is called whenever the `trix-change
 >></trix-editor>
 > ```
 
-### Listening for dispatched custom events
+### ディスパッチされたカスタムイベントのリッスン
 
-If your application dispatches custom events from Alpine, you can also listen for those using Livewire:
+アプリケーションがAlpineからカスタムイベントをディスパッチする場合、Livewireを使用してそれらをリッスンすることもできます。
 
 ```blade
 <div wire:custom-event="...">
 
-    <!-- Deeply nested within this component: -->
+    <!-- このコンポーネント内で深くネストされた部分: -->
     <button x-on:click="$dispatch('custom-event')">...</button>
 
 </div>
 ```
 
-When the button is clicked in the above example, the `custom-event` event is dispatched and bubbles up to the root of the Livewire component where `wire:custom-event` catches it and invokes a given action.
+上記の例では、ボタンがクリックされると`custom-event`イベントがディスパッチされ、Livewireコンポーネントのルートまでバブルアップし、そこで`wire:custom-event`がそれをキャッチして指定されたアクションを呼び出します。
 
-If you want to listen for an event dispatched somewhere else in your application, you will need to wait instead for the event to bubble up to the `window` object and listen for it there. Fortunately, Livewire makes this easy by allowing you to add a simple `.window` modifier to any event listener:
+アプリケーションのどこか別の場所でディスパッチされたイベントをリッスンしたい場合は、イベントが`window`オブジェクトにバブルアップするのを待ってから、そこでリッスンする必要があります。幸いなことに、Livewireはこのプロセスを簡単にするために、任意のイベントリスナーにシンプルな`.window`修飾子を追加できるようにしています。
 
 ```blade
 <div wire:custom-event.window="...">
     <!-- ... -->
 </div>
 
-<!-- Dispatched somewhere on the page outside the component: -->
+<!-- ページのどこか外部でディスパッチされた: -->
 <button x-on:click="$dispatch('custom-event')">...</button>
 ```
 
-### Disabling inputs while a form is being submitted
+### フォーム送信中の入力無効化
 
-Consider the `CreatePost` example we previously discussed:
+前述の`CreatePost`の例を考えてみましょう。
 
 ```blade
 <form wire:submit="save">
@@ -252,17 +253,17 @@ Consider the `CreatePost` example we previously discussed:
 </form>
 ```
 
-When a user clicks "Save", a network request is sent to the server to call the `save()` action on the Livewire component.
+ユーザーが「Save」をクリックすると、ネットワークリクエストがサーバーに送信され、Livewireコンポーネントの`save()`アクションが呼び出されます。
 
-But, let's imagine that a user is filling out this form on a slow internet connection. The user clicks "Save" and nothing happens initially because the network request takes longer than usual. They might wonder if the submission failed and attempt to click the "Save" button again while the first request is still being handled.
+しかし、ユーザーが遅いインターネット接続でこのフォームに入力していると想像してみてください。「Save」をクリックしても、ネットワークリクエストに通常より時間がかかるため、最初は何も起こりません。ユーザーは送信に失敗したのではないかと考え、最初のリクエストがまだ処理中の間に再度「Save」ボタンをクリックしようとするかもしれません。
 
-In this case, there would be two requests for the same action being processed at the same time.
+この場合、同じアクションに対して2つのリクエストが同時に処理されることになります。
 
-To prevent this scenario, Livewire automatically disables the submit button and all form inputs inside the `<form>` element while a `wire:submit` action is being processed. This ensures that a form isn't accidentally submitted twice.
+このシナリオを防ぐために、Livewireは`wire:submit`アクションが処理されている間、`<form>`要素内の送信ボタンとすべてのフォーム入力を自動的に無効にします。これにより、フォームが誤って2回送信されるのを防ぎます。
 
-To further lessen the confusion for users on slower connections, it is often helpful to show some loading indicator such as a subtle background color change or SVG animation.
+遅い接続のユーザーに対する混乱をさらに軽減するために、微妙な背景色の変更やSVGアニメーションなどのローディングインジケーターを表示することがしばしば役立ちます。
 
-Livewire provides a `wire:loading` directive that makes it trivial to show and hide loading indicators anywhere on a page. Here's a short example of using `wire:loading` to show a loading message below the "Save" button:
+Livewireは、ページ上の任意の場所にローディングインジケーターを表示および非表示にするのを簡単にする`wire:loading`ディレクティブを提供しています。以下は、`wire:loading`を使用して「Save」ボタンの下にローディングメッセージを表示する短い例です。
 
 ```blade
 <form wire:submit="save">
@@ -274,13 +275,13 @@ Livewire provides a `wire:loading` directive that makes it trivial to show and h
 </form>
 ```
 
-`wire:loading` is a powerful feature with a variety of more powerful features. [Check out the full loading documentation for more information](/docs/wire-loading).
+`wire:loading`は強力な機能であり、さまざまな高度な機能があります。詳細については、[完全なローディングドキュメント](/docs/wire-loading)を確認してください。
 
-## Passing parameters
+## パラメータの渡し方
 
-Livewire allows you to pass parameters from your Blade template to the actions in your component, giving you the opportunity to provide an action additional data or state from the frontend when the action is called.
+Livewireでは、Bladeテンプレートからコンポーネント内のアクションにパラメータを渡すことができ、アクションが呼び出されるときに追加のデータや状態をフロントエンドから提供できます。
 
-For example, let's imagine you have a `ShowPosts` component that allows users to delete a post. You can pass the post's ID as a parameter to the `delete()` action in your Livewire component. Then, the action can fetch the relevant post and delete it from the database:
+例えば、`ShowPosts`コンポーネントがあり、ユーザーがポストを削除できると想像してみてください。ポストのIDを`delete()`アクションにパラメータとして渡すことができます。次に、そのアクションは関連するポストを取得し、データベースから削除できます。
 
 ```php
 <?php
@@ -324,21 +325,21 @@ class ShowPosts extends Component
 </div>
 ```
 
-For a post with an ID of 2, the "Delete" button in the Blade template above will render in the browser as:
+IDが2のポストの場合、上記のBladeテンプレート内の「Delete」ボタンはブラウザで次のようにレンダリングされます。
 
 ```blade
 <button wire:click="delete(2)">Delete</button>
 ```
 
-When this button is clicked, the `delete()` method will be called and `$id` will be passed in with a value of "2".
+このボタンがクリックされると、`delete()`メソッドが呼び出され、`$id`には「2」という値が渡されます。
 
-> [!warning] Don't trust action parameters
-> Action parameters should be treated just like HTTP request input, meaning action parameter values should not be trusted. You should always authorize ownership of an entity before updating it in the database.
+> [!warning] アクションパラメータを信頼しない
+> アクションパラメータはHTTPリクエスト入力と同様に扱うべきであり、アクションパラメータの値は信頼できません。データベースを更新する前に、常にエンティティの所有権を認可する必要があります。
 >
-> For more information, consult our documentation regarding [security concerns and best practices](/docs/actions#security-concerns).
+> 詳細については、[セキュリティに関する懸念とベストプラクティス](/docs/actions#security-concerns)に関するドキュメントを参照してください。
 
 
-As an added convenience, you may automatically resolve Eloquent models by a corresponding model ID that is provided to an action as a parameter. This is very similar to [route model binding](/docs/components#using-route-model-binding). To get started, type-hint an action parameter with a model class and the appropriate model will automatically be retrieved from the database and passed to the action instead of the ID:
+さらに便利なことに、アクションのパラメータとして提供されたモデルIDによってEloquentモデルを自動的に解決することができます。これは、[ルートモデルバインディング](/docs/components#using-route-model-binding)に非常に似ています。始めるには、アクションパラメータをモデルクラスで型ヒントし、適切なモデルがデータベースから自動的に取得され、IDの代わりにアクションに渡されます。
 
 ```php
 <?php
@@ -367,9 +368,9 @@ class ShowPosts extends Component
 }
 ```
 
-## Dependency injection
+## 依存性注入
 
-You can take advantage of [Laravel's dependency injection](https://laravel.com/docs/controllers#dependency-injection-and-controllers) system by type-hinting parameters in your action's signature. Livewire and Laravel will automatically resolve the action's dependencies from the container:
+アクションのシグネチャにパラメータを型ヒントすることで、[Laravelの依存性注入](https://laravel.com/docs/controllers#dependency-injection-and-controllers)システムを利用できます。LivewireとLaravelは、アクションの依存関係をコンテナから自動的に解決します。
 
 ```php
 <?php
@@ -409,27 +410,27 @@ class ShowPosts extends Component
 </div>
 ```
 
-In this example, the `delete()` method receives an instance of `PostRepository` resolved via [Laravel's service container](https://laravel.com/docs/container#main-content) before receiving the provided `$postId` parameter.
+この例では、`delete()`メソッドは、提供された`$postId`パラメータを受け取る前に、コンテナから解決された`PostRepository`のインスタンスを受け取ります。
 
-## Calling actions from Alpine
+## Alpineからのアクション呼び出し
 
-Livewire integrates seamlessly with [Alpine](https://alpinejs.dev/). In fact, under the hood, every Livewire component is also an Alpine component. This means you can take full advantage of Alpine within your components to add JavaScript powered client-side interactivity.
+Livewireは、[Alpine](https://alpinejs.dev/)とシームレスに統合されます。実際、内部的には、すべてのLivewireコンポーネントはAlpineコンポーネントでもあります。つまり、コンポーネント内でAlpineのすべての利点を活用して、JavaScriptによるクライアントサイドのインタラクティブ性を追加できます。
 
-To make this pairing even more powerful, Livewire exposes a magic `$wire` object to Alpine that can be treated as a JavaScript representation of your PHP component. In addition to [accessing and mutating public properties via `$wire`](/docs/properties#accessing-properties-from-javascript), you can call actions. When an action is invoked on the `$wire` object, the corresponding PHP method will be invoked on your backend Livewire component:
+この組み合わせをさらに強力にするために、LivewireはAlpineにマジックの`$wire`オブジェクトを公開しており、PHPコンポーネントのJavaScript表現として扱うことができます。これにより、[JavaScriptからプロパティにアクセスおよび変更する](/docs/properties#accessing-properties-from-javascript)に加えて、アクションを呼び出すことができます。アクションが`$wire`オブジェクトで呼び出されると、対応するPHPメソッドがバックエンドのLivewireコンポーネントで呼び出されます。
 
 ```blade
 <button x-on:click="$wire.save()">Save Post</button>
 ```
 
-Or, to illustrate a more complex example, you might use Alpine's [`x-intersect`](https://alpinejs.dev/plugins/intersect) utility to trigger a `incrementViewCount()` Livewire action when a given element is visible on the page:
+また、Alpineの[`x-intersect`](https://alpinejs.dev/plugins/intersect)ユーティリティを使用して、特定の要素がページ上に表示されたときに`incrementViewCount()`Livewireアクションをトリガーする例を示します。
 
 ```blade
 <div x-intersect="$wire.incrementViewCount()">...</div>
 ```
 
-### Passing parameters
+### パラメータの渡し方
 
-Any parameters you pass to the `$wire` method will also be passed to the PHP class method. For example, consider the following Livewire action:
+`$wire`メソッドに渡すパラメータは、アクションに渡されるパラメータとしても渡されます。例えば、次のLivewireアクションを考えてみてください。
 
 ```php
 public function addTodo($todo)
@@ -438,7 +439,7 @@ public function addTodo($todo)
 }
 ```
 
-Within your component's Blade template, you can invoke this action via Alpine, providing the parameter that should be given to the action:
+コンポーネントのBladeテンプレート内で、このアクションをAlpine経由で呼び出し、アクションに渡されるパラメータを提供できます。
 
 ```blade
 <div x-data="{ todo: '' }">
@@ -448,13 +449,13 @@ Within your component's Blade template, you can invoke this action via Alpine, p
 </div>
 ```
 
-If a user had typed in "Take out the trash" into the text input and the pressed the "Add Todo" button, the `addTodo()` method will be triggered with the `$todo` parameter value being "Take out the trash".
+ユーザーがテキスト入力に「Take out the trash」と入力し、「Add Todo」ボタンを押した場合、`addTodo()`メソッドは`$todo`パラメータの値として「Take out the trash」を受け取ります。
 
-### Receiving return values
+### 戻り値の受け取り
 
-For even more power, invoked `$wire` actions return a promise while the network request is processing. When the server response is received, the promise resolves with the value returned by the backend action.
+さらに強力なことに、呼び出された`$wire`アクションは、ネットワークリクエストが処理されている間、プロミスを返します。サーバーの応答が受信されると、プロミスはバックエンドアクションによって返された値で解決されます。
 
-For example, consider a Livewire component that has the following action:
+例えば、次のアクションを持つLivewireコンポーネントを考えてみてください。
 
 ```php
 use App\Models\Post;
@@ -465,26 +466,26 @@ public function getPostCount()
 }
 ```
 
-Using `$wire`, the action may be invoked and its returned value resolved:
+`$wire`を使用して、このアクションを呼び出し、その戻り値を解決できます。
 
 ```blade
 <span x-init="$el.innerHTML = await $wire.getPostCount()"></span>
 ```
 
-In this example, if the `getPostCount()` method returns "10", the `<span>` tag will also contain "10".
+この例では、`getPostCount()`メソッドが「10」を返すと、`<span>`タグも「10」を含むようになります。
 
-Alpine knowledge is not required when using Livewire; however, it's an extremely powerful tool and knowing Alpine will augment your Livewire experience and productivity.
+Livewireを使用する際にAlpineの知識は必須ではありませんが、Alpineは非常に強力なツールであり、その知識はLivewireの体験と生産性を向上させます。
 
-## JavaScript actions
+## JavaScriptアクション
 
-Livewire allows you to define JavaScript actions that run entirely on the client-side without making a server request. This is useful in two scenarios:
+Livewireでは、サーバーリクエストを行うことなくクライアントサイドで完全に実行されるJavaScriptアクションを定義できます。これは、次の2つのシナリオで便利です。
 
-1. When you want to perform simple UI updates that don't require server communication
-2. When you want to optimistically update the UI with JavaScript before making a server request
+1. サーバーとの通信を必要としない簡単なUI更新を行いたいとき
+2. サーバーリクエストを行う前に、JavaScriptでUIを楽観的に更新したいとき
 
-To define a JavaScript action, you can use the `$js()` function inside a `<script>` tag in your component.
+JavaScriptアクションを定義するには、コンポーネント内の`<script>`タグ内で`$js()`関数を使用できます。
 
-Here's an example of bookmarking a post that uses a JavaScript action to optimistically update the UI before making a server request. The JavaScript action immediately shows the filled bookmark icon, then makes a request to persist the bookmark in the database:
+以下は、サーバーリクエストを行う前に楽観的にUIを更新するJavaScriptアクションを使用したポストのブックマークの例です。JavaScriptアクションは、データベースにブックマークを永続化するリクエストを行う前に、すぐにブックマークアイコンが塗りつぶされるのを表示します。
 
 ```php
 <?php
@@ -522,12 +523,12 @@ class ShowPost extends Component
 ```blade
 <div>
     <button wire:click="$js.bookmark" class="flex items-center gap-1">
-        {{-- Outlined bookmark icon... --}}
+        {{-- アウトライン付きのブックマークアイコン... --}}
         <svg wire:show="!bookmarked" wire:cloak xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
             <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
         </svg>
 
-        {{-- Solid bookmark icon... --}}
+        {{-- 塗りつぶされたブックマークアイコン... --}}
         <svg wire:show="bookmarked" wire:cloak xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
             <path fill-rule="evenodd" d="M6.32 2.577a49.255 49.255 0 0 1 11.36 0c1.497.174 2.57 1.46 2.57 2.93V21a.75.75 0 0 1-1.085.67L12 18.089l-7.165 3.583A.75.75 0 0 1 3.75 21V5.507c0-1.47 1.073-2.756 2.57-2.93Z" clip-rule="evenodd" />
         </svg>
@@ -545,25 +546,25 @@ class ShowPost extends Component
 @endscript
 ```
 
-When a user clicks the heart button, the following sequence occurs:
+ユーザーがハートボタンをクリックすると、次のシーケンスが発生します。
 
-1. The "bookmark" JavaScript action is triggered
-2. The heart icon immediately updates by toggling `$wire.bookmarked` on the client-side
-3. The `bookmarkPost()` method is called to save the change to the database
+1. 「bookmark」JavaScriptアクションがトリガーされる
+2. ハートアイコンがクライアントサイドで`$wire.bookmarked`をトグルして即座に更新される
+3. `bookmarkPost()`メソッドが呼び出されて変更がデータベースに保存される
 
-This provides instant visual feedback while ensuring the bookmark state is properly persisted.
+これにより、変更が適切に永続化されると同時に、即時の視覚的フィードバックが提供されます。
 
-### Calling from Alpine
+### Alpineからの呼び出し
 
-You can call JavaScript actions directly from Alpine using the `$wire` object. For example, you may use the `$wire` object to invoke the `bookmark` JavaScript action:
+JavaScriptアクションは、`$wire`オブジェクトを使用してAlpineから直接呼び出すこともできます。例えば、`$wire`オブジェクトを使用して`bookmark`JavaScriptアクションを呼び出すことができます。
 
 ```blade
 <button x-on:click="$wire.$js.bookmark()">Bookmark</button>
 ```
 
-### Calling from PHP
+### PHPからの呼び出し
 
-JavaScript actions can also be called using the `js()` method from PHP:
+JavaScriptアクションは、PHPの`js()`メソッドを使用して呼び出すこともできます。
 
 ```php
 <?php
@@ -601,45 +602,45 @@ class CreatePost extends Component
 @endscript
 ```
 
-In this example, when the `save()` action is finished, the `postSaved` JavaScript action will be run, triggering the alert dialog.
+この例では、`save()`アクションが終了すると、`postSaved`JavaScriptアクションが実行され、アラートダイアログがトリガーされます。
 
-## Magic actions
+## マジックアクション
 
-Livewire provides a set of "magic" actions that allow you to perform common tasks in your components without defining custom methods. These magic actions can be used within event listeners defined in your Blade templates.
+Livewireは、カスタムメソッドを定義することなくコンポーネント内の一般的なタスクを実行できる「マジック」アクションのセットを提供します。これらのマジックアクションは、Bladeテンプレート内で定義されたイベントリスナー内で使用できます。
 
 ### `$parent`
 
-The `$parent` magic variable allows you to access parent component properties and call parent component actions from a child component:
+`$parent`マジック変数を使用すると、子コンポーネントから親コンポーネントのプロパティにアクセスしたり、親コンポーネントのアクションを呼び出したりできます。
 
 ```blade
 <button wire:click="$parent.removePost({{ $post->id }})">Remove</button>
 ```
 
-In the above example, if a parent component has a `removePost()` action, a child can call it directly from its Blade template using `$parent.removePost()`.
+上記の例では、親コンポーネントに`removePost()`アクションがある場合、子コンポーネントは`$parent.removePost()`を使用して直接呼び出すことができます。
 
 ### `$set`
 
-The `$set` magic action allows you to update a property in your Livewire component directly from the Blade template. To use `$set`, provide the property you want to update and the new value as arguments:
+`$set`マジックアクションを使用すると、BladeテンプレートからLivewireコンポーネント内のプロパティを直接更新できます。`$set`を使用するには、更新したいプロパティと新しい値を引数として指定します。
 
 ```blade
 <button wire:click="$set('query', '')">Reset Search</button>
 ```
 
-In this example, when the button is clicked, a network request is dispatched that sets the `$query` property in the component to `''`.
+この例では、ボタンがクリックされると、ネットワークリクエストが送信され、コンポーネント内の`$query`プロパティが`''`に設定されます。
 
 ### `$refresh`
 
-The `$refresh` action triggers a re-render of your Livewire component. This can be useful when updating the component's view without changing any property values:
+`$refresh`アクションは、Livewireコンポーネントの再レンダリングをトリガーします。これは、プロパティ値を変更することなくコンポーネントのビューを更新する際に便利です。
 
 ```blade
 <button wire:click="$refresh">Refresh</button>
 ```
 
-When the button is clicked, the component will re-render, allowing you to see the latest changes in the view.
+ボタンがクリックされると、コンポーネントが再レンダリングされ、最新の変更がビューに表示されます。
 
 ### `$toggle`
 
-The `$toggle` action is used to toggle the value of a boolean property in your Livewire component:
+`$toggle`アクションは、Livewireコンポーネント内のブール値プロパティの値をトグルするために使用されます。
 
 ```blade
 <button wire:click="$toggle('sortAsc')">
@@ -647,11 +648,11 @@ The `$toggle` action is used to toggle the value of a boolean property in your L
 </button>
 ```
 
-In this example, when the button is clicked, the `$sortAsc` property in the component will toggle between `true` and `false`.
+この例では、ボタンがクリックされると、コンポーネント内の`$sortAsc`プロパティが`true`と`false`の間でトグルされます。
 
 ### `$dispatch`
 
-The `$dispatch` action allows you to dispatch a Livewire event directly in the browser. Below is an example of a button that, when clicked, will dispatch the `post-deleted` event:
+`$dispatch`アクションを使用すると、ブラウザ内でLivewireイベントを直接ディスパッチできます。以下は、クリックされると`post-deleted`イベントをディスパッチするボタンの例です。
 
 ```blade
 <button type="submit" wire:click="$dispatch('post-deleted')">Delete Post</button>
@@ -659,27 +660,27 @@ The `$dispatch` action allows you to dispatch a Livewire event directly in the b
 
 ### `$event`
 
-The `$event` action may be used within event listeners like `wire:click`. This action gives you access to the actual JavaScript event that was triggered, allowing you to reference the triggering element and other relevant information:
+`$event`アクションは、`wire:click`のようなイベントリスナー内で使用できます。このアクションを使用すると、トリガーされたJavaScriptイベントにアクセスでき、トリガー要素やその他の関連情報を参照できます。
 
 ```blade
 <input type="text" wire:keydown.enter="search($event.target.value)">
 ```
 
-When the enter key is pressed while a user is typing in the input above, the contents of the input will be passed as a parameter to the `search()` action.
+上記の入力フィールド内でユーザーがEnterキーを押すと、入力内容が`search()`アクションのパラメータとして渡されます。
 
-### Using magic actions from Alpine
+### Alpineからのマジックアクションの呼び出し
 
-You can also call magic actions from Alpine using the `$wire` object. For example, you may use the `$wire` object to invoke the `$refresh` magic action:
+Alpineを使用している場合、マジックアクションを呼び出すこともできます。例えば、`$wire`オブジェクトを使用して`$refresh`マジックアクションを呼び出すことができます。
 
 ```blade
 <button x-on:click="$wire.$refresh()">Refresh</button>
 ```
 
-## Skipping re-renders
+## 再レンダリングのスキップ
 
-Sometimes there might be an action in your component with no side effects that would change the rendered Blade template when the action is invoked. If so, you can skip the `render` portion of Livewire's lifecycle by adding the `#[Renderless]` attribute above the action method.
+時には、アクションに副作用がなく、そのアクションが呼び出されたときにレンダリングされたBladeテンプレートに変更がない場合もあるでしょう。その場合、アクションメソッドの上に`#[Renderless]`属性を追加することで、Livewireのライフサイクルの`render`部分をスキップできます。
 
-To demonstrate, in the `ShowPost` component below, the "view count" is logged when the user has scrolled to the bottom of the post:
+以下の`ShowPost`コンポーネントでは、ユーザーがポストの下部までスクロールしたときに「view count」が記録されます。
 
 ```php
 <?php
@@ -721,11 +722,11 @@ class ShowPost extends Component
 </div>
 ```
 
-The example above uses [`x-intersect`](https://alpinejs.dev/plugins/intersect), an Alpine utility that calls the expression when the element enters the viewport (typically used to detect when a user scrolls to an element further down the page).
+上記の例では、[`x-intersect`](https://alpinejs.dev/plugins/intersect)を使用しており、これは要素がビューポートに入ると式を呼び出すために使用されます（通常、ユーザーがページの下部にある要素にスクロールしたときに検出されます）。
 
-As you can see, when a user scrolls to the bottom of the post, `incrementViewCount()` is invoked. Since `#[Renderless]` was added to the action, the view is logged, but the template doesn't re-render and no part of the page is affected.
+このように、ユーザーがポストの下部までスクロールすると、`incrementViewCount()`が呼び出されます。アクションに`#[Renderless]`が追加されているため、ビューが記録されますが、テンプレートは再レンダリングされず、ページのどの部分も影響を受けません。
 
-If you prefer to not utilize method attributes or need to conditionally skip rendering, you may invoke the `skipRender()` method in your component action:
+メソッド属性を使用したくない場合や、条件に応じてレンダリングをスキップしたい場合は、コンポーネントアクション内で`skipRender()`メソッドを呼び出すことができます。
 
 ```php
 <?php
@@ -758,21 +759,21 @@ class ShowPost extends Component
 }
 ```
 
-## Security concerns
+## セキュリティに関する懸念
 
-Remember that any public method in your Livewire component can be called from the client-side, even without an associated `wire:click` handler that invokes it. In these scenarios, users can still trigger the action from the browser's DevTools.
+Livewireコンポーネント内のすべての公開メソッドは、関連する`wire:click`ハンドラがなくてもクライアントから呼び出すことができます。このようなシナリオでは、ユーザーはブラウザのDevToolsからアクションをトリガーできます。
 
-Below are three examples of easy-to-miss vulnerabilities in Livewire components. Each will show the vulnerable component first and the secure component after. As an exercise, try spotting the vulnerabilities in the first example before viewing the solution.
+以下に、Livewireコンポーネント内で見落としがちな脆弱性の3つの例を示します。最初に脆弱なコンポーネントを示し、その後に安全なコンポーネントを示します。最初の例で脆弱性を見つけるのが難しい場合は、解決策を見る前に練習として脆弱性を見つけてみてください。
 
-If you are having difficulty spotting the vulnerabilities and that makes you concerned about your ability to keep your own applications secure, remember all these vulnerabilities apply to standard web applications that use requests and controllers. If you use a component method as a proxy for a controller method, and its parameters as a proxy for request input, you should be able to apply your existing application security knowledge to your Livewire code.
+これらの脆弱性を見つけるのが難しい場合、そしてそれが自分のアプリケーションを安全に保つ能力に懸念を抱かせる場合は、これらの脆弱性はリクエストとコントローラを使用する標準的なWebアプリケーションにも適用されることを思い出してください。コンポーネントメソッドをコントローラメソッドへのプロキシとして使用し、そのパラメータをリクエスト入力へのプロキシとして使用する場合、既存のアプリケーションセキュリティの知識をLivewireコードに適用できるはずです。
 
-### Always authorize action parameters
+### アクションパラメータの常時認可
 
-Just like controller request input, it's imperative to authorize action parameters since they are arbitrary user input.
+コントローラのリクエスト入力と同様に、アクションパラメータを認可することが不可欠です。なぜなら、アクションパラメータは任意のユーザー入力であるためです。
 
-Below is a `ShowPosts` component where users can view all their posts on one page. They can delete any post they like using one of the post's "Delete" buttons.
+以下は、ユーザーが1つのページですべてのポストを表示できる`ShowPosts`コンポーネントの例です。ユーザーは、いずれかのポストの「Delete」ボタンを使用してポストを削除できます。
 
-Here is a vulnerable version of the component:
+脆弱なコンポーネントの例を示します。
 
 ```php
 <?php
@@ -814,9 +815,9 @@ class ShowPosts extends Component
 </div>
 ```
 
-Remember that a malicious user can call `delete()` directly from a JavaScript console, passing any parameters they would like to the action. This means that a user viewing one of their posts can delete another user's post by passing the un-owned post ID to `delete()`.
+悪意のあるユーザーは、任意のパラメータをアクションに渡して`delete()`をブラウザのJavaScriptコンソールから直接呼び出すことができることを思い出してください。これにより、自分のポストを表示しているユーザーが、他のユーザーのポストを削除するために`delete()`に不正なIDを渡すことが可能になります。
 
-To protect against this, we need to authorize that the user owns the post about to be deleted:
+これを防ぐために、削除されるポストの所有権を確認するために、アクションに認可を追加する必要があります。
 
 ```php
 <?php
@@ -847,11 +848,11 @@ class ShowPosts extends Component
 }
 ```
 
-### Always authorize server-side
+### サーバーサイドの常時認可
 
-Like standard Laravel controllers, Livewire actions can be called by any user, even if there isn't an affordance for invoking the action in the UI.
+標準的なLaravelコントローラと同様に、Livewireアクションは任意のユーザーによって呼び出すことができ、UI内でアクションを呼び出すための手段がなくても呼び出すことができます。
 
-Consider the following `BrowsePosts` component where any user can view all the posts in the application, but only administrators can delete a post:
+以下は、任意のユーザーがアプリケーション内のすべてのポストを見ることができる`BrowsePosts`コンポーネントの例ですが、管理者のみがポストを削除できます。
 
 ```php
 <?php
@@ -894,9 +895,9 @@ class BrowsePosts extends Component
 </div>
 ```
 
-As you can see, only administrators can see the "Delete" button; however, any user can call `deletePost()` on the component from the browser's DevTools.
+ご覧のとおり、「Delete」ボタンは管理者にのみ表示されます。ただし、どのユーザーでもブラウザのDevToolsから`deletePost()`をコンポーネントで呼び出すことができます。
 
-To patch this vulnerability, we need to authorize the action on the server like so:
+この脆弱性を修正するには、サーバー側でアクションを認可する必要があります。
 
 ```php
 <?php
@@ -929,16 +930,16 @@ class BrowsePosts extends Component
 }
 ```
 
-With this change, only administrators can delete a post from this component.
+この変更により、管理者のみがこのコンポーネントからポストを削除できるようになります。
 
-### Keep dangerous methods protected or private
+### 危険なメソッドは常にprotectedまたはprivateに
 
-Every public method inside your Livewire component is callable from the client. Even methods you haven't referenced inside a `wire:click` handler. To prevent a user from calling a method that isn't intended to be callable client-side, you should mark them as `protected` or `private`. By doing so, you restrict the visibility of that sensitive method to the component's class and its subclasses, ensuring they cannot be called from the client-side.
+Livewireコンポーネント内のすべてのpublicメソッドは、クライアントから呼び出すことができます。関連する`wire:click`ハンドラがなくてもです。このため、クライアント側で呼び出すことを意図していないメソッドが誤って呼び出されるのを防ぐために、それらを`protected`または`private`としてマークする必要があります。こうすることで、その敏感なメソッドへのアクセスがコンポーネントのクラスとそのサブクラスに制限され、クライアント側から呼び出すことができなくなります。
 
-Consider the `BrowsePosts` example that we previously discussed, where users can view all posts in your application, but only administrators can delete posts. In the [Always authorize server-side](/docs/actions#always-authorize-server-side) section, we made the action secure by adding server-side authorization. Now imagine we refactor the actual deletion of the post into a dedicated method like you might do in order to simplify your code:
+前述の`BrowsePosts`の例を再度考えてみましょう。ここでは、ユーザーがアプリケーション内のすべてのポストを表示でき、管理者のみがポストを削除できます。[サーバーサイドの常時認可](/docs/actions#always-authorize-server-side)セクションでは、アクションを認可することでセキュリティを強化しました。次に、実際のポスト削除を専用のメソッドにリファクタリングしたと想像してください。これは、コードをシンプルに保つために行うかもしれません。
 
 ```php
-// Warning: This snippet demonstrates what NOT to do...
+// 警告: これは何をすべきかを示すスニペットではありません...
 <?php
 
 namespace App\Livewire;
@@ -987,9 +988,9 @@ class BrowsePosts extends Component
 </div>
 ```
 
-As you can see, we refactored the post deletion logic into a dedicated method named `delete()`. Even though this method isn't referenced anywhere in our template, if a user gained knowledge of its existence, they would be able to call it from the browser's DevTools because it is `public`.
+ご覧のとおり、ポスト削除ロジックが`delete()`という専用のメソッドにリファクタリングされました。このメソッドは、テンプレート内のどこにも参照されていなくても、ユーザーがブラウザのDevToolsから呼び出すことができます。
 
-To remedy this, we can mark the method as `protected` or `private`. Once the method is marked as `protected` or `private`, an error will be thrown if a user tries to invoke it:
+これを修正するには、メソッドを`protected`または`private`としてマークします。そうすることで、ユーザーがそのメソッドを呼び出そうとするとエラーが発生します。
 
 ```php
 <?php
@@ -1028,13 +1029,13 @@ class BrowsePosts extends Component
 ```
 
 <!--
-## Applying middleware
+## ミドルウェアの適用
 
-By default, Livewire re-applies authentication and authorization related middleware on subsequent requests if those middleware were applied on the initial page load request.
+デフォルトでは、Livewireは、初回ページロードリクエストで適用された認証および認可関連のミドルウェアを、後続のリクエストでも再適用します。
 
-For example, imagine your component is loaded inside a route that is assigned the `auth` middleware and a user's session ends. When the user triggers another action, the `auth` middleware will be re-applied and the user will receive an error.
+例えば、コンポーネントが`auth`ミドルウェアで割り当てられたルート内で読み込まれ、ユーザーのセッションが終了したとします。ユーザーが別のアクションをトリガーすると、`auth`ミドルウェアが再適用され、エラーが表示されます。
 
-If there are specific middleware that you would like to apply to a specific action, you may do so with the `#[Middleware]` attribute. For example, we could apply a `LogPostCreation` middleware to an action that creates posts:
+特定のミドルウェアを特定のアクションに適用したい場合は、`#[Middleware]`属性を使用して適用できます。例えば、投稿を作成するアクションに`LogPostCreation`ミドルウェアを適用することができます。
 
 ```php
 <?php
@@ -1053,13 +1054,13 @@ class CreatePost extends Component
     #[Middleware(LogPostCreation::class)] // [tl! highlight]
     public function save()
     {
-        // Create the post...
+        // 投稿を作成する...
     }
 
     // ...
 }
 ```
 
-Now, the `LogPostCreation` middleware will be applied only to the `createPost` action, ensuring that the activity is only being logged when users create a new post.
+これで、`LogPostCreation`ミドルウェアは`createPost`アクションにのみ適用され、新しい投稿が作成されるときだけアクティビティがログに記録されます。
 
 -->

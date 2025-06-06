@@ -1,10 +1,10 @@
-Polling is a technique used in web applications to "poll" the server (send requests on a regular interval) for updates. It's a simple way to keep a page up-to-date without the need for a more sophisticated technology like [WebSockets](/docs/events#real-time-events-using-laravel-echo).
+Webアプリケーションで「ポーリング」とは、サーバーに定期的にリクエストを送り、最新情報を取得する手法です。より高度な技術（[WebSockets](/docs/events#real-time-events-using-laravel-echo)など）を使わずに、ページの内容を最新の状態に保つシンプルな方法です。
 
-## Basic usage
+## 基本的な使い方
 
-Using polling inside Livewire is as simple as adding `wire:poll` to an element.
+Livewireでポーリングを利用するには、要素に`wire:poll`を追加するだけです。
 
-Below is an example of a `SubscriberCount` component that shows a user's subscriber count:
+以下は、ユーザーの購読者数を表示する`SubscriberCount`コンポーネントの例です。
 
 ```php
 <?php
@@ -31,9 +31,9 @@ class SubscriberCount extends Component
 </div>
 ```
 
-Normally, this component would show the subscriber count for the user and never update until the page was refreshed. However, because of `wire:poll` on the component's template, this component will now refresh itself every `2.5` seconds, keeping the subscriber count up-to-date.
+通常、このコンポーネントはユーザーの購読者数を表示しますが、ページをリロードしない限り値は更新されません。しかし、テンプレートに`wire:poll`を追加することで、このコンポーネントは`2.5`秒ごとに自動で再描画され、購読者数が常に最新の状態に保たれます。
 
-You can also specify an action to fire on the polling interval by passing a value to `wire:poll`:
+また、`wire:poll`に値を渡すことで、ポーリングのタイミングで特定のアクションを実行することもできます。
 
 ```blade
 <div wire:poll="refreshSubscribers">
@@ -41,38 +41,38 @@ You can also specify an action to fire on the polling interval by passing a valu
 </div>
 ```
 
-Now, the `refreshSubscribers()` method on the component will be called every `2.5` seconds.
+この場合、コンポーネントの`refreshSubscribers()`メソッドが`2.5`秒ごとに呼び出されます。
 
-## Timing control
+## ポーリング間隔の調整
 
-The primary drawback of polling is that it can be resource intensive. If you have a thousand visitors on a page that uses polling, one thousand network requests will be triggered every `2.5` seconds.
+ポーリングの主な欠点は、サーバーへの負荷が高くなりやすい点です。たとえば、1,000人の訪問者が同じページでポーリングを利用している場合、`2.5`秒ごとに1,000件のネットワークリクエストが発生します。
 
-The best way to reduce requests in this scenario is simply to make the polling interval longer.
+このような場合は、ポーリングの間隔を長くすることでリクエスト数を減らすのが効果的です。
 
-You can manually control how often the component will poll by appending the desired duration to `wire:poll` like so:
+ポーリングの間隔は、`wire:poll`に希望する時間を指定することで調整できます。
 
 ```blade
-<div wire:poll.15s> <!-- In seconds... -->
+<div wire:poll.15s> <!-- 秒単位の指定 -->
 
-<div wire:poll.15000ms> <!-- In milliseconds... -->
+<div wire:poll.15000ms> <!-- ミリ秒単位の指定 -->
 ```
 
-## Background throttling
+## バックグラウンド時の間引き
 
-To further cut down on server requests, Livewire automatically throttles polling when a page is in the background. For example, if a user keeps a page open in a different browser tab, Livewire will reduce the number of polling requests by 95% until the user revisits the tab.
+さらにサーバーへのリクエストを減らすため、Livewireはページがバックグラウンド（他のタブなど）にある場合、自動的にポーリングの頻度を95%削減します。ユーザーがタブに戻るまで、ポーリングの回数が大幅に減ります。
 
-If you want to opt-out of this behavior and keep polling continuously, even when a tab is in the background, you can add the `.keep-alive` modifier to `wire:poll`:
+この挙動を無効にして、バックグラウンドでも常にポーリングを続けたい場合は、`wire:poll`に`.keep-alive`修飾子を追加してください。
 
 ```blade
 <div wire:poll.keep-alive>
 ```
 
-##  Viewport throttling
+## ビューポート時のみポーリング
 
-Another measure you can take to only poll when necessary, is to add the `.visible` modifier to `wire:poll`. The `.visible` modifier instructs Livewire to only poll the component when it is visible on the page:
+必要なときだけポーリングを行いたい場合は、`wire:poll`に`.visible`修飾子を追加できます。`.visible`を付けると、その要素がページ上で表示されているときだけポーリングが実行されます。
 
 ```blade
 <div wire:poll.visible>
 ```
 
-If a component using `wire:visible` is at the bottom of a long page, it won't start polling until the user scrolls it into the viewport. When the user scrolls away, it will stop polling again.
+たとえば、`wire:visible`を使ったコンポーネントが長いページの一番下にある場合、ユーザーがその部分までスクロールしない限りポーリングは始まりません。ユーザーがスクロールして見えなくなると、再びポーリングが停止します。

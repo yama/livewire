@@ -1,10 +1,10 @@
-## Global Component Hooks
+## グローバル・コンポーネントフック
 
-In cases where you want to add features or behavior to every single component in your application, you can use Livewire "Component Hooks".
+アプリケーション内のすべてのコンポーネントに機能や挙動を追加したい場合は、Livewireの「コンポーネントフック」を利用できます。
 
-Component Hooks allow you to define a single class with the ability to hook in to a Livewire component's lifecycle externally (not on the component class itself, and not in a trait).
+コンポーネントフックを使うと、Livewireコンポーネントのライフサイクルに外部から（コンポーネントクラス自体やトレイトではなく）フックできるクラスをひとつ定義できます。
 
-Before we look at an actual example of using them, here's a generic Component Hook class showing every available method you can use inside them:
+実際の使用例を見る前に、利用可能なすべてのメソッドを含んだ汎用的なコンポーネントフックのクラス例を紹介します。
 
 ```php
 use Livewire\ComponentHook;
@@ -13,69 +13,69 @@ class MyComponentHook extends ComponentHook
 {
     public static function provide()
     {
-        // Runs once at application boot.
-        // Can be used to register any services you may need.
+        // アプリケーションの起動時に一度だけ実行されます。
+        // 必要なサービスの登録などに利用できます。
     }
 
     public function mount($params, $parent)
     {
-        // Called when a component is "mounted"
+        // コンポーネントが「マウント」されたときに呼び出されます
         // 
-        // $params: Array of parameters passed into the component
-        // $parent: The parent component object if this is a nested component
+        // $params: コンポーネントに渡されたパラメータの配列
+        // $parent: ネストされたコンポーネントの場合の親コンポーネントオブジェクト
     }
 
     public function hydrate($memo)
     {
-        // Called when a component is "hydrated"
+        // コンポーネントが「ハイドレート」されたときに呼び出されます
         //
-        // $memo: An associative array of the "dehydrated" metadata for this component
+        // $memo: このコンポーネントの「デハイドレート」されたメタデータの連想配列
     }
 
     public function boot()
     {
-        // Called when the component boots
+        // コンポーネントのブート時に呼び出されます
     }
 
     public function update($property, $path, $value)
     {
-        // Called before the component updates...
+        // コンポーネントが更新される前に呼び出されます...
 
         return function () {
-            // Called after the component property has updated...
+            // コンポーネントプロパティが更新された後に呼び出されます...
         };
     }
 
     public function call($method, $params, $returnEarly)
     {
-        // Called before a method on the component is called...
+        // コンポーネントのメソッドが呼び出される前に実行されます...
 
         return function ($returnValue) {
-            // Called after a method is called
+            // メソッド呼び出し後に実行されます
         };
     }
 
     public function render($view, $data)
     {
-        // Called after "render" is called but before the Blade has been rendered...
+        // 「render」が呼び出された後、Bladeがレンダリングされる前に実行されます...
         return function ($html) {
-            // Called after the component's view has been rendered
+            // コンポーネントのビューがレンダリングされた後に呼び出されます
         };
     }
 
     public function dehydrate($context)
     {
-        // Called when a component "dehydrates"
+        // コンポーネントが「デハイドレート」されるときに呼び出されます
     }
 
     public function exception($e, $stopPropagation)
     {
-        // Called if an exception is thrown within a component...
+        // コンポーネント内で例外がスローされた場合に呼び出されます...
     }
 }
 ```
 
-You can register a Component Hook from a service provider like your `App\Providers\AppServiceProvider` like so:
+サービスプロバイダー（例：`App\Providers\AppServiceProvider`）からコンポーネントフックを登録するには、次のようにします。
 
 ```php
 <?php
@@ -99,9 +99,9 @@ class AppServiceProvider extends ServiceProvider
 }
 ```
 
-Now that you've seen the broad overview of Component Hooks, here's a more practical example of using them to provide useful functionality for your application.
+コンポーネントフックの概要を見たので、次は実際にそれらを使用してアプリケーションに便利な機能を提供する実用的な例を見てみましょう。
 
-Let's say you wanted to support the ability to return a CSV from any Livewire action, and it would automatically trigger a file download. For example, you could return a Csv from a method called `save` inside a `CreatePost` component:
+たとえば、任意のLivewireアクションからCSVを返す機能をサポートし、自動的にファイルダウンロードをトリガーしたいとします。たとえば、`CreatePost`コンポーネント内の`save`というメソッドからCsvを返すことができます。
 
 ```php
 use Livewire\Component;
@@ -133,15 +133,15 @@ class SupportCsvDownloads extends ComponentHook
 {
     public function call($method, $params, $returnEarly)
     {
-        // Called before a method on the component is called...
+        // コンポーネントのメソッドが呼び出される前に実行されます...
 
         return function ($returnValue) {
             if ($returnValue instanceof Csv) {
-                // do something
+                // 何かを行う
             }
         };
     }
 }
 ```
 
-You can 
+これで、コンポーネントメソッドからCsvインスタンスを返すと、自動的にファイルダウンロードがトリガーされるようになります。

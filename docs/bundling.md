@@ -1,16 +1,17 @@
-Every component update in Livewire triggers a network request. By default, when multiple components trigger updates at the same time, they are bundled into a single request.
+<!-- filepath: /home/yamamoto/oss/translations/livewire/docs/bundling.md -->
+Livewireでは、各コンポーネントの更新ごとにネットワークリクエストが発生します。デフォルトでは、複数のコンポーネントが同時に更新された場合、それらのリクエストは1つにまとめて送信されます。
 
-This results in fewer network connections to the server and can drastically reduce server load.
+これにより、サーバーへの接続数が減り、サーバー負荷を大幅に軽減できます。
 
-In addition to the performance gains, this also unlocks features internally that require collaboration between multiple components ([Reactive Properties](/docs/nesting#reactive-props), [Modelable Properties](/docs/nesting#binding-to-child-data-using-wiremodel), etc.)
+さらに、この仕組みによって複数コンポーネント間の連携が必要な内部機能（[リアクティブプロパティ](/docs/nesting#reactive-props)、[Modelableプロパティ](/docs/nesting#binding-to-child-data-using-wiremodel)など）も利用できるようになります。
 
-However, there are times when disabling this bundling is desired for performance reasons. The following page outlines various ways to customize this behavior in Livewire.
+ただし、パフォーマンス上の理由から、このバンドル機能を無効にしたい場合もあります。このページでは、Livewireでこの挙動をカスタマイズする方法を紹介します。
 
-## Isolating component requests
+## コンポーネントごとのリクエスト分離
 
-By using Livewire's `#[Isolate]` class attribute, you can mark a component as "isolated". This means that whenever that component makes a server roundtrip, it will attempt to isolate itself from other component requests.
+Livewireの `#[Isolate]` クラス属性を使うことで、コンポーネントを「分離」状態にできます。これを付与したコンポーネントは、サーバーへのリクエスト時に他のコンポーネントのリクエストと分離して処理されます。
 
-This is useful if the update is expensive and you'd rather execute this component's update in parallel with others. For example, if multiple components are using `wire:poll` or listening for an event on the page, you may want to isolate specific component whose updates are expensive and would otherwise hold up the entire request.
+更新処理が重い場合や、他のコンポーネントと並行して個別に処理したい場合に便利です。たとえば、複数のコンポーネントが `wire:poll` を使っていたり、ページ上のイベントをリッスンしている場合、特定のコンポーネントの更新だけを分離して、全体のリクエストを遅らせないようにできます。
 
 ```php
 use Livewire\Attributes\Isolate;
@@ -23,13 +24,13 @@ class ShowPost extends Component
 }
 ```
 
-By adding the `#[Isolate]` attribute, this component's requests will no longer be bundled with other component updates.
+`#[Isolate]` 属性を追加すると、このコンポーネントのリクエストは他のコンポーネントの更新とバンドルされなくなります。
 
-## Lazy components are isolated by default
+## Lazyコンポーネントはデフォルトで分離される
 
-When many components on a single page are "lazy" loaded (using the `#[Lazy]` attribute), it is often desired that their requests are isolated and sent in parallel. Therefore, Livewire isolates lazy updates by default.
+1ページに多数のコンポーネントを「遅延（lazy）」読み込みする場合（`#[Lazy]` 属性を利用）、それぞれのリクエストを分離して並行送信したいケースが多くなります。そのため、LivewireではLazyな更新はデフォルトで分離されます。
 
-If you wish to disable this behavior, you can pass an `isolate: false` parameter into the `#[Lazy]` attribute like so:
+この挙動を無効にしたい場合は、`#[Lazy]` 属性に `isolate: false` パラメータを指定してください。
 
 ```php
 <?php
@@ -46,4 +47,4 @@ class Revenue extends Component
 }
 ```
 
-Now, if there are multiple `Revenue` components on the same page, all ten updates will be bundled and sent the server as single, lazy-load, network request.
+このように設定すると、同じページに複数の `Revenue` コンポーネントがあっても、すべての更新が1つのlazy-loadリクエストとしてまとめて送信されます。

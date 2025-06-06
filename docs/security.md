@@ -1,12 +1,12 @@
-It's important to make sure your Livewire apps are secure and don't expose any application vulnerabilities. Livewire has internal security features to handle many cases, however, there are times when it's up to your application code to keep your components secure.
+Livewireアプリケーションのセキュリティを確保し、脆弱性を生まないようにすることは非常に重要です。Livewireには多くのケースをカバーする内部的なセキュリティ機能がありますが、コンポーネントの実装によっては開発者側で追加の対策が必要な場合もあります。
 
-## Authorizing action parameters
+## アクションパラメータの認可
 
-Livewire actions are extremely powerful, however, any parameters passed to Livewire actions are mutable on the client and should be treated as un-trusted user input.
+Livewireのアクションは非常に強力ですが、アクションに渡されるパラメータはクライアント側で自由に変更できるため、「信頼できないユーザー入力」として扱う必要があります。
 
-Arguably the most common security pitfall in Livewire is failing to validate and authorize Livewire action calls before persisting changes to the database.
+Livewireで最もよくあるセキュリティ上の落とし穴は、アクション呼び出し時のパラメータを検証・認可せずにデータベースへ反映してしまうことです。
 
-Here is an example of an insecurity resulting from a lack of authorization:
+以下は認可処理がないために危険な例です。
 
 ```php
 <?php
@@ -33,20 +33,19 @@ class ShowPost extends Component
 <button wire:click="delete({{ $post->id }})">Delete Post</button>
 ```
 
+上記の例が危険なのは、`wire:click="delete(...)"`の値をブラウザ上で書き換え、悪意のあるユーザーが任意の投稿IDを渡せてしまうためです。
 
-The reason the above example is insecure is that `wire:click="delete(...)"` can be modified in the browser to pass ANY post ID a malicious user wishes.
+このようなアクションパラメータ（この例では`$id`）は、他のブラウザ入力と同様に「信頼できない値」として扱うべきです。
 
-Action parameters (like `$id` in this case) should be treated the same as any untrusted input from the browser.
+このアプリケーションを安全に保ち、他人の投稿を削除できないようにするには、`delete()`アクション内で認可処理を追加する必要があります。
 
-Therefore, to keep this application secure and prevent a user from deleting another user's post, we must add authorization to the `delete()` action.
-
-First, let's create a [Laravel Policy](https://laravel.com/docs/authorization#creating-policies) for the Post model by running the following command:
+まず、以下のコマンドでPostモデル用の[Laravelポリシー](https://laravel.com/docs/authorization#creating-policies)を作成します。
 
 ```bash
 php artisan make:policy PostPolicy --model=Post
 ```
 
-After running the above command, a new Policy will be created inside `app/Policies/PostPolicy.php`. We can then update its contents with a `delete` method like so:
+上記コマンドで`app/Policies/PostPolicy.php`が作成されるので、`delete`メソッドを次のように実装します。
 
 ```php
 <?php
@@ -68,30 +67,29 @@ class PostPolicy
 }
 ```
 
-Now, we can use the `$this->authorize()` method from the Livewire component to ensure the user owns the post before deleting it:
+次に、Livewireコンポーネント内で`$this->authorize()`メソッドを使い、ユーザーが投稿の所有者かどうかを確認します。
 
 ```php
 public function delete($id)
 {
     $post = Post::find($id);
 
-    // If the user doesn't own the post,
-    // an AuthorizationException will be thrown...
+    // ユーザーが所有者でない場合はAuthorizationExceptionがスローされます
     $this->authorize('delete', $post); // [tl! highlight]
 
     $post->delete();
 }
 ```
 
-Further reading:
+詳しくは：
 * [Laravel Gates](https://laravel.com/docs/authorization#gates)
 * [Laravel Policies](https://laravel.com/docs/authorization#creating-policies)
 
-## Authorizing public properties
+## パブリックプロパティの認可
 
-Similar to action parameters, public properties in Livewire should be treated as un-trusted input from the user.
+アクションパラメータと同様に、Livewireのパブリックプロパティも「信頼できないユーザー入力」として扱うべきです。
 
-Here is the same example from above about deleting a post, written insecurely in a different manner:
+先ほどの削除例を、別の形で危険に実装した例を見てみましょう。
 
 ```php
 <?php
@@ -123,23 +121,23 @@ class ShowPost extends Component
 <button wire:click="delete">Delete Post</button>
 ```
 
-As you can see, instead of passing the `$postId` as a parameter to the `delete` method from `wire:click`, we are storing it as a public property on the Livewire component.
+この例では、`delete`メソッドの引数としてではなく、コンポーネントのパブリックプロパティ`$postId`に値を保持しています。
 
-The problem with this approach is that any malicious user can inject a custom element onto the page such as:
+この場合、悪意のあるユーザーが次のような要素をページに追加することで、`$postId`の値を自由に変更できてしまいます。
 
 ```html
 <input type="text" wire:model="postId">
 ```
 
-This would allow them to freely modify the `$postId` before pressing "Delete Post". Because the `delete` action doesn't authorize the value of `$postId`, the user can now delete any post in the database, whether they own it or not.
+このままでは、認可処理がないため、ユーザーは自分以外の投稿も削除できてしまいます。
 
-To protect against this risk, there are two possible solutions:
+このリスクを防ぐには、次の2つの方法があります。
 
-### Using model properties
+### モデルプロパティを使う
 
-When setting public properties, Livewire treats models differently than plain values such as strings and integers. Because of this, if we instead store the entire post model as a property on the component, Livewire will ensure the ID is never tampered with.
+Livewireでは、パブリックプロパティにモデル（Eloquentモデル）を直接保持した場合、IDの改ざんができないようになっています。
 
-Here is an example of storing a `$post` property instead of a simple `$postId` property:
+たとえば、`$postId`の代わりに`$post`モデルをプロパティとして持たせると安全です。
 
 ```php
 <?php
@@ -167,12 +165,13 @@ class ShowPost extends Component
 <button wire:click="delete">Delete Post</button>
 ```
 
-This component is now secured because there is no way for a malicious user to change the `$post` property to a different Eloquent model.
+この場合、`$post`プロパティは外部から改ざんできないため、悪意のあるユーザーによる不正な削除を防げます。
 
-### Locking the property
-Another way to prevent properties from being set to unwanted values is to use [locked properties](https://livewire.laravel.com/docs/locked). Locking properties is done by applying the `#[Locked]` attribute. Now if users attempt to tamper with this value an error will be thrown.
+### プロパティのロック
 
-Note that properties with the Locked attribute can still be changed in the back-end, so care still needs to taken that untrusted user input is not passed to the property in your own Livewire functions.
+プロパティの値が意図しないものに変更されるのを防ぐには、[ロック属性](https://livewire.laravel.com/docs/locked)を使う方法もあります。`#[Locked]`属性を付与すると、ユーザーが値を改ざんしようとした際にエラーが発生します。
+
+ただし、Locked属性を付けたプロパティも、バックエンド側のLivewire関数内では値の変更が可能なため、やはり「信頼できない入力」を直接プロパティに代入しないよう注意が必要です。
 
 ```php
 <?php
@@ -200,9 +199,9 @@ class ShowPost extends Component
 }
 ```
 
-### Authorizing the property
+### プロパティの認可
 
-If using a model property is undesired in your scenario, you can of course fall-back to manually authorizing the deletion of the post inside the `delete` action:
+モデルプロパティを使わない場合は、`delete`アクション内で手動で認可処理を行うこともできます。
 
 ```php
 <?php
@@ -234,78 +233,28 @@ class ShowPost extends Component
 <button wire:click="delete">Delete Post</button>
 ```
 
-Now, even though a malicious user can still freely modify the value of `$postId`, when the `delete` action is called, `$this->authorize()` will throw an `AuthorizationException` if the user does not own the post.
+この場合も、`$postId`の値は改ざん可能ですが、`delete`アクション内で`$this->authorize()`を呼び出すことで、所有者以外の削除を防げます。
 
-Further reading:
+詳しくは：
 * [Laravel Gates](https://laravel.com/docs/authorization#gates)
 * [Laravel Policies](https://laravel.com/docs/authorization#creating-policies)
 
-## Middleware
+## ミドルウェア
 
-When a Livewire component is loaded on a page containing route-level [Authorization Middleware](https://laravel.com/docs/authorization#via-middleware), like so:
-
-```php
-Route::get('/post/{post}', App\Livewire\UpdatePost::class)
-    ->middleware('can:update,post'); // [tl! highlight]
-```
-
-Livewire will ensure those middlewares are re-applied to subsequent Livewire network requests. This is referred to as "Persistent Middleware" in Livewire's core.
-
-Persistent middleware protects you from scenarios where the authorization rules or user permissions have changed after the initial page-load.
-
-Here's a more in-depth example of such a scenario:
+Livewireコンポーネントが、ルートレベルで[認可ミドルウェア](https://laravel.com/docs/authorization#via-middleware)を適用したページで読み込まれる場合：
 
 ```php
 Route::get('/post/{post}', App\Livewire\UpdatePost::class)
     ->middleware('can:update,post'); // [tl! highlight]
 ```
 
-```php
-<?php
+Livewireは、その後のネットワークリクエストでもミドルウェアを再適用します。これをLivewireでは「永続的ミドルウェア」と呼びます。
 
-use App\Models\Post;
-use Livewire\Component;
-use Livewire\Attributes\Validate;
+永続的ミドルウェアは、初回ページロード後に認可ルールやユーザー権限が変更された場合でも、セキュリティを維持します。
 
-class UpdatePost extends Component
-{
-    public Post $post;
+### 永続的ミドルウェアの設定
 
-    #[Validate('required|min:5')]
-    public $title = '';
-
-    public $content = '';
-
-    public function mount()
-    {
-        $this->title = $this->post->title;
-        $this->content = $this->post->content;
-    }
-
-    public function update()
-    {
-        $this->post->update([
-            'title' => $this->title,
-            'content' => $this->content,
-        ]);
-    }
-}
-```
-
-As you can see, the `can:update,post` middleware is applied at the route-level. This means that a user who doesn't have permission to update a post cannot view the page.
-
-However, consider a scenario where a user:
-* Loads the page
-* Loses permission to update after the page loads
-* Tries updating the post after losing permission
-
-Because Livewire has already successfully loaded the page you might ask yourself: "When Livewire makes a subsequent request to update the post, will the `can:update,post` middleware be re-applied? Or instead, will the un-authorized user be able to update the post successfully?"
-
-Because Livewire has internal mechanisms to re-apply middleware from the original endpoint, you are protected in this scenario.
-
-### Configuring persistent middleware
-
-By default, Livewire persists the following middleware across network requests:
+デフォルトで、Livewireは以下のミドルウェアをネットワークリクエスト間で永続化します。
 
 ```php
 \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
@@ -317,9 +266,9 @@ By default, Livewire persists the following middleware across network requests:
 \Illuminate\Auth\Middleware\Authorize::class,
 ```
 
-If any of the above middlewares are applied to the initial page-load, they will be persisted (re-applied) to any future network requests.
+初回ページロード時にこれらのミドルウェアが適用されていれば、以降のLivewireリクエストでも自動的に再適用されます。
 
-However, if you are applying a custom middleware from your application on the initial page-load, and want it persisted between Livewire requests, you will need to add it to this list from a [Service Provider](https://laravel.com/docs/providers#main-content) in your app like so:
+独自のミドルウェアを永続化したい場合は、[サービスプロバイダ](https://laravel.com/docs/providers#main-content)で次のように追加します。
 
 ```php
 <?php
@@ -343,45 +292,44 @@ class AppServiceProvider extends ServiceProvider
 }
 ```
 
-If a Livewire component is loaded on a page that uses the `EnsureUserHasRole` middleware from your application, it will now be persisted and re-applied to any future network requests to that Livewire component.
+これにより、`EnsureUserHasRole`ミドルウェアが適用されたページでLivewireコンポーネントを使うと、以降のリクエストでも同じミドルウェアが再適用されます。
 
-> [!warning] Middleware arguments are not supported
-> Livewire currently doesn't support middleware arguments for persistent middleware definitions.
+> [!warning] ミドルウェア引数はサポートされていません
+> Livewireの永続的ミドルウェア定義では、引数付きのミドルウェアは利用できません。
 >
 > ```php
-> // Bad...
+> // NG例
 > Livewire::addPersistentMiddleware(AuthorizeResource::class.':admin');
 >
-> // Good...
+> // OK例
 > Livewire::addPersistentMiddleware(AuthorizeResource::class);
 > ```
 
+### Livewire全体へのミドルウェア適用
 
-### Applying global Livewire middleware
-
-Alternatively, if you wish to apply specific middleware to every single Livewire update network request, you can do so by registering your own Livewire update route with any middleware you wish:
+すべてのLivewireリクエストに特定のミドルウェアを適用したい場合は、Livewireのアップデートルートを独自に登録し、任意のミドルウェアを付与できます。
 
 ```php
 Livewire::setUpdateRoute(function ($handle) {
-	return Route::post('/livewire/update', $handle)
+    return Route::post('/livewire/update', $handle)
         ->middleware(App\Http\Middleware\LocalizeViewPaths::class);
 });
 ```
 
-Any Livewire AJAX/fetch requests made to the server will use the above endpoint and apply the `LocalizeViewPaths` middleware before handling the component update.
+これにより、LivewireのAJAXリクエストは上記エンドポイントを経由し、`LocalizeViewPaths`ミドルウェアが適用されます。
 
-Learn more about [customizing the update route on the Installation page](https://livewire.laravel.com/docs/installation#configuring-livewires-update-endpoint).
+詳しくは[インストールページのアップデートエンドポイントのカスタマイズ](https://livewire.laravel.com/docs/installation#configuring-livewires-update-endpoint)を参照してください。
 
-## Snapshot checksums
+## スナップショットのチェックサム
 
-Between every Livewire request, a snapshot is taken of the Livewire component and sent to the browser. This snapshot is used to re-build the component during the next server round-trip.
+Livewireでは、各リクエストごとにコンポーネントのスナップショット（状態）が作成され、ブラウザに送信されます。このスナップショットは、次回のリクエスト時にコンポーネントを再構築するために使われます。
 
-[Learn more about Livewire snapshots in the Hydration documentation.](https://livewire.laravel.com/docs/hydration#the-snapshot)
+[Livewireのスナップショットについて詳しくはHydrationのドキュメントを参照](https://livewire.laravel.com/docs/hydration#the-snapshot)
 
-Because fetch requests can be intercepted and tampered with in a browser, Livewire generates a "checksum" of each snapshot to go along with it.
+ブラウザ上でリクエストが改ざんされる可能性があるため、Livewireは各スナップショットに「チェックサム」を付与します。
 
-This checksum is then used on the next network request to verify that the snapshot hasn't changed in any way.
+次回のリクエスト時にこのチェックサムを検証し、スナップショットが改ざんされていないか確認します。
 
-If Livewire finds a checksum mismatch, it will throw a `CorruptComponentPayloadException` and the request will fail.
+もしチェックサムが一致しない場合、Livewireは`CorruptComponentPayloadException`をスローし、リクエストを拒否します。
 
-This protects against any form of malicious tampering that would otherwise result in granting users the ability to execute or modify unrelated code.
+これにより、悪意のある改ざんによって本来許可されていない操作やコード実行が行われるのを防ぎます。

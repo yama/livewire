@@ -1,30 +1,29 @@
+`wire:cloak` は、Livewireが完全に初期化されるまで要素を非表示にするディレクティブです。ページ読み込み時に「ちらつき」や未スタイルのコンテンツが表示されるのを防ぐのに役立ちます。
 
-`wire:cloak` is a directive that hides elements on page load until Livewire is fully initialized. This is useful for preventing the "flash of unstyled content" that can occur when the page loads before Livewire has a chance to initialize.
+## 基本的な使い方
 
-## Basic usage
-
-To use `wire:cloak`, add the directive to any element you want to hide during page load:
+`wire:cloak` を使うには、ページロード中に非表示にしたい要素にこのディレクティブを追加します。
 
 ```blade
 <div wire:cloak>
-    This content will be hidden until Livewire is fully loaded
+    Livewireの読み込みが完了するまで、この内容は非表示になります
 </div>
 ```
 
-### Dynamic content
+### 動的コンテンツへの利用
 
-`wire:cloak` is particularly useful in scenarios where you want to prevent users from seeing uninitialized dynamic content such as element shown or hidden using `wire:show`.
+`wire:cloak` は、`wire:show` などで表示・非表示が切り替わる動的なコンテンツの初期状態を隠したい場合にも特に便利です。
 
 ```blade
 <div>
     <div wire:show="starred" wire:cloak>
-        <!-- Yellow star icon... -->
+        <!-- 黄色の星アイコン... -->
     </div>
 
     <div wire:show="!starred" wire:cloak>
-        <!-- Gray star icon... -->
+        <!-- グレーの星アイコン... -->
     </div>
 </div>
 ```
 
-In the above example, without `wire:cloak`, both icons would be shown before Livewire initializes. However, with `wire:cloak`, both elements will be hidden until initialization.
+上記の例では、`wire:cloak` を使わない場合、Livewireの初期化前に両方のアイコンが表示されてしまいます。しかし、`wire:cloak` を付与することで、初期化が完了するまで両方の要素が非表示になります。

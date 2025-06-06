@@ -1,19 +1,16 @@
+従来のHTMLページでは、フォームは「送信」ボタンが押されたときだけ送信されます。
 
-In a traditional HTML page containing a form, the form is only ever submitted when the user presses the "Submit" button.
+しかし、Livewireでは従来のフォーム送信にとどまらず、リアルタイムでの入力検証や、ユーザーが入力するたびに自動保存することも可能です。
 
-However, Livewire is capable of much more than traditional form submissions. You can validate form inputs in real-time or even save the form as a user types.
+このような「リアルタイム」更新のシナリオでは、フォームやその一部が未保存の状態（＝"dirty"）であることをユーザーに分かりやすく伝えることが重要です。未保存の入力がある場合、そのフォームは「dirty」とみなされ、サーバーとクライアントの状態が同期されたときに「clean」になります。
 
-In these "real-time" update scenarios, it can be helpful to signal to your users when a form or subset of a form has been changed, but hasn't been saved to the database.
+## 基本的な使い方
 
-When a form contains un-saved input, that form is considered "dirty". It only becomes "clean" when a network request has been triggered to synchronize the server state with the client-side state.
+Livewireでは、`wire:dirty` ディレクティブを使って、ページ上の要素を簡単にトグル表示できます。
 
-## Basic usage
+`wire:dirty` を要素に追加すると、クライアント側の状態がサーバー側と異なる場合のみ、その要素が表示されます。
 
-Livewire allows you to easily toggle visual elements on the page using the `wire:dirty` directive.
-
-By adding `wire:dirty` to an element, you are instructing Livewire to only show the element when the client-side state diverges from the server-side state.
-
-To demonstrate, here is an example of an `UpdatePost` form containing a visual "Unsaved changes..." indication that signals to the user that the form contains input that has not been saved:
+例えば、未保存の変更があることを示す「Unsaved changes...」メッセージを表示する `UpdatePost` フォームの例です。
 
 ```blade
 <form wire:submit="update">
@@ -27,23 +24,21 @@ To demonstrate, here is an example of an `UpdatePost` form containing a visual "
 </form>
 ```
 
-Because `wire:dirty` has been added to the "Unsaved changes..." message, the message will be hidden by default. Livewire will automatically display the message when the user starts modifying the form inputs.
+`wire:dirty` を「Unsaved changes...」メッセージに付与することで、デフォルトでは非表示になり、フォームの入力が変更されると自動的に表示されます。
 
-When the user submits the form, the message will disappear again, since the server / client data is back in sync.
+フォームを送信すると、サーバーとクライアントのデータが再び同期され、メッセージは非表示に戻ります。
 
-### Removing elements
+### 要素の非表示（remove）
 
-By adding the `.remove` modifier to `wire:dirty`, you can instead show an element by default and only hide it when the component has "dirty" state:
+`wire:dirty` に `.remove` モディファイアを付与すると、デフォルトで要素を表示し、「dirty」状態のときだけ非表示にできます。
 
 ```blade
 <div wire:dirty.remove>The data is in-sync...</div>
 ```
 
-## Targeting property updates
+## プロパティ単位での監視
 
-Imagine you are using `wire:model.blur` to update a property on the server immediately after a user leaves an input field. In this scenario, you can provide a "dirty" indication for only that property by adding `wire:target` to the element that contains the `wire:dirty` directive.
-
-Here is an example of only showing a dirty indication when the title property has been changed:
+例えば、`wire:model.blur` を使って、入力欄からフォーカスが外れたタイミングでサーバーにプロパティを即時反映させる場合、`wire:target` を `wire:dirty` と組み合わせて、特定のプロパティだけ「dirty」表示を出すこともできます。
 
 ```blade
 <form wire:submit="update">
@@ -55,11 +50,9 @@ Here is an example of only showing a dirty indication when the title property ha
 </form>
 ```
 
-## Toggling classes
+## クラスのトグル
 
-Often, instead of toggling entire elements, you may want to toggle individual CSS classes on an input when its state is "dirty".
-
-Below is an example where a user types into an input field and the border becomes yellow, indicating an "unsaved" state. Then, when the user tabs away from the field, the border is removed, indicating that the state has been saved on the server:
+要素全体の表示・非表示ではなく、入力欄が「dirty」状態のときだけ特定のCSSクラスを付与したい場合にも活用できます。
 
 ```blade
 <input wire:model.blur="title" wire:dirty.class="border-yellow-500">

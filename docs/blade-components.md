@@ -1,4 +1,3 @@
-
 ```blade
 <form wire:submit="save">
     <label>
@@ -20,6 +19,11 @@
     <button type="submit">Save</button>
 </form>
 ```
+
+<!--
+上記は、Livewireコンポーネント内でフォームを作成する基本的な例です。
+各<label>タグ内で、タイトルの入力欄とバリデーションエラーの表示を個別に記述しています。
+-->
 
 ```blade
 <form wire:submit="save">
@@ -30,6 +34,10 @@
     <button type="submit">Save</button>
 </form>
 ```
+
+<!--
+Bladeコンポーネントを活用することで、フォームの入力欄やエラーメッセージの記述を共通化し、コードを簡潔に保つことができます。
+-->
 
 ```blade
 @props(['label', 'error'])

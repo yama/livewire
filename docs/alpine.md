@@ -1,32 +1,31 @@
+[AlpineJS](https://alpinejs.dev/) は、Webページにクライアントサイドのインタラクティブな機能を簡単に追加できる軽量なJavaScriptライブラリです。もともとLivewireのようなツールと組み合わせて使うことを想定して作られており、アプリに手軽にインタラクションを加えたい場合に便利です。
 
-[AlpineJS](https://alpinejs.dev/) is a lightweight JavaScript library that makes it easy to add client-side interactivity to your web pages. It was originally built to complement tools like Livewire where a more JavaScript-centric utility is helpful for sprinkling interactivity around your app.
+LivewireにはAlpineが最初から組み込まれているため、別途インストールする必要はありません。
 
-Livewire ships with Alpine out of the box so there is no need to install it into your project separately.
+AlpineJSの使い方については、[公式ドキュメント](https://alpinejs.dev) を参照してください。
 
-The best place to learn about using AlpineJS is [the Alpine documentation](https://alpinejs.dev).
+## 基本的なAlpineコンポーネント
 
-## A Basic Alpine component
-
-To lay a foundation for the rest of this documentation, here is one of the most simple and informative examples of an Alpine component. A small "counter" that shows a number on the page and allows the user to increment that number by clicking a button:
+このドキュメントの基礎として、最もシンプルかつ分かりやすいAlpineコンポーネントの例を紹介します。ページ上に数値を表示し、ボタンをクリックするとその数値が増える「カウンター」です。
 
 ```html
-<!-- Declare a JavaScript object of data... -->
+<!-- JavaScriptのデータオブジェクトを宣言... -->
 <div x-data="{ count: 0 }">
-    <!-- Render the current "count" value inside an element... -->
+    <!-- 現在の「count」値を要素内に表示... -->
     <h2 x-text="count"></h2>
 
-    <!-- Increment the "count" value by "1" when a click event is dispatched... -->
+    <!-- クリックイベントが発生したときに「count」値を「1」増やす... -->
     <button x-on:click="count++">+</button>
 </div>
 ```
 
-The Alpine component above can be used inside any Livewire component in your application without a hitch. Livewire takes care of maintaining Alpine's state across Livewire component updates. In essence, you should feel free to use Alpine components inside Livewire as if you were using Alpine in any other non-Livewire context.
+上記のAlpineコンポーネントは、アプリケーション内のどのLivewireコンポーネントでもそのまま利用できます。LivewireがAlpineの状態をLivewireコンポーネントの更新時にも維持してくれるため、特別な対応は不要です。つまり、Alpineを通常の（非Livewire）環境と同じように、Livewire内でも自由に使うことができます。
 
-## Using Alpine inside Livewire
+## Livewire内でAlpineを使う
 
-Let's explore a more real-life example of using an Alpine component inside a Livewire component.
+Livewireコンポーネント内でAlpineコンポーネントを使用する、より実践的な例を見てみましょう。
 
-Below is a simple Livewire component showing the details of a post model from the database. By default, only the title of the post is shown:
+以下は、データベースからポストモデルの詳細を表示するシンプルなLivewireコンポーネントです。デフォルトでは、ポストのタイトルのみが表示されます。
 
 ```html
 <div>
@@ -34,8 +33,8 @@ Below is a simple Livewire component showing the details of a post model from th
 
     <div x-data="{ expanded: false }">
         <button type="button" x-on:click="expanded = ! expanded">
-            <span x-show="! expanded">Show post content...</span>
-            <span x-show="expanded">Hide post content...</span>
+            <span x-show="! expanded">ポストの内容を表示...</span>
+            <span x-show="expanded">ポストの内容を隠す...</span>
         </button>
 
         <div x-show="expanded">
@@ -45,19 +44,19 @@ Below is a simple Livewire component showing the details of a post model from th
 </div>
 ```
 
-By using Alpine, we can hide the content of the post until the user presses the "Show post content..." button. At that point, Alpine's `expanded` property will be set to `true` and the content will be shown on the page because `x-show="expanded"` is used to give Alpine control over the visibility of the post's content.
+Alpineを使用することで、ユーザーが「ポストの内容を表示...」ボタンを押すまでポストの内容を隠すことができます。この時点で、Alpineの`expanded`プロパティは`true`に設定され、`x-show="expanded"`がポストの内容の表示/非表示を制御するため、ページ上に内容が表示されます。
 
-This is an example of where Alpine shines: adding interactivity into your application without triggering Livewire server-roundtrips.
+これは、Alpineの真価を発揮する例です：アプリケーションにインタラクティブ性を追加する際に、Livewireのサーバー往復を引き起こすことなく実現できます。
 
-## Controlling Livewire from Alpine using `$wire`
+## `$wire`を使ったAlpineからLivewireの制御
 
-One of the most powerful features available to you as a Livewire developer is `$wire`. The `$wire` object is a magic object available to all your Alpine components that are used inside of Livewire.
+Livewire開発者にとって非常に強力な機能の一つが`$wire`です。`$wire`オブジェクトは、Livewire内で使用されるすべてのAlpineコンポーネントで利用可能なマジックオブジェクトです。
 
-You can think of `$wire` as a gateway from JavaScript into PHP. It allows you to access and modify Livewire component properties, call Livewire component methods, and do much more; all from inside AlpineJS.
+`$wire`は、JavaScriptからPHPへのゲートウェイのように考えることができます。これを使用すると、Livewireコンポーネントのプロパティにアクセスしたり、Livewireコンポーネントのメソッドを呼び出したりすることができます。さらに多くのことが、すべてAlpineJS内から実行可能です。
 
-### Accessing Livewire properties
+### Livewireプロパティへのアクセス
 
-Here is an example of a simple "character count" utility in a form for creating a post. This will instantly show a user how many characters are contained inside their post's content as they type:
+以下は、投稿の内容に含まれる文字数をユーザーに即座に示す、投稿作成フォーム内のシンプルな「文字カウント」ユーティリティの例です。ユーザーが入力するたびに、ポストの内容に何文字含まれているかを即座に示します。
 
 ```html
 <form wire:submit="save">
@@ -66,47 +65,47 @@ Here is an example of a simple "character count" utility in a form for creating 
     <input wire:model="content" type="text">
 
     <small>
-        Character count: <span x-text="$wire.content.length"></span> <!-- [tl! highlight] -->
+        文字数: <span x-text="$wire.content.length"></span> <!-- [tl! highlight] -->
     </small>
 
-    <button type="submit">Save</button>
+    <button type="submit">保存</button>
 </form>
 ```
 
-As you can see `x-text` in the above example is being used to allow Alpine to control the text content of the `<span>` element. `x-text` accepts any JavaScript expression inside of it and automatically reacts when any dependencies are updated. Because we are using `$wire.content` to access the value of `$content`, Alpine will automatically update the text content every time `$wire.content` is updated from Livewire; in this case by `wire:model="content"`.
+上記の例では、`x-text`が`<span>`要素のテキストコンテンツを制御するために使用されています。`x-text`は、任意のJavaScript式を受け入れ、依存関係が更新されると自動的に反応します。ここでは、`$wire.content`を使用して`$content`の値にアクセスしているため、Livewireから`wire:model="content"`によって`$wire.content`が更新されるたびに、Alpineがテキストコンテンツを自動的に更新します。
 
-### Mutating Livewire properties
+### Livewireプロパティの変更
 
-Here is an example of using `$wire` inside Alpine to clear the "title" field of a form for creating a post.
+以下は、Alpine内で`$wire`を使用して、投稿作成フォームの「タイトル」フィールドをクリアする例です。
 
 ```html
 <form wire:submit="save">
     <input wire:model="title" type="text">
 
-    <button type="button" x-on:click="$wire.title = ''">Clear</button> <!-- [tl! highlight] -->
+    <button type="button" x-on:click="$wire.title = ''">クリア</button> <!-- [tl! highlight] -->
 
     <!-- ... -->
 
-    <button type="submit">Save</button>
+    <button type="submit">保存</button>
 </form>
 ```
 
-As a user is filling out the above Livewire form, they can press "Clear" and the title field will be cleared without sending a network request from Livewire. The interaction will be "instant".
+ユーザーが上記のLivewireフォームに入力しているとき、「クリア」ボタンを押すとタイトルフィールドがクリアされ、Livewireからネットワークリクエストを送信することなく即座に反応します。
 
-Here's a brief explanation of what's going on to make that happen:
+これを実現するために何が行われているのか、簡単に説明します：
 
-* `x-on:click` tells Alpine to listen for a click on the button element
-* When clicked, Alpine runs the provided JS expression: `$wire.title = ''`
-* Because `$wire` is a magic object representing the Livewire component, all properties from your component can be accessed or mutated straight from JavaScript
-* `$wire.title = ''` sets the value of `$title` in your Livewire component to an empty string
-* Any Livewire utilities like `wire:model` will instantly react to this change, all without sending a server-roundtrip
-* On the next Livewire network request, the `$title` property will be updated to an empty string on the backend
+* `x-on:click`は、Alpineにボタン要素のクリックをリッスンするよう指示します
+* クリックされると、Alpineは提供されたJS式`$wire.title = ''`を実行します
+* `$wire`はLivewireコンポーネントを表すマジックオブジェクトであるため、コンポーネントのすべてのプロパティにJavaScriptから直接アクセスまたは変更できます
+* `$wire.title = ''`は、Livewireコンポーネント内の`$title`の値を空の文字列に設定します
+* `wire:model`のようなLivewireユーティリティは、この変更に即座に反応し、すべてサーバー往復を送信することなく行われます
+* 次回のLivewireネットワークリクエストで、バックエンドの`$title`プロパティは空の文字列に更新されます
 
-### Calling Livewire methods
+### Livewireメソッドの呼び出し
 
-Alpine can also easily call any Livewire methods/actions by simply calling them directly on `$wire`.
+Alpineは、`$wire`上で直接メソッドを呼び出すことで、Livewireメソッド/アクションを簡単に呼び出すこともできます。
 
-Here is an example of using Alpine to listen for a "blur" event on an input and triggering a form save. The "blur" event is dispatched by the browser when a user presses "tab" to remove focus from the current element and focus on the next one on the page:
+以下は、Alpineを使用して入力フィールドの「blur」イベントをリッスンし、フォームの保存をトリガーする例です。「blur」イベントは、ユーザーが「tab」キーを押して現在の要素からフォーカスを外し、ページ上の次の要素にフォーカスを移動させると、ブラウザによって発火されます。
 
 ```html
 <form wire:submit="save">
@@ -114,95 +113,95 @@ Here is an example of using Alpine to listen for a "blur" event on an input and 
 
     <!-- ... -->
 
-    <button type="submit">Save</button>
+    <button type="submit">保存</button>
 </form>
 ```
 
-Typically, you would just use `wire:model.blur="title"` in this situation, however, it's helpful for demonstration purposes how you can achieve this using Alpine.
+通常、この状況では`wire:model.blur="title"`を使用しますが、これはAlpineを使用してどのように実現できるかを示すために役立ちます。
 
-#### Passing parameters
+#### パラメータの渡し方
 
-You can also pass parameters to Livewire methods by simply passing them to the `$wire` method call.
+`$wire`メソッド呼び出しにパラメータを渡すこともできます。
 
-Consider a component with a `deletePost()` method like so:
+以下のような`deletePost()`メソッドを持つコンポーネントを考えてみてください。
 
 ```php
 public function deletePost($postId)
 {
     $post = Post::find($postId);
 
-    // Authorize user can delete...
+    // 認可されたユーザーのみが削除可能...
     auth()->user()->can('update', $post);
 
     $post->delete();
 }
 ```
 
-Now, you can pass a `$postId` parameter to the `deletePost()` method from Alpine like so:
+次のように、Alpineから`deletePost()`メソッドに`$postId`パラメータを渡すことができます。
 
 ```html
 <button type="button" x-on:click="$wire.deletePost(1)">
 ```
 
-In general, something like a `$postId` would be generated in Blade. Here's an example of using Blade to determine which `$postId` Alpine passes into `deletePost()`:
+一般的に、`$postId`のようなものはBladeで生成されます。以下は、Bladeを使用してどのように異なる`$postId`を`deletePost()`に渡すかの例です。
 
 ```html
 @foreach ($posts as $post)
     <button type="button" x-on:click="$wire.deletePost({{ $post->id }})">
-        Delete "{{ $post->title }}"
+        「{{ $post->title }}」を削除
     </button>
 @endforeach
 ```
 
-If there are three posts on the page, the above Blade template will render to something like the following in the browser:
+ページ上に3つのポストがある場合、上記のBladeテンプレートはブラウザ上で次のようにレンダリングされます。
 
 ```html
 <button type="button" x-on:click="$wire.deletePost(1)">
-    Delete "The power of walking"
+    「歩行の力」を削除
 </button>
 
 <button type="button" x-on:click="$wire.deletePost(2)">
-    Delete "How to record a song"
+    「曲を録音する方法」を削除
 </button>
 
 <button type="button" x-on:click="$wire.deletePost(3)">
-    Delete "Teach what you learn"
+    「学んだことを教える」を削除
 </button>
 ```
 
-As you can see, we've used Blade to render different post IDs into the Alpine `x-on:click` expressions.
+このように、Bladeを使用して異なるポストIDをAlpineの`x-on:click`式にレンダリングしています。
 
-#### Blade parameter "gotchas"
+#### Bladeパラメータの「落とし穴」
 
-This is an extremely powerful technique, but can be confusing when reading your Blade templates. It can be hard to know which parts are Blade and which parts are Alpine at first glance. Therefore, it's helpful to inspect the HTML rendered on the page to make sure what you are expecting to be rendered is accurate.
+これは非常に強力なテクニックですが、Bladeテンプレートを読むときに混乱を招くことがあります。一見してどの部分がBladeでどの部分がAlpineなのかを把握するのが難しい場合があります。そのため、期待通りにレンダリングされているかを確認するために、ページ上でレンダリングされたHTMLを検査することが役立ちます。
 
-Here's an example that commonly confuses people:
+以下は、人々を混乱させる一般的な例です：
 
-Let's say, instead of an ID, your Post model uses UUIDs for indexes (IDs are integers, and UUIDs are long strings of characters).
+ポストモデルがUUIDをIDとして使用しているとしましょう（IDは整数で、UUIDは長い文字列のキャラクターです）。
 
-If we render the following just like we did with an ID there will be an issue:
+IDの代わりに次のようにレンダリングすると、問題が発生します。
 
 ```html
-<!-- Warning: this is an example of problematic code... -->
+<!-- 警告：これは問題のあるコードの例です... -->
 <button
     type="button"
     x-on:click="$wire.deletePost({{ $post->uuid }})"
 >
 ```
 
-The above Blade template will render the following in your HTML:
+上記のBladeテンプレートは、HTML内で次のようにレンダリングされます。
 
 ```html
-<!-- Warning: this is an example of problematic code... -->
+<!-- 警告：これは問題のあるコードの例です... -->
 <button
     type="button"
     x-on:click="$wire.deletePost(93c7b04c-c9a4-4524-aa7d-39196011b81a)"
 >
 ```
 
-Notice the lack of quotes around the UUID string? When Alpine goes to evaluate this expression, JavaScript will throw an error: "Uncaught SyntaxError: Invalid or unexpected token".
+UUID文字列の周りに引用符がないことに注意してください。Alpineがこの式を評価しようとすると、JavaScriptはエラーをスローします：「Uncaught SyntaxError: Invalid or unexpected token」。
 
-To fix this, we need to add quotations around the Blade expression like so:
+これを修正するには、次のようにBlade式の周りに引用符を追加する必要があります。
 
 ```html
 <button
@@ -211,7 +210,7 @@ To fix this, we need to add quotations around the Blade expression like so:
 >
 ```
 
-Now the above template will render properly and everything will work as expected:
+これで、上記のテンプレートは正しくレンダリングされ、すべてが期待通りに機能します。
 
 ```html
 <button
@@ -220,19 +219,19 @@ Now the above template will render properly and everything will work as expected
 >
 ```
 
-### Refreshing a component
+### コンポーネントのリフレッシュ
 
-You can easily refresh a Livewire component (trigger network roundtrip to re-render a component's Blade view) using `$wire.$refresh()`:
+`$wire.$refresh()`を使用すると、Livewireコンポーネントを簡単にリフレッシュ（ネットワーク往復をトリガーしてコンポーネントのBladeビューを再レンダリング）できます。
 
 ```html
 <button type="button" x-on:click="$wire.$refresh()">
 ```
 
-## Sharing state using `$wire.entangle`
+## `$wire.entangle`を使った状態の共有
 
-In most cases, `$wire` is all you need for interacting with Livewire state from Alpine. However, Livewire provides an additional `$wire.entangle()` utility that can be used to keep values from Livewire in-sync with values in Alpine.
+ほとんどの場合、AlpineからLivewireの状態にアクセスするためには`$wire`だけで十分ですが、Livewireは追加のユーティリティ`$wire.entangle()`も提供しており、これを使用するとLivewireの値とAlpineの値を同期させることができます。
 
-To demonstrate, consider this dropdown example with its `showDropdown` property entangled between Livewire and Alpine using `$wire.entangle()`. By using entanglement, we are now able to control the state of the dropdown from both Alpine and Livewire:
+これを示すために、以下のように`showDropdown`プロパティがLivewireとAlpineの間で絡められたドロップダウンの例を考えてみましょう。絡めることによって、AlpineとLivewireの両方からドロップダウンの状態を制御できるようになります。
 
 
 ```php
@@ -260,19 +259,19 @@ class PostDropdown extends Component
 
 ```blade
 <div x-data="{ open: $wire.entangle('showDropdown') }">
-    <button x-on:click="open = true">Show More...</button>
+    <button x-on:click="open = true">もっと表示...</button>
 
     <ul x-show="open" x-on:click.outside="open = false">
-        <li><button wire:click="archive">Archive</button></li>
+        <li><button wire:click="archive">アーカイブ</button></li>
 
-        <li><button wire:click="delete">Delete</button></li>
+        <li><button wire:click="delete">削除</button></li>
     </ul>
 </div>
 ```
 
-A user can now toggle the dropdown immediately with Alpine, but when they click a Livewire action like "Archive", the dropdown will be told to close from Livewire. Both Alpine and Livewire are welcome to manipulate their respective properties, and the other will automatically update.
+ユーザーはAlpineを使ってドロップダウンを即座にトグルできますが、「アーカイブ」のようなLivewireアクションをクリックすると、Livewireからドロップダウンを閉じるように指示されます。AlpineとLivewireの両方がそれぞれのプロパティを操作でき、もう一方は自動的に更新されます。
 
-By default, updating the state is deferred (changes on the client, but not immediately on the server) until the next Livewire request. If you need to update the state server-side as soon as the user clicks, chain the `.live` modifier like so:
+デフォルトでは、状態の更新は遅延されます（クライアント上の変更は即座に反映されますが、サーバー上の変更は次回のLivewireリクエストまで反映されません）。ユーザーがクリックしたときに状態をサーバー側で即座に更新する必要がある場合は、次のように`.live`修飾子をチェーンします。
 
 ```blade
 <div x-data="{ open: $wire.entangle('showDropdown').live }">
@@ -280,21 +279,21 @@ By default, updating the state is deferred (changes on the client, but not immed
 </div>
 ```
 
-> [!tip] You might not need `$wire.entangle`
-> In most cases, you can achieve what you want by using `$wire` to directly access Livewire properties from Alpine rather than entangling them. Entangling two properties rather than relying on one can cause predictability and performance issues when using deeply nested objects that change frequently. For this reason, `$wire.entangle` has been de-emphasized in Livewire's documentation starting with version 3.
+> [!tip] `$wire.entangle`は必ずしも必要ではありません
+> ほとんどの場合、AlpineからLivewireのプロパティに直接アクセスするために`$wire`を使用することで、望んでいることを達成できます。2つのプロパティを絡めるよりも、1つのプロパティに依存する方が、深くネストされたオブジェクトを使用する際の予測可能性やパフォーマンスの問題を引き起こす可能性があるため、`$wire.entangle`はLivewireのドキュメントでの強調表示が減少しています（バージョン3から）。
 
-> [!warning] Refrain from using the @@entangle directive
-> In Livewire version 2, it was recommended to use Blade's `@@entangle` directive. That is no longer the case in v3. `$wire.entangle()` is preferred as it is a more robust utility and avoids certain [issues when removing DOM elements](https://github.com/livewire/livewire/pull/6833#issuecomment-1902260844).
+> [!warning] @@entangleディレクティブの使用は避けてください
+> Livewireバージョン2では、Bladeの`@@entangle`ディレクティブを使用することが推奨されていました。しかし、v3ではそうではなくなりました。`$wire.entangle()`が推奨されており、これはより堅牢なユーティリティであり、特定の[DOM要素を削除する際の問題](https://github.com/livewire/livewire/pull/6833#issuecomment-1902260844)を回避します。
 
-## Manually bundling Alpine in your JavaScript build
+## JavaScriptビルドへのAlpineの手動バンドル
 
-By default, Livewire and Alpine's JavaScript is injected onto each Livewire page automatically.
+デフォルトでは、LivewireとAlpineのJavaScriptは各Livewireページに自動的に挿入されます。
 
-This is ideal for simpler setups, however, you may want to include your own Alpine components, stores, and plugins into your project.
+これはシンプルなセットアップには理想的ですが、独自のAlpineコンポーネント、ストア、プラグインをプロジェクトに含めたい場合もあるでしょう。
 
-To include Livewire and Alpine via your own JavaScript bundle on a page is straightforward.
+ページにLivewireとAlpineを独自のJavaScriptバンドル経由で含めるのは簡単です。
 
-First, you must include the `@livewireScriptConfig` directive in your layout file like so:
+まず、次のようにレイアウトファイルに`@livewireScriptConfig`ディレクティブを含める必要があります。
 
 ```blade
 <html>
@@ -311,19 +310,19 @@ First, you must include the `@livewireScriptConfig` directive in your layout fil
 </html>
 ```
 
-This allows Livewire to provide your bundle with certain configuration it needs for your app to run properly.
+これにより、Livewireはバンドルにアプリが正しく動作するために必要な特定の設定を提供できるようになります。
 
-Now you can import Livewire and Alpine in your `resources/js/app.js` file like so:
+これで、次のように`resources/js/app.js`ファイルにLivewireとAlpineをインポートできます。
 
 ```js
 import { Livewire, Alpine } from '../../vendor/livewire/livewire/dist/livewire.esm';
 
-// Register any Alpine directives, components, or plugins here...
+// ここに任意のAlpineディレクティブ、コンポーネント、プラグインを登録...
 
 Livewire.start()
 ```
 
-Here is an example of registering a custom Alpine directive called "x-clipboard" in your application:
+ここでは、アプリケーションに「x-clipboard」というカスタムAlpineディレクティブを登録する例を示します。
 
 ```js
 import { Livewire, Alpine } from '../../vendor/livewire/livewire/dist/livewire.esm';
@@ -339,4 +338,4 @@ Alpine.directive('clipboard', (el) => {
 Livewire.start()
 ```
 
-Now the `x-clipboard` directive will be available to all your Alpine components in your Livewire application.
+これで、`x-clipboard`ディレクティブはLivewireアプリケーション内のすべてのAlpineコンポーネントで利用可能になります。

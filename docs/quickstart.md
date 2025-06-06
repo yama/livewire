@@ -1,39 +1,39 @@
+````markdown
+Livewireの使い方を体験するために、まずはシンプルな「カウンター」コンポーネントを作成し、ブラウザで表示してみましょう。この例は、Livewireの“ライブ感”を最も簡単な形で体験できる、初めての方におすすめの内容です。
 
-To begin your Livewire journey, we will create a simple "counter" component and render it in the browser. This example is a great way to experience Livewire for the first time as it demonstrates Livewire's _liveness_ in the simplest way possible.
+## 前提条件
 
-## Prerequisites
+作業を始める前に、以下がインストールされていることを確認してください。
 
-Before we start, make sure you have the following installed:
+- Laravel バージョン10以上
+- PHP バージョン8.1以上
 
-- Laravel version 10 or later
-- PHP version 8.1 or later
+## Livewireのインストール
 
-## Install Livewire
-
-From the root directory of your Laravel app, run the following [Composer](https://getcomposer.org/) command:
+Laravelアプリのルートディレクトリで、次の[Composer](https://getcomposer.org/)コマンドを実行します。
 
 ```shell
 composer require livewire/livewire
 ```
 
-> [!warning] Make sure Alpine isn't already installed
-> If the application you are using already has AlpineJS installed, you will need to remove it for Livewire to work properly; otherwise, Alpine will be loaded twice and Livewire won't function. For example, if you installed the Laravel Breeze "Blade with Alpine" starter kit, you will need to remove Alpine from `resources/js/app.js`.
+> [!warning] Alpineがすでにインストールされていないか確認してください
+> もしご利用中のアプリケーションにAlpineJSがすでにインストールされている場合は、Livewireが正しく動作するようAlpineを削除してください。Alpineが二重に読み込まれると、Livewireが動作しなくなります。たとえば、Laravel Breezeの「Blade with Alpine」スターターキットを使っている場合は、`resources/js/app.js`からAlpineを削除してください。
 
-## Create a Livewire component
+## Livewireコンポーネントの作成
 
-Livewire provides a convenient Artisan command to generate new components quickly. Run the following command to make a new `Counter` component:
+Livewireには、新しいコンポーネントを素早く生成できる便利なArtisanコマンドが用意されています。次のコマンドで`Counter`コンポーネントを作成しましょう。
 
 ```shell
 php artisan make:livewire counter
 ```
 
-This command will generate two new files in your project:
+このコマンドを実行すると、プロジェクト内に2つの新しいファイルが生成されます。
 * `app/Livewire/Counter.php`
 * `resources/views/livewire/counter.blade.php`
 
-## Writing the class
+## クラスの記述
 
-Open `app/Livewire/Counter.php` and replace its contents with the following:
+`app/Livewire/Counter.php`を開き、内容を以下のコードに置き換えてください。
 
 ```php
 <?php
@@ -63,14 +63,14 @@ class Counter extends Component
 }
 ```
 
-Here's a brief explanation of the code above:
-- `public $count = 1;` — Declares a public property named `$count` with an initial value of `1`.
-- `public function increment()` — Declares a public method named `increment()` that increments the `$count` property each time it's called. Public methods like this can be triggered from the browser in a variety of ways, including when a user clicks a button.
-- `public function render()` — Declares a `render()` method that returns a Blade view. This Blade view will contain the HTML template for our component.
+上記コードの簡単な説明は以下の通りです：
+- `public $count = 1;` — 初期値`1`で`$count`という名前のパブリックプロパティを宣言します。
+- `public function increment()` — `$count`プロパティをインクリメントする`increment()`という名前のパブリックメソッドを宣言します。このようなパブリックメソッドは、ボタンがクリックされたときなど、さまざまな方法でブラウザからトリガーされます。
+- `public function render()` — Bladeビューを返す`render()`メソッドを宣言します。このBladeビューが、コンポーネントのHTMLテンプレートとなります。
 
-## Writing the view
+## ビューの記述
 
-Open the `resources/views/livewire/counter.blade.php` file and replace its content with the following:
+`resources/views/livewire/counter.blade.php`ファイルを開き、その内容を以下のコードに置き換えてください。
 
 ```blade
 <div>
@@ -82,15 +82,15 @@ Open the `resources/views/livewire/counter.blade.php` file and replace its conte
 </div>
 ```
 
-This code will display the value of the `$count` property and two buttons that increment and decrement the `$count` property, respectively.
+このコードは、`$count`プロパティの値を表示し、それぞれ`$count`プロパティをインクリメントおよびデクリメントする2つのボタンを表示します。
 
-> [!warning] Livewire components MUST have a single root element
-> In order for Livewire to work, components must have just **one** single element as its root. If multiple root elements are detected, an exception is thrown. It is recommended to use a `<div>` element as in the example. HTML comments count as separate elements and should be put inside the root element.
-> When rendering [full-page components](/docs/components#full-page-components), named slots for the layout file may be put outside the root element. These are removed before the component is rendered.
+> [!warning] Livewireコンポーネントはルート要素を1つだけ持つ必要があります
+> Livewireが機能するためには、コンポーネントはルート要素として**1つだけ**の要素を持っている必要があります。複数のルート要素が検出されると、例外がスローされます。推奨されるように、例として`<div>`要素を使用してください。HTMLコメントは別々の要素としてカウントされ、ルート要素内に配置する必要があります。
+> [フルページコンポーネント](/docs/components#full-page-components)をレンダリングする場合、レイアウトファイルの名前付きスロットはルート要素の外に置くことができます。これらはコンポーネントがレンダリングされる前に削除されます。
 
-## Register a route for the component
+## コンポーネントのルート登録
 
-Open the `routes/web.php` file in your Laravel application and add the following code:
+Laravelアプリケーションの`routes/web.php`ファイルを開き、以下のコードを追加します。
 
 ```php
 use App\Livewire\Counter;
@@ -98,19 +98,19 @@ use App\Livewire\Counter;
 Route::get('/counter', Counter::class);
 ```
 
-Now, our _counter_ component is assigned to the `/counter` route, so that when a user visits the `/counter` endpoint in your application, this component will be rendered by the browser.
+これで、_counter_コンポーネントは`/counter`ルートに割り当てられました。ユーザーがアプリケーション内の`/counter`エンドポイントにアクセスすると、このコンポーネントがブラウザによってレンダリングされます。
 
-## Create a template layout
+## テンプレートレイアウトの作成
 
-Before you can visit `/counter` in the browser, we need an HTML layout for our component to render inside. By default, Livewire will automatically look for a layout file named: `resources/views/components/layouts/app.blade.php`
+ブラウザで`/counter`にアクセスする前に、コンポーネントがレンダリングされるためのHTMLレイアウトが必要です。デフォルトでは、Livewireは自動的に`resources/views/components/layouts/app.blade.php`という名前のレイアウトファイルを探します。
 
-You may create this file if it doesn't already exist by running the following command:
+このファイルがまだ存在しない場合は、次のコマンドを実行して作成できます。
 
 ```shell
 php artisan livewire:layout
 ```
 
-This command will generate a file called `resources/views/components/layouts/app.blade.php` with the following contents:
+このコマンドを実行すると、以下の内容を持つ`resources/views/components/layouts/app.blade.php`というファイルが生成されます。
 
 ```blade
 <!DOCTYPE html>
@@ -127,16 +127,17 @@ This command will generate a file called `resources/views/components/layouts/app
 </html>
 ```
 
-The _counter_ component will be rendered in place of the `$slot` variable in the template above.
+上記のテンプレート内の`$slot`変数の場所に、_counter_コンポーネントがレンダリングされます。
 
-You may have noticed there is no JavaScript or CSS assets provided by Livewire. That is because Livewire 3 and above automatically injects any frontend assets it needs.
+Livewireから提供されるJavaScriptやCSSのアセットがないことにお気づきかもしれません。それは、Livewire 3以降は必要なフロントエンドアセットが自動的に注入されるためです。
 
-## Test it out
+## 動作確認
 
-With our component class and templates in place, our component is ready to test!
+コンポーネントクラスとテンプレートが整ったので、コンポーネントのテストを行いましょう！
 
-Visit `/counter` in your browser, and you should see a number displayed on the screen with two buttons to increment and decrement the number.
+ブラウザで`/counter`にアクセスすると、画面に数字が表示され、数字をインクリメントおよびデクリメントするための2つのボタンが表示されます。
 
-After clicking one of the buttons, you will notice that the count updates in real time, without the page reloading. This is the magic of Livewire: dynamic frontend applications written entirely in PHP.
+ボタンのいずれかをクリックすると、ページをリロードすることなくカウントがリアルタイムで更新されるのに気づくでしょう。これがLivewireの魔法です：PHPだけで書かれた動的なフロントエンドアプリケーションです。
 
-We've barely scratched the surface of what Livewire is capable of. Keep reading the documentation to see everything Livewire has to offer.
+Livewireが提供する機能のすべてを知るには、ドキュメントを読み続けてください。
+````

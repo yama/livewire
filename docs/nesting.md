@@ -1,14 +1,14 @@
+<!-- filepath: /home/yamamoto/oss/translations/livewire/docs/nesting.md -->
+Livewireでは、親コンポーネントの中にさらにLivewireコンポーネントをネストして配置できます。この機能は非常に強力で、アプリケーション全体で共有されるLivewireコンポーネント内の振る舞いを再利用・カプセル化することができます。
 
-Livewire allows you to nest additional Livewire components inside of a parent component. This feature is immensely powerful, as it allows you to re-use and encapsulate behavior within Livewire components that are shared across your application.
+> [!warning] Livewireコンポーネントが本当に必要か再考しましょう
+> テンプレートの一部をネストしたLivewireコンポーネントとして切り出す前に、「この部分は“ライブ”である必要があるか？」を考えてみてください。もしそうでなければ、シンプルな[Bladeコンポーネント](https://laravel.com/docs/blade#components)の利用をおすすめします。Livewireの動的な特性やパフォーマンス上の利点がある場合のみ、Livewireコンポーネントを作成してください。
 
-> [!warning] You might not need a Livewire component
-> Before you extract a portion of your template into a nested Livewire component, ask yourself: Does this content in this component need to be "live"? If not, we recommend that you create a simple [Blade component](https://laravel.com/docs/blade#components) instead. Only create a Livewire component if the component benefits from Livewire's dynamic nature or if there is a direct performance benefit.
+Livewireコンポーネントのネストに関するパフォーマンスや使い方、制約については、[詳細な技術解説](/docs/understanding-nesting)もご参照ください。
 
-Consult our [in-depth, technical examination of Livewire component nesting](/docs/understanding-nesting) for more information on the performance, usage implications, and constraints of nested Livewire components.
+## コンポーネントのネスト
 
-## Nesting a component
-
-To nest a Livewire component within a parent component, simply include it in the parent component's Blade view. Below is an example of a `Dashboard` parent component that contains a nested `TodoList` component:
+親コンポーネント内にLivewireコンポーネントをネストするには、親コンポーネントのBladeビューにそのまま含めるだけです。以下は、`Dashboard`という親コンポーネントの中に`TodoList`コンポーネントをネストした例です：
 
 ```php
 <?php
@@ -34,15 +34,15 @@ class Dashboard extends Component
 </div>
 ```
 
-On this page's initial render, the `Dashboard` component will encounter `<livewire:todo-list />` and render it in place. On a subsequent network request to `Dashboard`, the nested `todo-list` component will skip rendering because it is now its own independent component on the page. For more information on the technical concepts behind nesting and rendering, consult our documentation on why [nested components are "islands"](/docs/understanding-nesting#every-component-is-an-island).
+このページが最初にレンダリングされる際、`Dashboard`コンポーネントは`<livewire:todo-list />`に遭遇し、それをその場でレンダリングします。次回`Dashboard`へのネットワークリクエストが行われると、ネストされた`todo-list`コンポーネントはすでにページ上に独立したコンポーネントとして存在するため、レンダリングをスキップします。ネストとレンダリングの背後にある技術的な概念については、[ネストされたコンポーネントは「アイランド」である理由](/docs/understanding-nesting#every-component-is-an-island)に関するドキュメントをご覧ください。
 
-For more information about the syntax for rendering components, consult our documentation on [Rendering Components](/docs/components#rendering-components).
+コンポーネントをレンダリングするための構文に関する詳細は、[コンポーネントのレンダリング](/docs/components#rendering-components)に関するドキュメントをご参照ください。
 
-## Passing props to children
+## 子コンポーネントへのプロパティの受け渡し
 
-Passing data from a parent component to a child component is straightforward. In fact, it's very much like passing props to a typical [Blade component](https://laravel.com/docs/blade#components).
+親コンポーネントから子コンポーネントへデータを渡すのは簡単です。実際、これは通常の[Bladeコンポーネント](https://laravel.com/docs/blade#components)にプロパティを渡すのと非常に似ています。
 
-For example, let's check out a `TodoList` component that passes a collection of `$todos` to a child component called `TodoCount`:
+例えば、`TodoList`コンポーネントが`TodoCount`という子コンポーネントに`$todos`のコレクションを渡す例を見てみましょう：
 
 ```php
 <?php
@@ -71,9 +71,9 @@ class TodoList extends Component
 </div>
 ```
 
-As you can see, we are passing `$todos` into `todo-count` with the syntax: `:todos="$todos"`.
+ご覧の通り、`:todos="$todos"`という構文を使って`todo-count`に`$todos`を渡しています。
 
-Now that `$todos` has been passed to the child component, you can receive that data through the child component's `mount()` method:
+`$todos`が子コンポーネントに渡されたので、子コンポーネントの`mount()`メソッドでそのデータを受け取ることができます：
 
 ```php
 <?php
@@ -101,35 +101,35 @@ class TodoCount extends Component
 }
 ```
 
-> [!tip] Omit `mount()` as a shorter alternative
-> If the `mount()` method in above example feels like redundant boilerplate code to you, it can be omitted as long as the property and parameter names match:
+> [!tip] `mount()`を省略する短縮方法
+> 上記の例の`mount()`メソッドが冗長に感じる場合、プロパティ名とパラメータ名が一致していれば省略できます：
 > ```php
 > public $todos; // [tl! highlight]
 > ```
 
-### Passing static props
+### 静的プロパティの受け渡し
 
-In the previous example, we passed props to our child component using Livewire's dynamic prop syntax, which supports PHP expressions like so:
+前の例では、Livewireの動的プロパティ構文を使用して子コンポーネントにプロパティを渡しました。これは次のようにPHP式をサポートしています：
 
 ```blade
 <livewire:todo-count :todos="$todos" />
 ```
 
-However, sometimes you may want to pass a component a simple static value such as a string. In these cases, you may omit the colon from the beginning of the statement:
+しかし、時にはコンポーネントに文字列などの単純な静的値を渡したい場合もあります。このような場合、構文の先頭からコロンを省略できます：
 
 ```blade
 <livewire:todo-count :todos="$todos" label="Todo Count:" />
 ```
 
-Boolean values may be provided to components by only specifying the key. For example, to pass an `$inline` variable with a value of `true` to a component, we may simply place `inline` on the component tag:
+ブール値はキーのみを指定することでコンポーネントに渡すことができます。例えば、`$inline`という変数に`true`の値を渡すには、コンポーネントタグに`inline`とだけ記述します：
 
 ```blade
 <livewire:todo-count :todos="$todos" inline />
 ```
 
-### Shortened attribute syntax
+### 属性構文の短縮
 
-When passing PHP variables into a component, the variable name and the prop name are often the same. To avoid writing the name twice, Livewire allows you to simply prefix the variable with a colon:
+PHP変数をコンポーネントに渡すとき、変数名とプロパティ名はしばしば同じです。名前を二度書くのを避けるために、Livewireでは変数の前にコロンを付けるだけで済みます：
 
 ```blade
 <livewire:todo-count :todos="$todos" /> <!-- [tl! remove] -->
@@ -137,13 +137,13 @@ When passing PHP variables into a component, the variable name and the prop name
 <livewire:todo-count :$todos /> <!-- [tl! add] -->
 ```
 
-## Rendering children in a loop
+## ループ内での子コンポーネントのレンダリング
 
-When rendering a child component within a loop, you should include a unique `key` value for each iteration.
+ループ内で子コンポーネントをレンダリングする場合、各イテレーションに対して一意の`key`値を含める必要があります。
 
-Component keys are how Livewire tracks each component on subsequent renders, particularly if a component has already been rendered or if multiple components have been re-arranged on the page.
+コンポーネントのキーは、特にコンポーネントがすでにレンダリングされている場合や、複数のコンポーネントがページ上で再配置されている場合に、Livewireが各コンポーネントを追跡する方法です。
 
-You can specify the component's key by specifying a `:key` prop on the child component:
+子コンポーネントに`key`プロパティを指定することで、コンポーネントのキーを指定できます：
 
 ```blade
 <div>
@@ -155,20 +155,20 @@ You can specify the component's key by specifying a `:key` prop on the child com
 </div>
 ```
 
-As you can see, each child component will have a unique key set to the ID of each `$todo`. This ensures the key will be unique and tracked if the todos are re-ordered.
+ご覧の通り、各子コンポーネントには各`$todo`のIDに設定された一意のキーがあります。これにより、キーが一意であり、todoが再注文された場合でも追跡されます。
 
-> [!warning] Keys aren't optional
-> If you have used frontend frameworks like Vue or Alpine, you are familiar with adding a key to a nested element in a loop. However, in those frameworks, a key isn't _mandatory_, meaning the items will render, but a re-order might not be tracked properly. However, Livewire relies more heavily on keys and will behave incorrectly without them.
+> [!warning] キーは必須です
+> VueやAlpineのようなフロントエンドフレームワークを使用したことがある方は、ループ内のネストされた要素にキーを追加することに慣れているかもしれません。しかし、これらのフレームワークではキーは_必須_ではなく、アイテムはレンダリングされますが、再注文が正しく追跡されない場合があります。しかし、Livewireはキーにより依存しており、キーなしでは正しく動作しません。
 
-## Reactive props
+## リアクティブプロパティ
 
-Developers new to Livewire expect that props are "reactive" by default. In other words, they expect that when a parent changes the value of a prop being passed into a child component, the child component will automatically be updated. However, by default, Livewire props are not reactive.
+Livewireに不慣れな開発者は、プロパティがデフォルトで「リアクティブ」であると期待します。言い換えれば、親が子コンポーネントに渡されるプロパティの値を変更すると、子コンポーネントが自動的に更新されることを期待します。しかし、デフォルトではLivewireのプロパティはリアクティブではありません。
 
-When using Livewire, [every component is an island](/docs/understanding-nesting#every-component-is-an-island). This means that when an update is triggered on the parent and a network request is dispatched, only the parent component's state is sent to the server to re-render - not the child component's. The intention behind this behavior is to only send the minimal amount of data back and forth between the server and client, making updates as performant as possible.
+Livewireを使用する際は、[すべてのコンポーネントがアイランドである](/docs/understanding-nesting#every-component-is-an-island)ことを理解してください。つまり、親で更新がトリガーされ、ネットワークリクエストが送信されると、サーバーに送信されるのは親コンポーネントの状態のみであり、子コンポーネントの状態は含まれません。この動作の意図は、サーバーとクライアント間で最小限のデータのみを送受信し、更新をできるだけパフォーマンス良く行うことです。
 
-But, if you want or need a prop to be reactive, you can easily enable this behavior using the `#[Reactive]` attribute parameter.
+しかし、プロパティをリアクティブにしたい、またはする必要がある場合は、`#[Reactive]`属性パラメータを使用してこの動作を簡単に有効にできます。
 
-For example, below is the template of a parent `TodoList` component. Inside, it is rendering a `TodoCount` component and passing in the current list of todos:
+例えば、以下は親`TodoList`コンポーネントのテンプレートです。その中で、`TodoCount`コンポーネントをレンダリングし、現在のtodoリストを渡しています：
 
 ```blade
 <div>
@@ -180,7 +180,7 @@ For example, below is the template of a parent `TodoList` component. Inside, it 
 </div>
 ```
 
-Now let's add `#[Reactive]` to the `$todos` prop in the `TodoCount` component. Once we have done so, any todos that are added or removed inside the parent component will automatically trigger an update within the `TodoCount` component:
+次に、`TodoCount`コンポーネントの`$todos`プロパティに`#[Reactive]`を追加してみましょう。そうすることで、親コンポーネント内でtodoが追加または削除されると、自動的に`TodoCount`コンポーネント内でも更新がトリガーされます：
 
 ```php
 <?php
@@ -205,15 +205,15 @@ class TodoCount extends Component
 }
 ```
 
-Reactive properties are an incredibly powerful feature, making Livewire more similar to frontend component libraries like Vue and React. But, it is important to understand the performance implications of this feature and only add `#[Reactive]` when it makes sense for your particular scenario.
+リアクティブプロパティは非常に強力な機能であり、LivewireをVueやReactのようなフロントエンドコンポーネントライブラリに近づけます。しかし、この機能のパフォーマンスへの影響を理解し、特定のシナリオに対して意味がある場合にのみ`#[Reactive]`を追加することが重要です。
 
-## Binding to child data using `wire:model`
+## `wire:model`を使用した子データへのバインディング
 
-Another powerful pattern for sharing state between parent and child components is using `wire:model` directly on a child component via Livewire's `Modelable` feature.
+親コンポーネントと子コンポーネント間で状態を共有するための別の強力なパターンは、Livewireの`Modelable`機能を介して子コンポーネントに直接`wire:model`を使用することです。
 
-This behavior is very commonly needed when extracting an input element into a dedicated Livewire component while still accessing its state in the parent component.
+この動作は、入力要素を専用のLivewireコンポーネントに抽出しながら、その状態に親コンポーネントからもアクセスする必要がある場合に非常に一般的に必要とされます。
 
-Below is an example of a parent `TodoList` component that contains a `$todo` property which tracks the current todo about to be added by a user:
+以下は、現在のtodoを追跡する`$todo`プロパティを含む親`TodoList`コンポーネントの例です。ユーザーが追加しようとしているtodoです：
 
 ```php
 <?php
@@ -244,7 +244,7 @@ class TodoList extends Component
 }
 ```
 
-As you can see in the `TodoList` template, `wire:model` is being used to bind the `$todo` property directly to a nested `TodoInput` component:
+`TodoList`テンプレートでは、`wire:model`を使用して`$todo`プロパティをネストされた`TodoInput`コンポーネントに直接バインドしています：
 
 ```blade
 <div>
@@ -262,9 +262,7 @@ As you can see in the `TodoList` template, `wire:model` is being used to bind th
 </div>
 ```
 
-Livewire provides a `#[Modelable]` attribute you can add to any child component property to make it _modelable_ from a parent component.
-
-Below is the `TodoInput` component with the `#[Modelable]` attribute added above the `$value` property to signal to Livewire that if `wire:model` is declared on the component by a parent it should bind to this property:
+Livewireは、親からこのプロパティに`wire:model`が宣言された場合に、これをこのプロパティにバインドするようにLivewireに指示するために、`TodoInput`コンポーネントの`$value`プロパティの上に`#[Modelable]`属性を追加します：
 
 ```php
 <?php
@@ -292,19 +290,19 @@ class TodoInput extends Component
 </div>
 ```
 
-Now the parent `TodoList` component can treat `TodoInput` like any other input element and bind directly to its value using `wire:model`.
+これで、親`TodoList`コンポーネントは`TodoInput`を他の入力要素と同様に扱い、`wire:model`を使用してその値に直接バインドできます。
 
 > [!warning]
-> Currently Livewire only supports a single `#[Modelable]` attribute, so only the first one will be bound.
+> 現在、Livewireは単一の`#[Modelable]`属性のみをサポートしているため、最初の1つだけがバインドされます。
 
 
-## Listening for events from children
+## 子コンポーネントからのイベントリスニング
 
-Another powerful parent-child component communication technique is Livewire's event system, which allows you to dispatch an event on the server or client that can be intercepted by other components.
+親子コンポーネント間の通信手法として、Livewireのイベントシステムを使用することもできます。これにより、サーバーまたはクライアントでイベントを発火し、他のコンポーネントによってインターセプトされることができます。
 
-Our [complete documentation on Livewire's event system](/docs/events) provides more detailed information on events, but below we'll discuss a simple example of using an event to trigger an update in a parent component.
+Livewireのイベントシステムに関する[完全なドキュメント](/docs/events)では、イベントの詳細情報が提供されていますが、以下にイベントを使用して親コンポーネントの更新をトリガーする簡単な例を示します。
 
-Consider a `TodoList` component with functionality to show and remove todos:
+`TodoList`コンポーネントがあり、ここにtodoを表示および削除する機能があるとします：
 
 ```php
 <?php
@@ -343,7 +341,7 @@ class TodoList extends Component
 </div>
 ```
 
-To call `remove()` from inside the child `TodoItem` components, you can add an event listener to `TodoList` via the `#[On]` attribute:
+`remove()`を子の`TodoItem`コンポーネント内から呼び出すには、`#[On]`属性を使用して`TodoList`にイベントリスナーを追加できます：
 
 ```php
 <?php
@@ -376,7 +374,7 @@ class TodoList extends Component
 }
 ```
 
-Once the attribute has been added to the action, you can dispatch the `remove-todo` event from the `TodoList` child component:
+アクションに属性が追加されたので、`TodoList`子コンポーネントから`remove-todo`イベントを発火できます：
 
 ```php
 <?php
@@ -410,18 +408,18 @@ class TodoItem extends Component
 </div>
 ```
 
-Now when the "Remove" button is clicked inside a `TodoItem`, the parent `TodoList` component will intercept the dispatched event and perform the todo removal.
+これで、「Remove」ボタンが`TodoItem`内でクリックされると、親`TodoList`コンポーネントが発火したイベントをインターセプトし、todoの削除を実行します。
 
-After the todo is removed in the parent, the list will be re-rendered and the child that dispatched the `remove-todo` event will be removed from the page.
+todoが親で削除されると、リストが再レンダリングされ、`remove-todo`イベントを発火させた子コンポーネントがページから削除されます。
 
-### Improving performance by dispatching client-side
+### クライアント側でのディスパッチによるパフォーマンスの向上
 
-Though the above example works, it takes two network requests to perform a single action:
+上記の例は機能しますが、単一のアクションを実行するのに2回のネットワークリクエストがかかります：
 
-1. The first network request from the `TodoItem` component triggers the `remove` action, dispatching the `remove-todo` event.
-2. The second network request is after the `remove-todo` event is dispatched client-side and is intercepted by `TodoList` to call its `remove` action.
+1. 最初のネットワークリクエストは、`TodoItem`コンポーネントから`remove`アクションをトリガーし、`remove-todo`イベントを発火させます。
+2. 2回目のネットワークリクエストは、`remove-todo`イベントがクライアント側で発火し、`TodoList`がその`remove`アクションを呼び出すためにインターセプトされます。
 
-You can avoid the first request entirely by dispatching the `remove-todo` event directly on the client-side. Below is an updated `TodoItem` component that does not trigger a network request when dispatching the `remove-todo` event:
+可能な限り最初のリクエストを回避するには、イベントをクライアント側で直接発火させます。以下は、ネットワークリクエストをトリガーせずに`remove-todo`イベントを発火させるように更新された`TodoItem`コンポーネントです：
 
 ```php
 <?php
@@ -450,15 +448,15 @@ class TodoItem extends Component
 </div>
 ```
 
-As a rule of thumb, always prefer dispatching client-side when possible.
+一般的なルールとして、可能な限りクライアント側でのディスパッチを優先してください。
 
-## Directly accessing the parent from the child
+## 子から親への直接アクセス
 
-Event communication adds a layer of indirection. A parent can listen for an event that never gets dispatched from a child, and a child can dispatch an event that is never intercepted by a parent.
+イベント通信には間接的な層が追加されます。親は子から発火されないイベントをリッスンでき、子は親によってインターセプトされないイベントを発火できます。
 
-This indirection is sometimes desirable; however, in other cases you may prefer to access a parent component directly from the child component.
+この間接的な通信は時には望ましいですが、他のケースでは子コンポーネントから親コンポーネントに直接アクセスしたい場合もあります。
 
-Livewire allows you to accomplish this by providing a magic `$parent` variable to your Blade template that you can use to access actions and properties directly from the child. Here's the above `TodoItem` template rewritten to call the `remove()` action directly on the parent via the magic `$parent` variable:
+Livewireでは、Bladeテンプレート内でマジック変数`$parent`を提供することで、これを実現できます。これにより、子コンポーネントは親コンポーネントのアクションやプロパティに直接アクセスできます。以下は、`remove()`アクションをマジック`$parent`変数を介して親に直接呼び出させるように書き換えられた`TodoItem`テンプレートです：
 
 ```blade
 <div>
@@ -468,17 +466,17 @@ Livewire allows you to accomplish this by providing a magic `$parent` variable t
 </div>
 ```
 
-Events and direct parent communication are a few of the ways to communicate back and forth between parent and child components. Understanding their tradeoffs enables you to make more informed decisions about which pattern to use in a particular scenario.
+イベントと直接親通信は、親コンポーネントと子コンポーネント間での双方向通信を実現するためのいくつかの方法のうちの一部です。それぞれのトレードオフを理解することで、特定のシナリオでどのパターンを使用するかについてより情報に基づいた決定を下すことができます。
 
-## Dynamic child components
+## 動的子コンポーネント
 
-Sometimes, you may not know which child component should be rendered on a page until run-time. Therefore, Livewire allows you to choose a child component at run-time via `<livewire:dynamic-component ...>`, which receives an `:is` prop:
+時には、実行時までページにどの子コンポーネントをレンダリングするかわからない場合もあります。そのため、Livewireでは実行時に子コンポーネントを選択できる`<livewire:dynamic-component ...>`を介して子コンポーネントをレンダリングできます。これは`:is`プロパティを受け取ります：
 
 ```blade
 <livewire:dynamic-component :is="$current" />
 ```
 
-Dynamic child components are useful in a variety of different scenarios, but below is an example of rendering different steps in a multi-step form using a dynamic component:
+動的子コンポーネントはさまざまなシナリオで便利ですが、以下はマルチステップフォームの異なるステップを動的コンポーネントを使用してレンダリングする例です：
 
 ```php
 <?php
@@ -519,7 +517,7 @@ class Steps extends Component
 </div>
 ```
 
-Now, if the `Steps` component's `$current` prop is set to "step-one", Livewire will render a component named "step-one" like so:
+`Steps`コンポーネントの`$current`プロパティが「step-one」に設定されている場合、Livewireは次のように「step-one」という名前のコンポーネントをレンダリングします：
 
 ```php
 <?php
@@ -537,22 +535,22 @@ class StepOne extends Component
 }
 ```
 
-If you prefer, you can use the alternative syntax:
+お好みで、代替構文を使用することもできます：
 
 ```blade
 <livewire:is :component="$current" :key="$current" />
 ```
 
 > [!warning]
-> Don't forget to assign each child component a unique key. Although Livewire automatically generates a key for `<livewire:dynamic-child />` and `<livewire:is />`, that same key will apply to _all_ your child components, meaning subsequent renders will be skipped.
+> 各子コンポーネントに一意のキーを割り当てるのを忘れないでください。Livewireは`<livewire:dynamic-child />`および`<livewire:is />`に自動的にキーを生成しますが、そのキーは_すべての_子コンポーネントに適用されるため、後続のレンダリングがスキップされることになります。
 > 
-> See [forcing a child component to re-render](#forcing-a-child-component-to-re-render) for a deeper understanding of how keys affect component rendering.
+> コンポーネントのレンダリングに対するキーの影響をより深く理解するには、[子コンポーネントの再レンダリングを強制する](#forcing-a-child-component-to-re-render)を参照してください。
 
-## Recursive components
+## 再帰コンポーネント
 
-Although rarely needed by most applications, Livewire components may be nested recursively, meaning a parent component renders itself as its child.
+ほとんどのアプリケーションではほとんど必要とされませんが、Livewireコンポーネントは再帰的にネストすることができます。つまり、親コンポーネントが自分自身を子としてレンダリングすることができます。
 
-Imagine a survey which contains a `SurveyQuestion` component that can have sub-questions attached to itself:
+アンケートを想像してみてください。その中に`SurveyQuestion`コンポーネントがあり、それにサブ質問を添付できるとします：
 
 ```php
 <?php
@@ -586,13 +584,13 @@ class SurveyQuestion extends Component
 ```
 
 > [!warning]
-> Of course, the standard rules of recursion apply to recursive components. Most importantly, you should have logic in your template to ensure the template doesn't recurse indefinitely. In the example above, if a `$subQuestion` contained the original question as its own `$subQuestion`, an infinite loop would occur.
+> もちろん、再帰コンポーネントには標準の再帰ルールが適用されます。最も重要なのは、テンプレート内にテンプレートが無限に再帰しないようにするロジックが必要であることです。上記の例では、もし`$subQuestion`が自分自身の`$subQuestion`として元の質問を含んでいた場合、無限ループが発生します。
 
-## Forcing a child component to re-render
+## 子コンポーネントの再レンダリングの強制
 
-Behind the scenes, Livewire generates a key for each nested Livewire component in its template.
+内部では、Livewireはテンプレート内の各ネストされたLivewireコンポーネントにキーを生成します。
 
-For example, consider the following nested `todo-count` component:
+例えば、次のようなネストされた`todo-count`コンポーネントを考えてみてください：
 
 ```blade
 <div>
@@ -600,7 +598,7 @@ For example, consider the following nested `todo-count` component:
 </div>
 ```
 
-Livewire internally attaches a random string key to the component like so:
+Livewireは内部的に次のようにコンポーネントにランダムな文字列キーを添付します：
 
 ```blade
 <div>
@@ -608,19 +606,19 @@ Livewire internally attaches a random string key to the component like so:
 </div>
 ```
 
-When the parent component is rendering and encounters a child component like the above, it stores the key in a list of children attached to the parent:
+親コンポーネントがレンダリングされ、上記のような子コンポーネントに遭遇すると、そのキーは親に添付された子のリストに保存されます：
 
 ```php
 'children' => ['lska'],
 ```
 
-Livewire uses this list for reference on subsequent renders in order to detect if a child component has already been rendered in a previous request. If it has already been rendered, the component is skipped. Remember, [nested components are islands](/docs/understanding-nesting#every-component-is-an-island). However, if the child key is not in the list, meaning it hasn't been rendered already, Livewire will create a new instance of the component and render it in place.
+Livewireは、後続のレンダリング時にこのリストを参照して、子コンポーネントがすでにレンダリングされているかどうかを検出します。すでにレンダリングされている場合、コンポーネントはスキップされます。前述のとおり、[ネストされたコンポーネントはアイランドです](/docs/understanding-nesting#every-component-is-an-island)。ただし、子キーがリストにない場合、つまりまだレンダリングされていない場合、Livewireはコンポーネントの新しいインスタンスを作成し、その場でレンダリングします。
 
-These nuances are all behind-the-scenes behavior that most users don't need to be aware of; however, the concept of setting a key on a child is a powerful tool for controlling child rendering.
+これらのニュアンスは、ほとんどのユーザーが意識する必要のない裏側の動作ですが、子コンポーネントのキーを設定するという概念は、子コンポーネントのレンダリングを制御するための強力なツールです。
 
-Using this knowledge, if you want to force a component to re-render, you can simply change its key.
+この知識を使用して、コンポーネントを再レンダリングさせたい場合は、そのキーを変更するだけで済みます。
 
-Below is an example where we might want to destroy and re-initialize the `todo-count` component if the `$todos` being passed to the component are changed:
+以下は、`$todos`が変更された場合に`todo-count`コンポーネントを破棄して再初期化したい場合の例です：
 
 ```blade
 <div>
@@ -628,4 +626,4 @@ Below is an example where we might want to destroy and re-initialize the `todo-c
 </div>
 ```
 
-As you can see above, we are generating a dynamic `:key` string based on the content of `$todos`. This way, the `todo-count` component will render and exist as normal until the `$todos` themselves change. At that point, the component will be re-initialized entirely from scratch, and the old component will be discarded.
+上記のように、`$todos`の内容に基づいて動的な`:key`文字列を生成しています。これにより、`todo-count`コンポーネントは通常通りレンダリングされ、存在しますが、`$todos`自体が変更されると、コンポーネントは最初から再初期化され、古いコンポーネントは破棄されます。
